@@ -6,23 +6,25 @@ use Aggregate;
 
 class Customer extends Aggregate
 {
+    private CustomerId $customerId;
+    private string $name;
+
     public static function create(CustomerId $customerId, string $name): self
     {
-        return new Customer($customerId, $name);
-    }
-
-    private function __construct(
-        private CustomerId $customerId,
-        private string $name,
-    )
-    {
-        $this->apply(
+        $customer = new Customer();
+        $customer->apply(
             new CustomerCreatedEvent($customerId)
         );
-
-        $this->apply(
+        $customer->apply(
             new CustomerCredentialSetEvent($name)
         );
+
+        return $customer;
+    }
+
+    protected function __construct(
+    )
+    {
     }
 
     public function getId(): CustomerId

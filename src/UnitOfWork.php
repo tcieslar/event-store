@@ -12,6 +12,11 @@ class UnitOfWork
     {
     }
 
+    public function loadAggregateEventStream(IdentityInterface $identity): EventStream
+    {
+        return $this->eventStore->loadEventStream($identity);
+    }
+
     public function persist(Aggregate $aggregate): void
     {
         $this->identityMap[$aggregate->getId()->toString()] = $aggregate;

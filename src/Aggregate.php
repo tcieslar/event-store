@@ -4,15 +4,14 @@ abstract class Aggregate
 {
     protected array $changes = [];
 
-    /**
-     * @param array<EventInterface> $events
-     */
-    public static function loadFromEventStream(array $events): static
+    public static function loadFromEvents(array $events): self
     {
         $obj = new static();
         foreach ($events as $event) {
             $obj->mutate($event);
         }
+
+        return $obj;
     }
 
     abstract public function getId(): IdentityInterface;

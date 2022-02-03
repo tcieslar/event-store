@@ -8,4 +8,9 @@ class EventStream
     )
     {
     }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->events);
+    }
 }

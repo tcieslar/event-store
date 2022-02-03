@@ -14,12 +14,19 @@ class CustomerRepositoryTest extends TestCase
         $eventStore = new EventStoreInMemory();
         $unitOfWork = new UnitOfWork($eventStore);
         $repository = new CustomerRepository($unitOfWork);
-        $customer = Customer::create(new CustomerId(Uuid::v4()), 'test');
+        $customerId = new CustomerId(Uuid::v4());
+        $customer = Customer::create($customerId, 'test');
         $repository->add($customer);
 
         $this->assertCount(0, $eventStore->getAllEvents());
         $unitOfWork->flush();
         $this->assertCount(2, $eventStore->getAllEvents());
+
+        $c2 = $repository->find($customerId);
+        $this->assertSame($customer->getId(), $c2->getId());
+
+        $customerId2 = new CustomerId(Uuid::v4());
+        //$c3 = $repository->find($customerId2);
     }
 
 }

@@ -8,7 +8,6 @@ use IdentityInterface;
 
 class EventStoreInMemory implements EventStoreInterface
 {
-
     public function __construct(
         private array $events = []
     )
