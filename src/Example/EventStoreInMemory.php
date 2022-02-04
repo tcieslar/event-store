@@ -2,47 +2,68 @@
 
 namespace Example;
 
+use EventInterface;
 use EventStoreInterface;
 use EventStream;
-use IdentityInterface;
+use AggregateIdInterface;
+use Version;
 
 class EventStoreInMemory implements EventStoreInterface
 {
-    public function __construct(
-        private array $events = []
-    )
+    private array $events = [];
+    private array $aggregatesVersion = [];
+
+    public function __construct()
     {
     }
 
-    public function loadEventStream(IdentityInterface $identity): EventStream
+    public function loadEventStream(AggregateIdInterface $identity): EventStream
     {
-        if (!isset($this->events[$identity->toString()])) {
+        $id = $identity->toString();
+        if (!isset($this->aggregatesVersion[$id])) {
             throw new \InvalidArgumentException('Aggregate not found.');
         }
+
+        $versionColumn = array_column($this->events[$id], 'version');
+        $events = array_column($this->events[$id], 'event');
+        array_multisort($versionColumn, $events, SORT_ASC);
         return new EventStream(
-            version: 1,
-            events: $this->events[$identity->toString()]
+            version: $this->aggregatesVersion[$id],
+            events: $events
         );
     }
 
-    public function appendToStream(IdentityInterface $identity, int $expectedVersion, array $events): void
+    public function appendToStream(AggregateIdInterface $identity, Version $expectedVersion, array $events): void
     {
-        if (!isset($this->events[$identity->toString()])) {
-            $this->events[$identity->toString()] = [];
+        $id = $identity->toString();
+        if (!isset($this->aggregatesVersion[$id])) {
+            $this->aggregatesVersion[$id] = $expectedVersion;
+            $this->events[$id] = [];
+        }
+        /** @var Version $version */
+        $version = $this->aggregatesVersion[$id];
+        if (!$expectedVersion->isEqual($version)) {
+            throw new \RuntimeException('Concurrency error.');
         }
 
+        /** @var EventInterface $event */
         foreach ($events as $event) {
-            $this->events[$identity->toString()][] = $event;
+            $version = $version->incremented();
+            $this->events[$id][] = [
+                'version' => (int)$version->toString(),
+                'occurred_at' => $event->occurredAt(),
+                'event' => $event
+            ];
         }
+        $this->aggregatesVersion[$id] = $version;
     }
 
     public function getAllEvents(): array
     {
         $result = [];
-        foreach ($this->events as $eventArray) {
-             $result = [...$eventArray];
+        foreach ($this->events as $aggregate) {
+            $result = [...$aggregate];
         }
-
         return $result;
     }
 }

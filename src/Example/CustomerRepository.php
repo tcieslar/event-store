@@ -3,25 +3,13 @@
 namespace Example;
 
 use Aggregate;
-use IdentityInterface;
+use EventStream;
 use Repository;
 
 class CustomerRepository extends Repository
 {
-    public function add(Customer $customer): void
+    protected function createAggregateByEventStream(EventStream $eventStream): Aggregate
     {
-        $this->persistAggregate($customer);
-    }
-
-    public function find(IdentityInterface $identity): ?Customer
-    {
-        $customer = Customer::loadFromEvents($this->getAggregateEvents($identity));
-        $this->persistAggregate($customer);
-        return $customer;
-    }
-
-    protected function getClassName(): string
-    {
-        return Customer::class;
+        return Customer::loadFromEvents($eventStream->events);
     }
 }

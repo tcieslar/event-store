@@ -2,18 +2,18 @@
 
 namespace Example;
 
-use IdentityInterface;
+use AggregateIdInterface;
 
-class CustomerId implements IdentityInterface
+class CustomerId implements AggregateIdInterface
 {
     public function __construct(
-        private string $uuid
+        private string $guid
     )
     {
     }
 
     public function toString(): string
     {
-        return $this->uuid;
+        return $this->guid;
     }
 }

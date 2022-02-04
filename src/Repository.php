@@ -8,20 +8,23 @@ abstract class Repository
     {
     }
 
-    abstract protected function getClassName(): string;
-
-    protected function getAggregateEvents(IdentityInterface $identity): array
+    public function add(Aggregate $aggregate): void
     {
-        $eventStream = $this->unitOfWork->loadAggregateEventStream($identity);
-        if ($eventStream->isEmpty()) {
-            throw new InvalidArgumentException($this->getClassName() . ' not found.');
+        $this->unitOfWork->insert($aggregate);
+    }
+
+    public function find(AggregateIdInterface $id): ?Aggregate
+    {
+        if ($aggregate = $this->unitOfWork->get($id)) {
+            return $aggregate;
         }
 
-        return $eventStream->events;
+        $eventStream = $this->unitOfWork->loadAggregateEventStream($id);
+        $aggregate = $this->createAggregateByEventStream($eventStream);
+        $this->unitOfWork->persist($aggregate, $eventStream);
+
+        return $aggregate;
     }
 
-    protected function persistAggregate(Aggregate $aggregate): void
-    {
-        $this->unitOfWork->persist($aggregate);
-    }
+    abstract protected function createAggregateByEventStream(EventStream $eventStream): Aggregate;
 }

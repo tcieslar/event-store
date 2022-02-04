@@ -14,7 +14,7 @@ abstract class Aggregate
         return $obj;
     }
 
-    abstract public function getId(): IdentityInterface;
+    abstract public function getId(): AggregateIdInterface;
 
     protected function apply(EventInterface $event): void
     {

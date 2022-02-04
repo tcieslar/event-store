@@ -1,6 +1,6 @@
 <?php
 
-interface IdentityInterface
+interface AggregateIdInterface
 {
     public function toString(): string;
 }
