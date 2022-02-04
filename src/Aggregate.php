@@ -2,9 +2,9 @@
 
 abstract class Aggregate
 {
-    protected array $changes = [];
+    protected EventCollection $changes;
 
-    public static function loadFromEvents(array $events): self
+    public static function loadFromEvents(EventCollection $events): self
     {
         $obj = new static();
         foreach ($events as $event) {
@@ -14,15 +14,20 @@ abstract class Aggregate
         return $obj;
     }
 
+    public function __construct()
+    {
+        $this->changes = new EventCollection();
+    }
+
     abstract public function getId(): AggregateIdInterface;
 
     protected function apply(EventInterface $event): void
     {
-        $this->changes[] = $event;
+        $this->changes->add($event);
         $this->mutate($event);
     }
 
-    public function getChanges(): array
+    public function getChanges(): EventCollection
     {
         return $this->changes;
     }

@@ -2,6 +2,7 @@
 
 namespace Example;
 
+use EventCollection;
 use EventInterface;
 use EventStoreInterface;
 use EventStream;
@@ -25,15 +26,15 @@ class EventStoreInMemory implements EventStoreInterface
         }
 
         $versionColumn = array_column($this->events[$id], 'version');
-        $events = array_column($this->events[$id], 'event');
-        array_multisort($versionColumn, $events, SORT_ASC);
+        $eventsColumn = array_column($this->events[$id], 'event');
+        array_multisort($versionColumn, $eventsColumn, SORT_ASC);
         return new EventStream(
             version: $this->aggregatesVersion[$id],
-            events: $events
+            events: new EventCollection($eventsColumn)
         );
     }
 
-    public function appendToStream(AggregateIdInterface $identity, Version $expectedVersion, array $events): void
+    public function appendToStream(AggregateIdInterface $identity, Version $expectedVersion, EventCollection $events): void
     {
         $id = $identity->toString();
         if (!isset($this->aggregatesVersion[$id])) {

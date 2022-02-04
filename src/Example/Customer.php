@@ -25,6 +25,7 @@ class Customer extends Aggregate
     protected function __construct(
     )
     {
+        parent::__construct();
     }
 
     public function getId(): CustomerId

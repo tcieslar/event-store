@@ -2,9 +2,9 @@
 
 namespace Example;
 
-use EventInterface;
+use Event;
 
-class CustomerCreatedEvent implements EventInterface
+class CustomerCreatedEvent extends Event
 {
     public readonly \DateTimeImmutable $occurredAt;
 
@@ -12,16 +12,6 @@ class CustomerCreatedEvent implements EventInterface
         public readonly CustomerId $customerId
     )
     {
-        $this->occurredAt = new \DateTimeImmutable();
-    }
-
-    public function getType(): string
-    {
-        return self::class;
-    }
-
-    public function occurredAt(): \DateTimeImmutable
-    {
-        return $this->occurredAt;
+        parent::__construct();
     }
 }

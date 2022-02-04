@@ -17,7 +17,7 @@ final class CustomerAggregateTest extends TestCase
         $this->assertSame($customer->getId(), $customerId);
         $changes = $customer->getChanges();
         $this->assertNotEmpty($changes);
-        $this->assertInstanceOf(CustomerCreatedEvent::class, $changes[0]);
-        $this->assertInstanceOf(CustomerCredentialSetEvent::class, $changes[1]);
+        $this->assertInstanceOf(CustomerCreatedEvent::class, $changes->get(0));
+        $this->assertInstanceOf(CustomerCredentialSetEvent::class, $changes->get(1));
     }
 }

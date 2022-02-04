@@ -2,26 +2,14 @@
 
 namespace Example;
 
-use EventInterface;
+use Event;
 
-class CustomerCredentialSetEvent implements EventInterface
+class CustomerCredentialSetEvent extends Event
 {
-    public readonly \DateTimeImmutable $occurredAt;
-
     public function __construct(
         public readonly string $name
     )
     {
-        $this->occurredAt = new \DateTimeImmutable();
-    }
-
-    public function getType(): string
-    {
-        return self::class;
-    }
-
-    public function occurredAt(): \DateTimeImmutable
-    {
-        return $this->occurredAt;
+        parent::__construct();
     }
 }

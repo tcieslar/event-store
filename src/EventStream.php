@@ -4,7 +4,7 @@ class EventStream
 {
     public function __construct(
         public readonly Version $version,
-        public readonly array $events
+        public readonly EventCollection $events
     )
     {
     }

@@ -40,6 +40,7 @@ class CustomerRepositoryTest extends TestCase
         $this->assertNotNull($obj);
         $this->assertInstanceOf(Customer::class, $obj);
 
+        // get the same
         $obj2 = $repository->find($customerId);
         $this->assertSame($obj2, $obj);
     }
