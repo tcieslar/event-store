@@ -16,7 +16,7 @@ interface StorageInterface
 
     public function getEventStreamAfterVersion(AggregateIdInterface $aggregateId, Version $afterVersion): EventStream;
 
-    public function storeEvent(AggregateIdInterface $aggregateId, Version $version, EventInterface $event): void;
+    public function storeEvents(AggregateIdInterface $aggregateId, Version $version, EventCollection $events): Version;
 
     public function getAllEvents(): EventCollection;
 }

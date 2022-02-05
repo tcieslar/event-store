@@ -14,6 +14,12 @@ class EventCollection implements \Countable, \Iterator
         }
     }
 
+    public function getAll(): array
+    {
+        return $this->values;
+
+    }
+
     public function add(EventInterface $event): void
     {
         $this->values[] = $event;

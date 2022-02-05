@@ -3,7 +3,6 @@
 namespace Example;
 
 use EventCollection;
-use EventInterface;
 use ConcurrencyException;
 use EventStoreInterface;
 use EventStream;
@@ -34,6 +33,7 @@ class EventStore implements EventStoreInterface
 
     /**
      * @throws ConcurrencyException
+     * @return Version new version
      */
     public function appendToStream(AggregateIdInterface $aggregateId, Version $expectedVersion, EventCollection $events): Version
     {
@@ -48,13 +48,7 @@ class EventStore implements EventStoreInterface
             throw new ConcurrencyException($aggregateId, $expectedVersion, $events, $storedEvents);
         }
 
-        /** @var EventInterface $event */
-        foreach ($events as $event) {
-            $version = $version->incremented();
-            $this->storage->storeEvent($aggregateId, $version, $event);
-        }
-
-        return $version;
+        return $this->storage->storeEvents($aggregateId, $version, $events);
     }
 
     public function getAllEvents(): EventCollection

@@ -53,28 +53,33 @@ class InMemoryStorage implements StorageInterface
             $aggregateId,
             Version::createVersion(current($events)['version']),
             $this->aggregatesVersion[$aggregateId->toString()],
-            new EventCollection(array_column($events,'event'))
+            new EventCollection(array_column($events, 'event'))
         );
     }
 
-    public function storeEvent(AggregateIdInterface $aggregateId, Version $version, EventInterface $event): void
+    public function storeEvents(AggregateIdInterface $aggregateId, Version $version, EventCollection $events): Version
     {
         $idString = $aggregateId->toString();
-
-        $this->events[$idString][] = [
-            'version' => (int)$version->toString(),
-            'occurred_at' => $event->occurredAt(),
-            'event' => $event
-        ];
-
-        $this->aggregatesVersion[$idString] = $version;
+        $newVersion = $version;
+        foreach ($events->getAll() as $event) {
+            $newVersion = $newVersion->incremented();
+            $this->events[$idString][] = [
+                'version' => (int)$newVersion->toString(),
+                'occurred_at' => $event->occurredAt(),
+                'event' => $event
+            ];
+            $this->aggregatesVersion[$idString] = $newVersion;
+        }
+        return $newVersion;
     }
 
     public function getAllEvents(): EventCollection
     {
         $result = [];
         foreach ($this->events as $aggregate) {
-            $result = [...array_column($aggregate, 'event')];
+            foreach ($aggregate as $item) {
+                $result[] = $item['event'];
+            }
         }
 
         return new EventCollection($result);

@@ -39,20 +39,18 @@ class AggregateManager
     public function flush(): void
     {
         $identityMap = $this->unitOfWork->getIdentityMap();
-        foreach ($identityMap as $key => $row) {
+        foreach ($identityMap as $row) {
             /** @var Aggregate $aggregate */
             $aggregate = $row['aggregate'];
             /** @var Version $version */
             $version = $row['version'];
-            $newVersion = null;
             try {
                 $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $version, $aggregate->getChanges());
+                $this->unitOfWork->changeVersion($aggregate, $newVersion);
+                $aggregate->removeChanges();
             } catch (ConcurrencyException $exception) {
                 $this->concurrencyResolvingStrategy->resolve($exception);
             }
-
-            $this->unitOfWork->changeVersion($aggregate, $newVersion);
-            $aggregate->removeChanges();
 
             //todo: publish events
         }
