@@ -13,7 +13,7 @@ abstract class Repository
         $this->unitOfWork->insert($aggregate);
     }
 
-    public function find(AggregateIdInterface $id): ?Aggregate
+    public function findAggregate(AggregateIdInterface $id): ?Aggregate
     {
         if ($aggregate = $this->unitOfWork->get($id)) {
             return $aggregate;
@@ -21,7 +21,7 @@ abstract class Repository
 
         $eventStream = $this->unitOfWork->loadAggregateEventStream($id);
         $aggregate = $this->createAggregateByEventStream($eventStream);
-        $this->unitOfWork->persist($aggregate, $eventStream);
+        $this->unitOfWork->persist($aggregate, $eventStream->version);
 
         return $aggregate;
     }

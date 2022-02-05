@@ -6,6 +6,7 @@ class UnitOfWork
 
     public function __construct(
         private EventStoreInterface $eventStore,
+        private SnapshotRepositoryInterface $snapshotRepository,
         private ConcurrencyResolvingStrategyInterface $concurrencyResolvingStrategy
     )
     {
@@ -33,7 +34,7 @@ class UnitOfWork
         return $this->identityMap[$id->toString()]['aggregate'];
     }
 
-    public function persist(Aggregate $aggregate, EventStream $eventStream): void
+    public function persist(Aggregate $aggregate, Version $version): void
     {
         if (isset($this->identityMap[$aggregate->getId()->toString()])) {
             throw new InvalidArgumentException('Aggregate already persisted.');
@@ -41,7 +42,7 @@ class UnitOfWork
 
         $this->identityMap[$aggregate->getId()->toString()] =
             [
-                'version' => $eventStream->version,
+                'version' => $version,
                 'aggregate' => $aggregate
             ];
 

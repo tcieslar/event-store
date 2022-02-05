@@ -10,6 +10,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Version;
 
+/**
+ * @group unit
+ */
 class EventStoreTest extends TestCase
 {
     public function testLoadEmpty(): void
