@@ -13,7 +13,8 @@ class CustomerRepositoryTest extends TestCase
     {
         $inMemoryStorage = new InMemoryStorage();
         $eventStore = new EventStore($inMemoryStorage);
-        $unitOfWork = new UnitOfWork($eventStore);
+        $strategy = new DoNothingStrategy();
+        $unitOfWork = new UnitOfWork($eventStore, $strategy);
         $repository = new CustomerRepository($unitOfWork);
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
@@ -29,7 +30,8 @@ class CustomerRepositoryTest extends TestCase
         // insert
         $inMemoryStorage = new InMemoryStorage();
         $eventStore = new EventStore($inMemoryStorage);
-        $unitOfWork = new UnitOfWork($eventStore);
+        $strategy = new DoNothingStrategy();
+        $unitOfWork = new UnitOfWork($eventStore, $strategy);
         $repository = new CustomerRepository($unitOfWork);
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');

@@ -21,15 +21,15 @@ abstract class Aggregate
 
     abstract public function getId(): AggregateIdInterface;
 
+    public function getChanges(): EventCollection
+    {
+        return $this->changes;
+    }
+
     protected function apply(EventInterface $event): void
     {
         $this->changes->add($event);
         $this->mutate($event);
-    }
-
-    public function getChanges(): EventCollection
-    {
-        return $this->changes;
     }
 
     protected function mutate(EventInterface $event): void

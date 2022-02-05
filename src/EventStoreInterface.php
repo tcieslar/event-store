@@ -2,7 +2,7 @@
 
 interface EventStoreInterface
 {
-    public function loadFromStream(AggregateIdInterface $identity): EventStream;
+    public function loadFromStream(AggregateIdInterface $aggregateId): EventStream;
 
-    public function appendToStream(AggregateIdInterface $identity, Version $expectedVersion, EventCollection $events): void;
+    public function appendToStream(AggregateIdInterface $aggregateId, Version $expectedVersion, EventCollection $events): void;
 }

@@ -1,12 +1,16 @@
 <?php
 
+namespace Unit;
+
 use Example\Customer;
 use Example\CustomerId;
 use Example\EventStore;
+use InMemoryStorage;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
+use Version;
 
-class EventStoreInMemoryTest extends TestCase
+class EventStoreTest extends TestCase
 {
     public function testLoadEmpty(): void
     {
@@ -37,6 +41,8 @@ class EventStoreInMemoryTest extends TestCase
         $customer = Customer::create($customerId, 'test');
         $eventStore = new EventStore(new InMemoryStorage());
 
+        $this->assertEquals('test', $customer->getName());
+
         // insert
         $eventStore->appendToStream($customerId, Version::createFirstVersion(), $customer->getChanges());
 
@@ -50,7 +56,9 @@ class EventStoreInMemoryTest extends TestCase
 
         //read 2
         $eventStream = $eventStore->loadFromStream($customerId);
+        $customer = Customer::loadFromEvents($eventStream->events);
 
+        $this->assertEquals('test2', $customer->getName());
         $this->assertEquals('3', $eventStream->version->toString());
         $this->assertCount(3, $eventStream->events);
     }

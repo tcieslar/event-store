@@ -4,9 +4,9 @@ class UnitOfWork
 {
     private array $identityMap = [];
 
-
     public function __construct(
         private EventStoreInterface $eventStore,
+        private ConcurrencyResolvingStrategyInterface $concurrencyResolvingStrategy
     )
     {
     }
@@ -57,12 +57,16 @@ class UnitOfWork
         foreach ($this->identityMap as $row) {
             $aggregate = $row['aggregate'];
             $version = $row['version'];
-            $this->eventStore->appendToStream($aggregate->getId(), $version, $aggregate->getChanges());
+            try{
+                $this->eventStore->appendToStream($aggregate->getId(), $version, $aggregate->getChanges());
+            } catch (ConcurrencyException $exception) {
+                $this->concurrencyResolvingStrategy->resolve($exception);
+            }
         }
     }
 
-    public function loadAggregateEventStream(AggregateIdInterface $identity): EventStream
+    public function loadAggregateEventStream(AggregateIdInterface $aggregateId): EventStream
     {
-        return $this->eventStore->loadFromStream($identity);
+        return $this->eventStore->loadFromStream($aggregateId);
     }
 }

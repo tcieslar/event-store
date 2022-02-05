@@ -5,23 +5,23 @@ class InMemoryStorage implements StorageInterface
     private array $aggregatesVersion = [];
     private array $events = [];
 
-    public function getAggregateVersion(AggregateIdInterface $id): ?Version
+    public function getAggregateVersion(AggregateIdInterface $aggregateId): ?Version
     {
-        $idString = $id->toString();
+        $idString = $aggregateId->toString();
         return $this->aggregatesVersion[$idString] ?? null;
     }
 
-    public function createAggregate(AggregateIdInterface $id, Version $expectedVersion): void
+    public function createAggregate(AggregateIdInterface $aggregateId, Version $expectedVersion): void
     {
-        $idString = $id->toString();
+        $idString = $aggregateId->toString();
 
         $this->aggregatesVersion[$idString] = $expectedVersion;
         $this->events[$idString] = [];
     }
 
-    public function getEventStream(AggregateIdInterface $id): EventStream
+    public function getEventStream(AggregateIdInterface $aggregateId): EventStream
     {
-        $idString = $id->toString();
+        $idString = $aggregateId->toString();
         $versionColumn = array_column($this->events[$idString], 'version');
         $eventsColumn = array_column($this->events[$idString], 'event');
         array_multisort($versionColumn, $eventsColumn, SORT_ASC);
@@ -32,9 +32,9 @@ class InMemoryStorage implements StorageInterface
         );
     }
 
-    public function storeEvent(AggregateIdInterface $id, Version $version, EventInterface $event): void
+    public function storeEvent(AggregateIdInterface $aggregateId, Version $version, EventInterface $event): void
     {
-        $idString = $id->toString();
+        $idString = $aggregateId->toString();
 
         $this->events[$idString][] = [
             'version' => (int)$version->toString(),

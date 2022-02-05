@@ -4,6 +4,7 @@ namespace Example;
 
 use EventCollection;
 use EventInterface;
+use ConcurrencyException;
 use EventStoreInterface;
 use EventStream;
 use AggregateIdInterface;
@@ -18,31 +19,35 @@ class EventStore implements EventStoreInterface
     {
     }
 
-    public function loadFromStream(AggregateIdInterface $identity): EventStream
+    public function loadFromStream(AggregateIdInterface $aggregateId): EventStream
     {
-        if (!$this->storage->getAggregateVersion($identity)) {
+        if (!$this->storage->getAggregateVersion($aggregateId)) {
             throw new \InvalidArgumentException('Aggregate not found.');
         }
 
-        return $this->storage->getEventStream($identity);
+        return $this->storage->getEventStream($aggregateId);
     }
 
-    public function appendToStream(AggregateIdInterface $identity, Version $expectedVersion, EventCollection $events): void
+    /**
+     * @throws ConcurrencyException
+     */
+    public function appendToStream(AggregateIdInterface $aggregateId, Version $expectedVersion, EventCollection $events): void
     {
-        $version = $this->storage->getAggregateVersion($identity);
+        $version = $this->storage->getAggregateVersion($aggregateId);
         if (!$version) {
-            $this->storage->createAggregate($identity, $expectedVersion);
+            $this->storage->createAggregate($aggregateId, $expectedVersion);
             $version = $expectedVersion;
         }
 
         if (!$expectedVersion->isEqual($version)) {
-            throw new \RuntimeException('Concurrency error.');
+            $storedEvents = new EventCollection();
+            throw new ConcurrencyException($aggregateId, $expectedVersion, $events, $storedEvents);
         }
 
         /** @var EventInterface $event */
         foreach ($events as $event) {
-            $expectedVersion = $expectedVersion->incremented();
-            $this->storage->storeEvent($identity, $expectedVersion, $event);
+            $version = $version->incremented();
+            $this->storage->storeEvent($aggregateId, $version, $event);
         }
     }
 

@@ -5,16 +5,16 @@ interface StorageInterface
     /**
      * If aggregate doesn't exists return null
      *
-     * @param AggregateIdInterface $id
+     * @param AggregateIdInterface $aggregateId
      * @return Version|null
      */
-    public function getAggregateVersion(AggregateIdInterface $id): ?Version;
+    public function getAggregateVersion(AggregateIdInterface $aggregateId): ?Version;
 
-    public function createAggregate(AggregateIdInterface $id, Version $expectedVersion): void;
+    public function createAggregate(AggregateIdInterface $aggregateId, Version $expectedVersion): void;
 
-    public function getEventStream(AggregateIdInterface $id): EventStream;
+    public function getEventStream(AggregateIdInterface $aggregateId): EventStream;
 
-    public function storeEvent(AggregateIdInterface $id, Version $version, EventInterface $event): void;
+    public function storeEvent(AggregateIdInterface $aggregateId, Version $version, EventInterface $event): void;
 
     public function getAllEvents(): EventCollection;
 }
