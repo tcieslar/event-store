@@ -8,13 +8,16 @@ class Version
     {
     }
 
-    public static function createFirstVersion(): self
+    public static function createZeroVersion(): self
     {
         return self::createVersion(0);
     }
 
     public static function createVersion(int $number): self
     {
+        if ($number < 0) {
+            throw new InvalidArgumentException('Version number error.');
+        }
         $version = new self();
         $version->number = $number;
         return $version;

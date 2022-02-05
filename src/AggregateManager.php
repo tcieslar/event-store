@@ -3,7 +3,7 @@
 class AggregateManager
 {
     public function __construct(
-        private UnitOfWork $unitOfWork,
+        private UnitOfWork                            $unitOfWork,
         private EventStoreInterface                   $eventStore,
         private SnapshotRepositoryInterface           $snapshotRepository,
         private ConcurrencyResolvingStrategyInterface $concurrencyResolvingStrategy
@@ -38,14 +38,23 @@ class AggregateManager
 
     public function flush(): void
     {
-        foreach ($this->unitOfWork->getIdentityMap() as $row) {
+        $identityMap = $this->unitOfWork->getIdentityMap();
+        foreach ($identityMap as $key => $row) {
+            /** @var Aggregate $aggregate */
             $aggregate = $row['aggregate'];
+            /** @var Version $version */
             $version = $row['version'];
+            $newVersion = null;
             try {
-                $this->eventStore->appendToStream($aggregate->getId(), $version, $aggregate->getChanges());
+                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $version, $aggregate->getChanges());
             } catch (ConcurrencyException $exception) {
                 $this->concurrencyResolvingStrategy->resolve($exception);
             }
+
+            $this->unitOfWork->changeVersion($aggregate, $newVersion);
+            $aggregate->removeChanges();
+
+            //todo: publish events
         }
     }
 }

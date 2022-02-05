@@ -25,12 +25,15 @@ class CustomerRepositoryTest extends TestCase
         $unitOfWork = new UnitOfWork();
         $aggregateManager = new AggregateManager($unitOfWork, $eventStore, new InMemorySnapshotRepository(new PhpSerializer()), $strategy);
         $repository = new CustomerRepository($aggregateManager);
+
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
         $repository->add($customer);
 
         $this->assertCount(0, $eventStore->getAllEvents());
         $aggregateManager->flush();
+       // $aggregateManager->flush();
+
         $this->assertCount(2, $eventStore->getAllEvents());
     }
 

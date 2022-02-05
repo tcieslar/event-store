@@ -64,7 +64,7 @@ class UnitOfWorkTest extends TestCase
         // create outside
         $customer = $this->createCustomer();
         $customerId = $customer->getId();
-        $eventStore->appendToStream($customer->getId(), Version::createFirstVersion(), $customer->getChanges());
+        $eventStore->appendToStream($customer->getId(), Version::createZeroVersion(), $customer->getChanges());
         unset($customer);
 
         // load and persist
@@ -79,6 +79,29 @@ class UnitOfWorkTest extends TestCase
         // loaded with version 2
         $this->assertNotEmpty($identityMap);
         $this->assertEquals('2', $identityMap[$customerId->toString()]['version']->toString());
+    }
+
+    public function testChangeVersion(): void
+    {
+        $unitOfWork = new UnitOfWork();
+
+        // create outside
+        $customer = $this->createCustomer();
+        $customerId = $customer->getId();
+
+        $unitOfWork->insert($customer);
+
+        // version 0
+        $reflectionClass = new ReflectionClass('UnitOfWork');
+        $reflectionProperty = $reflectionClass->getProperty('identityMap');
+        $identityMap = $reflectionProperty->getValue($unitOfWork);
+
+        $this->assertNotEmpty($identityMap);
+        $this->assertEquals('0', $identityMap[$customerId->toString()]['version']->toString());
+
+        $unitOfWork->changeVersion($customer, Version::createVersion(123456));
+        $identityMap = $reflectionProperty->getValue($unitOfWork);
+        $this->assertEquals('123456', $identityMap[$customerId->toString()]['version']->toString());
     }
 
     private function createCustomer(): Customer

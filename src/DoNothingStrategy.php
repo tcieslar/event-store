@@ -2,8 +2,11 @@
 
 class DoNothingStrategy implements ConcurrencyResolvingStrategyInterface
 {
-    public function resolve(ConcurrencyException $exception): void
+    /**
+     * @throws Exception
+     */
+    public function resolve(ConcurrencyException $exception): never
     {
-        return ;
+        throw new Exception('Silence, do nothing.');
     }
 }

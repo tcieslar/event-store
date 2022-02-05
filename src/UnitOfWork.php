@@ -16,18 +16,9 @@ class UnitOfWork
         }
         $this->identityMap[$aggregate->getId()->toString()] =
             [
-                'version' => Version::createFirstVersion(),
+                'version' => Version::createZeroVersion(),
                 'aggregate' => $aggregate
             ];
-    }
-
-    public function get(AggregateIdInterface $id): ?Aggregate
-    {
-        if (!isset($this->identityMap[$id->toString()])) {
-            return null;
-        }
-
-        return $this->identityMap[$id->toString()]['aggregate'];
     }
 
     public function persist(Aggregate $aggregate, Version $version): void
@@ -40,7 +31,23 @@ class UnitOfWork
                 'version' => $version,
                 'aggregate' => $aggregate
             ];
+    }
 
+    public function changeVersion(Aggregate $aggregate, Version $version): void
+    {
+        if (!isset($this->identityMap[$aggregate->getId()->toString()])) {
+            throw new InvalidArgumentException('Aggregate not found.');
+        }
+        $this->identityMap[$aggregate->getId()->toString()]['version'] = $version;
+    }
+
+    public function get(AggregateIdInterface $id): ?Aggregate
+    {
+        if (!isset($this->identityMap[$id->toString()])) {
+            return null;
+        }
+
+        return $this->identityMap[$id->toString()]['aggregate'];
     }
 
     public function reset(): void

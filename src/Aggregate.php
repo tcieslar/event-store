@@ -26,6 +26,11 @@ abstract class Aggregate
         return $this->changes;
     }
 
+    public function removeChanges(): void
+    {
+        $this->changes = new EventCollection();
+    }
+
     protected function apply(EventInterface $event): void
     {
         $this->changes->add($event);

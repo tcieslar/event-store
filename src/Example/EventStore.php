@@ -35,7 +35,7 @@ class EventStore implements EventStoreInterface
     /**
      * @throws ConcurrencyException
      */
-    public function appendToStream(AggregateIdInterface $aggregateId, Version $expectedVersion, EventCollection $events): void
+    public function appendToStream(AggregateIdInterface $aggregateId, Version $expectedVersion, EventCollection $events): Version
     {
         $version = $this->storage->getAggregateVersion($aggregateId);
         if (!$version) {
@@ -53,6 +53,8 @@ class EventStore implements EventStoreInterface
             $version = $version->incremented();
             $this->storage->storeEvent($aggregateId, $version, $event);
         }
+
+        return $version;
     }
 
     public function getAllEvents(): EventCollection

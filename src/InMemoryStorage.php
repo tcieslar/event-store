@@ -28,7 +28,7 @@ class InMemoryStorage implements StorageInterface
 
         return new EventStream(
             aggregateId: $aggregateId,
-            startVersion: Version::createFirstVersion(),
+            startVersion: Version::createZeroVersion(),
             endVersion: $this->aggregatesVersion[$idString],
             events: new EventCollection($eventsColumn)
         );
