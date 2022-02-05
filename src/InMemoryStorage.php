@@ -27,8 +27,33 @@ class InMemoryStorage implements StorageInterface
         array_multisort($versionColumn, $eventsColumn, SORT_ASC);
 
         return new EventStream(
-            version: $this->aggregatesVersion[$idString],
+            aggregateId: $aggregateId,
+            startVersion: Version::createFirstVersion(),
+            endVersion: $this->aggregatesVersion[$idString],
             events: new EventCollection($eventsColumn)
+        );
+    }
+
+    public function getEventStreamAfterVersion(AggregateIdInterface $aggregateId, Version $afterVersion): EventStream
+    {
+        $position = -1;
+        foreach ($this->events[$aggregateId->toString()] as $key => $eventArray) {
+            if ($eventArray['version'] > (int)$afterVersion->toString()) {
+                $position = $key;
+                break;
+            }
+        }
+
+        if ($position === -1) {
+            throw new RuntimeException('Wrong version provided.');
+        }
+        $events = array_slice($this->events[$aggregateId->toString()], $position);
+
+        return new EventStream(
+            $aggregateId,
+            Version::createVersion(current($events)['version']),
+            $this->aggregatesVersion[$aggregateId->toString()],
+            new EventCollection(array_column($events,'event'))
         );
     }
 

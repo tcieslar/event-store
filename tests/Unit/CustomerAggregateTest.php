@@ -1,5 +1,7 @@
 <?php
 
+namespace Unit;
+
 use Example\Customer;
 use Example\CustomerCreatedEvent;
 use Example\CustomerCredentialSetEvent;

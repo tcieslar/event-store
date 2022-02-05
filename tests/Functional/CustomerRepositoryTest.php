@@ -1,11 +1,19 @@
 <?php
 
+namespace Functional;
+
+use AggregateManager;
+use DoNothingStrategy;
 use Example\Customer;
 use Example\CustomerId;
 use Example\CustomerRepository;
 use Example\EventStore;
+use InMemorySnapshotRepository;
+use InMemoryStorage;
+use PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
+use UnitOfWork;
 
 class CustomerRepositoryTest extends TestCase
 {
@@ -14,14 +22,15 @@ class CustomerRepositoryTest extends TestCase
         $inMemoryStorage = new InMemoryStorage();
         $eventStore = new EventStore($inMemoryStorage);
         $strategy = new DoNothingStrategy();
-        $unitOfWork = new UnitOfWork($eventStore, new InMemorySnapshotRepository(new PhpSerializer()), $strategy);
-        $repository = new CustomerRepository($unitOfWork);
+        $unitOfWork = new UnitOfWork();
+        $aggregateManager = new AggregateManager($unitOfWork, $eventStore, new InMemorySnapshotRepository(new PhpSerializer()), $strategy);
+        $repository = new CustomerRepository($aggregateManager);
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
         $repository->add($customer);
 
         $this->assertCount(0, $eventStore->getAllEvents());
-        $unitOfWork->flush();
+        $aggregateManager->flush();
         $this->assertCount(2, $eventStore->getAllEvents());
     }
 
@@ -31,12 +40,13 @@ class CustomerRepositoryTest extends TestCase
         $inMemoryStorage = new InMemoryStorage();
         $eventStore = new EventStore($inMemoryStorage);
         $strategy = new DoNothingStrategy();
-        $unitOfWork = new UnitOfWork($eventStore, new InMemorySnapshotRepository(new PhpSerializer()), $strategy);
-        $repository = new CustomerRepository($unitOfWork);
+        $unitOfWork = new UnitOfWork();
+        $aggregateManager = new AggregateManager($unitOfWork, $eventStore, new InMemorySnapshotRepository(new PhpSerializer()), $strategy);
+        $repository = new CustomerRepository($aggregateManager);
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
         $repository->add($customer);
-        $unitOfWork->flush();
+        $aggregateManager->flush();
         $unitOfWork->reset();
 
         // find

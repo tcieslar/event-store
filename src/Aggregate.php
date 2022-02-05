@@ -32,6 +32,11 @@ abstract class Aggregate
         $this->mutate($event);
     }
 
+    public function reply(EventInterface $event): void
+    {
+        $this->mutate($event);
+    }
+
     protected function mutate(EventInterface $event): void
     {
         $array = explode('\\', get_class($event));

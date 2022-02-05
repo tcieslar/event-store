@@ -19,13 +19,17 @@ class EventStore implements EventStoreInterface
     {
     }
 
-    public function loadFromStream(AggregateIdInterface $aggregateId): EventStream
+    public function loadFromStream(AggregateIdInterface $aggregateId, ?Version $afterVersion = null): EventStream
     {
         if (!$this->storage->getAggregateVersion($aggregateId)) {
             throw new \InvalidArgumentException('Aggregate not found.');
         }
 
-        return $this->storage->getEventStream($aggregateId);
+        if (!$afterVersion) {
+            return $this->storage->getEventStream($aggregateId);
+        }
+
+        return $this->storage->getEventStreamAfterVersion($aggregateId, $afterVersion);
     }
 
     /**

@@ -3,26 +3,35 @@
 abstract class Repository
 {
     public function __construct(
-        private UnitOfWork $unitOfWork
+        private AggregateManager $aggregateManager
     )
     {
     }
 
     public function add(Aggregate $aggregate): void
     {
-        $this->unitOfWork->insert($aggregate);
+        $this->aggregateManager->addAggregate($aggregate);
     }
 
-    public function findAggregate(AggregateIdInterface $id): ?Aggregate
+    public function findAggregate(AggregateIdInterface $aggregateId): ?Aggregate
     {
-        if ($aggregate = $this->unitOfWork->get($id)) {
+        if ($aggregate = $this->aggregateManager->getAggregate($aggregateId)) {
             return $aggregate;
         }
 
-        $eventStream = $this->unitOfWork->loadAggregateEventStream($id);
-        $aggregate = $this->createAggregateByEventStream($eventStream);
-        $this->unitOfWork->persist($aggregate, $eventStream->version);
+        $snapshot = $this->aggregateManager->getSnapshot($aggregateId);
+        if (!$snapshot) {
+            $eventStream = $this->aggregateManager->getEventStream($aggregateId);
+            $aggregate = $this->createAggregateByEventStream($eventStream);
+            $this->aggregateManager->persistAggregate($aggregate, $eventStream->endVersion);
+            return $aggregate;
+        }
 
+        $eventStream = $this->aggregateManager->getEventStream($aggregateId, $snapshot->version);
+        $aggregate = $snapshot->aggregate;
+        foreach ($eventStream->events as $event) {
+            $aggregate->reply($event);
+        }
         return $aggregate;
     }
 

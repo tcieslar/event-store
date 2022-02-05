@@ -3,7 +3,9 @@
 class EventStream
 {
     public function __construct(
-        public readonly Version $version,
+        public readonly AggregateIdInterface $aggregateId,
+        public readonly Version $startVersion,
+        public readonly Version $endVersion,
         public readonly EventCollection $events
     )
     {

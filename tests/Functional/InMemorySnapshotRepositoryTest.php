@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit;
+namespace Functional;
 
 use Example\Customer;
 use Example\CustomerId;
@@ -35,7 +35,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         $customer2 = Customer::loadFromEvents($eventStream->events);
 
         // create snapshot
-        $snapshotRepository->saveSnapshot($customer2, $eventStream->version);
+        $snapshotRepository->saveSnapshot($customer2, $eventStream->endVersion);
 
         // get private snapshots array
         $reflectionClass = new ReflectionClass('InMemorySnapshotRepository');
@@ -62,10 +62,10 @@ class InMemorySnapshotRepositoryTest extends TestCase
         $customer2 = Customer::loadFromEvents($eventStream->events);
 
         // create snapshot
-        $snapshotRepository->saveSnapshot($customer2, $eventStream->version);
+        $snapshotRepository->saveSnapshot($customer2, $eventStream->endVersion);
 
         $snapshot = $snapshotRepository->getSnapshot($customerId);
         $this->assertSame($snapshot->aggregate->getId(), $customerId);
-        $this->assertSame($snapshot->version, $eventStream->version);
+        $this->assertSame($snapshot->version, $eventStream->endVersion);
     }
 }
