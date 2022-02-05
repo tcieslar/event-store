@@ -2,7 +2,7 @@
 
 class EventCollection implements \Countable, \Iterator
 {
-    private array $values;
+    private array $values = [];
 
     private int $position = 0;
 

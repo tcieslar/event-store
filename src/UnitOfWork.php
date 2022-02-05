@@ -63,6 +63,6 @@ class UnitOfWork
 
     public function loadAggregateEventStream(AggregateIdInterface $identity): EventStream
     {
-        return $this->eventStore->loadEventStream($identity);
+        return $this->eventStore->loadFromStream($identity);
     }
 }

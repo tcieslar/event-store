@@ -3,7 +3,7 @@
 use Example\Customer;
 use Example\CustomerId;
 use Example\CustomerRepository;
-use Example\EventStoreInMemory;
+use Example\EventStore;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -11,7 +11,8 @@ class CustomerRepositoryTest extends TestCase
 {
     public function testAdd(): void
     {
-        $eventStore = new EventStoreInMemory();
+        $inMemoryStorage = new InMemoryStorage();
+        $eventStore = new EventStore($inMemoryStorage);
         $unitOfWork = new UnitOfWork($eventStore);
         $repository = new CustomerRepository($unitOfWork);
         $customerId = new CustomerId(Uuid::v4());
@@ -26,7 +27,8 @@ class CustomerRepositoryTest extends TestCase
     public function testFind(): void
     {
         // insert
-        $eventStore = new EventStoreInMemory();
+        $inMemoryStorage = new InMemoryStorage();
+        $eventStore = new EventStore($inMemoryStorage);
         $unitOfWork = new UnitOfWork($eventStore);
         $repository = new CustomerRepository($unitOfWork);
         $customerId = new CustomerId(Uuid::v4());

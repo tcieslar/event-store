@@ -4,15 +4,19 @@ class Version
 {
     private int $number;
 
-    public function __construct(
-    )
+    private function __construct()
     {
     }
 
     public static function createFirstVersion(): self
     {
+        return self::createVersion(0);
+    }
+
+    public static function createVersion(int $number): self
+    {
         $version = new self();
-        $version->number = 0;
+        $version->number = $number;
         return $version;
     }
 
