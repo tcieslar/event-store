@@ -1,10 +1,10 @@
 <?php
 
-namespace Example;
+namespace Example\Aggregate;
 
 use AggregateIdInterface;
 
-class CustomerId implements AggregateIdInterface
+class OrderId implements AggregateIdInterface
 {
     public function __construct(
         public readonly string $guid

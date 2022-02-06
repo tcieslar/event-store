@@ -1,9 +1,11 @@
 <?php
 
-namespace Example;
+namespace Example\Repository;
 
 use Aggregate;
 use EventStream;
+use Example\Aggregate\Customer;
+use Example\Aggregate\CustomerId;
 use Repository;
 
 class CustomerRepository extends Repository

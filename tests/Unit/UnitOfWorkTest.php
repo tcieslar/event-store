@@ -2,8 +2,8 @@
 
 namespace Unit;
 
-use Example\Customer;
-use Example\CustomerId;
+use Example\Aggregate\Customer;
+use Example\Aggregate\CustomerId;
 use Example\EventStore;
 use FileEventPublisher;
 use InMemoryStorage;

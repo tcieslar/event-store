@@ -2,8 +2,8 @@
 
 namespace Functional;
 
-use Example\Customer;
-use Example\CustomerId;
+use Example\Aggregate\Customer;
+use Example\Aggregate\CustomerId;
 use Example\EventStore;
 use FileEventPublisher;
 use InMemorySnapshotRepository;
@@ -70,7 +70,6 @@ class InMemorySnapshotRepositoryTest extends TestCase
 
         // create snapshot
         $snapshotRepository->saveSnapshot($customer2, $eventStream->endVersion);
-
         $snapshot = $snapshotRepository->getSnapshot($customerId);
         $this->assertSame($snapshot->aggregate->getId(), $customerId);
         $this->assertSame($snapshot->version, $eventStream->endVersion);

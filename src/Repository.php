@@ -13,7 +13,7 @@ abstract class Repository
         $this->aggregateManager->addAggregate($aggregate);
     }
 
-    public function findAggregate(AggregateIdInterface $aggregateId): ?Aggregate
+    public function findAggregate(AggregateIdInterface $aggregateId)
     {
         if ($aggregate = $this->aggregateManager->getAggregate($aggregateId)) {
             return $aggregate;

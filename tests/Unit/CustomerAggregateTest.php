@@ -2,10 +2,10 @@
 
 namespace Unit;
 
-use Example\Customer;
-use Example\CustomerCreatedEvent;
-use Example\CustomerCredentialSetEvent;
-use Example\CustomerId;
+use Example\Aggregate\Customer;
+use Example\Event\CustomerCreatedEvent;
+use Example\Event\CustomerCredentialSetEvent;
+use Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 

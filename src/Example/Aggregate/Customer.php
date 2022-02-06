@@ -1,14 +1,19 @@
 <?php
 
-namespace Example;
+namespace Example\Aggregate;
 
 use Aggregate;
+use Example\Aggregate\CustomerId;
+use Example\Event\CustomerCreatedEvent;
+use Example\Event\CustomerCredentialSetEvent;
+use Example\Event\OrderAddedEvent;
+use Example\Aggregate\Order;
 
 class Customer extends Aggregate
 {
     private CustomerId $customerId;
     private string $name;
-    private array $orders;
+    private array $ordersIds;
 
     public static function create(CustomerId $customerId, string $name): self
     {
@@ -17,7 +22,7 @@ class Customer extends Aggregate
             new CustomerCreatedEvent($customerId)
         );
         $customer->apply(
-            new CustomerCredentialSetEvent($name)
+            new CustomerCredentialSetEvent($customerId, $name)
         );
 
         return $customer;
@@ -41,7 +46,7 @@ class Customer extends Aggregate
         }
 
         $this->apply(
-            new CustomerCredentialSetEvent($name)
+            new CustomerCredentialSetEvent($this->customerId, $name)
         );
     }
 
@@ -49,7 +54,8 @@ class Customer extends Aggregate
     {
         $this->apply(
             new OrderAddedEvent(
-                $order
+                $this->customerId,
+                $order->getOrderId()
             )
         );
     }
@@ -59,9 +65,15 @@ class Customer extends Aggregate
         return $this->name;
     }
 
+    public function getOrdersIds(): array
+    {
+        return $this->ordersIds;
+
+    }
+
     protected function whenCustomerCreatedEvent(CustomerCreatedEvent $event): void
     {
-        $this->customerId = $event->customerId;
+        $this->customerId = $event->orderId;
     }
 
     protected function whenCustomerCredentialSetEvent(CustomerCredentialSetEvent $event): void
@@ -71,6 +83,6 @@ class Customer extends Aggregate
 
     protected function whenOrderAddedEvent(OrderAddedEvent $event): void
     {
-        $this->orders[] = $event->order;
+        $this->ordersIds[] = $event->orderId;
     }
 }

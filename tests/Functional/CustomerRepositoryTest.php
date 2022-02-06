@@ -4,9 +4,9 @@ namespace Functional;
 
 use AggregateManager;
 use DoNothingStrategy;
-use Example\Customer;
-use Example\CustomerId;
-use Example\CustomerRepository;
+use Example\Aggregate\Customer;
+use Example\Aggregate\CustomerId;
+use Example\Repository\CustomerRepository;
 use Example\EventStore;
 use FileEventPublisher;
 use InMemorySnapshotRepository;

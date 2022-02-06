@@ -1,12 +1,13 @@
 <?php
 
-namespace Example;
+namespace Example\Event;
 
-use Event;
+use Example\Aggregate\CustomerId;
 
 class CustomerCredentialSetEvent extends Event
 {
     public function __construct(
+        public readonly CustomerId $orderId,
         public readonly string $name
     )
     {

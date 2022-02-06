@@ -1,15 +1,13 @@
 <?php
 
-namespace Example;
+namespace Example\Event;
 
-use Event;
+use Example\Aggregate\CustomerId;
 
 class CustomerCreatedEvent extends Event
 {
-    public readonly \DateTimeImmutable $occurredAt;
-
     public function __construct(
-        public readonly CustomerId $customerId
+        public readonly CustomerId $orderId
     )
     {
         parent::__construct();
