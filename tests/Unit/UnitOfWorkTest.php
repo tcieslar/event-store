@@ -5,6 +5,7 @@ namespace Unit;
 use Example\Customer;
 use Example\CustomerId;
 use Example\EventStore;
+use FileEventPublisher;
 use InMemoryStorage;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -57,7 +58,8 @@ class UnitOfWorkTest extends TestCase
     public function testPersist(): void
     {
         $eventStore = new EventStore(
-            storage: new InMemoryStorage()
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
         );
         $unitOfWork = new UnitOfWork();
 

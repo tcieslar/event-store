@@ -12,6 +12,7 @@ use Example\CustomerId;
 use Example\EventStore;
 use Example\Order;
 use Example\OrderId;
+use FileEventPublisher;
 use InMemorySnapshotRepository;
 use InMemoryStorage;
 use PhpSerializer;
@@ -27,7 +28,8 @@ class AggregateManagerTest extends TestCase
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: new EventStore(
-                storage: new InMemoryStorage()
+                storage: new InMemoryStorage(),
+                eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: new InMemorySnapshotRepository(
                 serializer: new PhpSerializer()
@@ -90,7 +92,10 @@ class AggregateManagerTest extends TestCase
         $unitOfWork = new UnitOfWork();
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
-            eventStore: new EventStore(new InMemoryStorage()),
+            eventStore: new EventStore(
+                storage: new InMemoryStorage(),
+                eventPublisher: new FileEventPublisher()
+            ),
             snapshotRepository: new InMemorySnapshotRepository(
                 serializer: new PhpSerializer()
             ),
@@ -112,7 +117,10 @@ class AggregateManagerTest extends TestCase
     public function testMultiAggregateFlush(): void
     {
         $unitOfWork = new UnitOfWork();
-        $eventStore = new EventStore(new InMemoryStorage());
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
             eventStore: $eventStore,
@@ -159,7 +167,10 @@ class AggregateManagerTest extends TestCase
     public function testMultiEventFlush(): void
     {
         $unitOfWork = new UnitOfWork();
-        $eventStore = new EventStore(new InMemoryStorage());
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
             eventStore: $eventStore,

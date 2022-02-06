@@ -8,6 +8,7 @@ use Example\Customer;
 use Example\CustomerId;
 use Example\CustomerRepository;
 use Example\EventStore;
+use FileEventPublisher;
 use InMemorySnapshotRepository;
 use InMemoryStorage;
 use PhpSerializer;
@@ -19,8 +20,10 @@ class CustomerRepositoryTest extends TestCase
 {
     public function testAdd(): void
     {
-        $inMemoryStorage = new InMemoryStorage();
-        $eventStore = new EventStore($inMemoryStorage);
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
         $strategy = new DoNothingStrategy();
         $unitOfWork = new UnitOfWork();
         $aggregateManager = new AggregateManager($unitOfWork, $eventStore, new InMemorySnapshotRepository(new PhpSerializer()), $strategy);
@@ -40,8 +43,10 @@ class CustomerRepositoryTest extends TestCase
     public function testFind(): void
     {
         // insert
-        $inMemoryStorage = new InMemoryStorage();
-        $eventStore = new EventStore($inMemoryStorage);
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
         $strategy = new DoNothingStrategy();
         $unitOfWork = new UnitOfWork();
         $aggregateManager = new AggregateManager($unitOfWork, $eventStore, new InMemorySnapshotRepository(new PhpSerializer()), $strategy);

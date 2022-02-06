@@ -2,3 +2,4 @@
 /.idea/
 /composer.phar
 /tests/coverage/*
+event_log.txt

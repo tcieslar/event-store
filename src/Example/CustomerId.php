@@ -7,7 +7,7 @@ use AggregateIdInterface;
 class CustomerId implements AggregateIdInterface
 {
     public function __construct(
-        private string $guid
+        public readonly string $guid
     )
     {
     }

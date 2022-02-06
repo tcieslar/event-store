@@ -4,6 +4,7 @@ namespace Example;
 
 use EventCollection;
 use ConcurrencyException;
+use EventPublisherInterface;
 use EventStoreInterface;
 use EventStream;
 use AggregateIdInterface;
@@ -13,7 +14,8 @@ use Version;
 class EventStore implements EventStoreInterface
 {
     public function __construct(
-        private StorageInterface $storage
+        private StorageInterface $storage,
+        private EventPublisherInterface $eventPublisher
     )
     {
     }
@@ -48,7 +50,9 @@ class EventStore implements EventStoreInterface
             throw new ConcurrencyException($aggregateId, $expectedVersion, $events, $newEventsStream->events);
         }
 
-        return $this->storage->storeEvents($aggregateId, $version, $events);
+        $version2 = $this->storage->storeEvents($aggregateId, $version, $events);
+        $this->eventPublisher->publish($events);
+        return $version2;
     }
 
     public function getAllEvents(): EventCollection

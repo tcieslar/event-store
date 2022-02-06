@@ -5,6 +5,7 @@ namespace Functional;
 use Example\Customer;
 use Example\CustomerId;
 use Example\EventStore;
+use FileEventPublisher;
 use InMemoryStorage;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -18,7 +19,10 @@ class EventStoreTest extends TestCase
     public function testLoadEmpty(): void
     {
         $customerId = new CustomerId(Uuid::v4());
-        $eventStore = new EventStore(new InMemoryStorage());
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
 
         $this->expectExceptionMessage('Aggregate not found.');
         $eventStore->loadFromStream($customerId);
@@ -29,7 +33,10 @@ class EventStoreTest extends TestCase
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
 
-        $eventStore = new EventStore(new InMemoryStorage());
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
         $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
 
         $eventStream = $eventStore->loadFromStream($customerId);
@@ -42,7 +49,10 @@ class EventStoreTest extends TestCase
         // create
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
-        $eventStore = new EventStore(new InMemoryStorage());
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
 
         $this->assertEquals('test', $customer->getName());
 
@@ -74,7 +84,10 @@ class EventStoreTest extends TestCase
         $customer->setName('test 3');
         $customer->setName('test 4');
 
-        $eventStore = new EventStore(new InMemoryStorage());
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
         $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
 
         $eventStream = $eventStore->loadFromStream($customerId, Version::createZeroVersion());

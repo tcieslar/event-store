@@ -3,7 +3,7 @@
 abstract class Event implements EventInterface
 {
     public function __construct(
-        private readonly \DateTimeImmutable $occurredAt = new DateTimeImmutable()
+        public readonly \DateTimeImmutable $occurredAt = new DateTimeImmutable()
     )
     {
     }

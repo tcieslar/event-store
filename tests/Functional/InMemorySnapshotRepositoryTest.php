@@ -5,6 +5,7 @@ namespace Functional;
 use Example\Customer;
 use Example\CustomerId;
 use Example\EventStore;
+use FileEventPublisher;
 use InMemorySnapshotRepository;
 use InMemoryStorage;
 use PhpSerializer;
@@ -20,7 +21,10 @@ class InMemorySnapshotRepositoryTest extends TestCase
 {
     public function testSave(): void
     {
-        $eventStore = new EventStore(new InMemoryStorage());
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
         $serializer = new PhpSerializer();
         $snapshotRepository = new InMemorySnapshotRepository($serializer);
 
@@ -47,7 +51,10 @@ class InMemorySnapshotRepositoryTest extends TestCase
 
     public function testGet(): void
     {
-        $eventStore = new EventStore(new InMemoryStorage());
+        $eventStore = new EventStore(
+            storage: new InMemoryStorage(),
+            eventPublisher: new FileEventPublisher()
+        );
         $serializer = new PhpSerializer();
         $snapshotRepository = new InMemorySnapshotRepository($serializer);
 

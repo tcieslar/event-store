@@ -3,7 +3,6 @@
 namespace Example;
 
 use Aggregate;
-use Symfony\Component\Uid\Uuid;
 
 class Customer extends Aggregate
 {
