@@ -3,11 +3,9 @@
 namespace Example\Aggregate;
 
 use Aggregate;
-use Example\Aggregate\CustomerId;
 use Example\Event\CustomerCreatedEvent;
 use Example\Event\CustomerCredentialSetEvent;
 use Example\Event\OrderAddedEvent;
-use Example\Aggregate\Order;
 
 class Customer extends Aggregate
 {

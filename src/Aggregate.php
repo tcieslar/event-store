@@ -2,7 +2,7 @@
 
 abstract class Aggregate
 {
-    protected EventCollection $changes;
+    protected EventCollection $recordedEvents;
 
     public static function loadFromEvents(EventCollection $events): self
     {
@@ -16,24 +16,24 @@ abstract class Aggregate
 
     public function __construct()
     {
-        $this->changes = new EventCollection();
+        $this->recordedEvents = new EventCollection();
     }
 
     abstract public function getId(): AggregateIdInterface;
 
     public function recordedEvents(): EventCollection
     {
-        return $this->changes;
+        return $this->recordedEvents;
     }
 
     public function removeRecordedEvents(): void
     {
-        $this->changes = new EventCollection();
+        $this->recordedEvents = new EventCollection();
     }
 
     protected function apply(EventInterface $event): void
     {
-        $this->changes->add($event);
+        $this->recordedEvents->add($event);
         $this->mutate($event);
     }
 

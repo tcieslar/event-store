@@ -12,11 +12,7 @@ class InMemorySnapshotRepository extends AbstractSnapshotRepository
     public function getSnapshot(AggregateIdInterface $aggregateId): ?Snapshot
     {
         $idString = $aggregateId->toString();
-        if (!isset($this->snapshots[$idString])) {
-            return null;
-        }
-
-        return $this->snapshots[$idString];
+        return $this->snapshots[$idString] ?? null;
     }
 
     public function saveSnapshot(Aggregate $aggregate, Version $version): void

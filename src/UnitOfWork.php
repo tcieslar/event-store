@@ -33,6 +33,15 @@ class UnitOfWork
             ];
     }
 
+    public function getVersion(Aggregate $aggregate): Version
+    {
+        if (!isset($this->identityMap[$aggregate->getId()->toString()])) {
+            throw new InvalidArgumentException('Aggregate not found.');
+        }
+
+        return $this->identityMap[$aggregate->getId()->toString()]['version'];
+    }
+
     public function changeVersion(Aggregate $aggregate, Version $version): void
     {
         if (!isset($this->identityMap[$aggregate->getId()->toString()])) {

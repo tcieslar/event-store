@@ -24,6 +24,10 @@ abstract class Repository
             $eventStream = $this->aggregateManager->getEventStream($aggregateId);
             $aggregate = $this->createAggregateByEventStream($eventStream);
             $this->aggregateManager->persistAggregate($aggregate, $eventStream->endVersion);
+
+            //todo:
+            $this->aggregateManager->saveSnapshot($aggregateId);
+
             return $aggregate;
         }
 

@@ -13,16 +13,21 @@ class Order extends Aggregate
     private string $description;
     private DateTimeImmutable $createdAt;
 
-    public function __construct(OrderId $orderId, string $description)
+    public static function create(OrderId $orderId, string $description): self
+    {
+        $obj = new Order();
+        $obj->apply(
+            new OrderCreatedEvent(
+                $orderId,
+                $description
+            )
+        );
+        return $obj;
+    }
+
+    public function __construct()
     {
         parent::__construct();
-
-        $this->apply(
-           new OrderCreatedEvent(
-               $orderId,
-               $description
-           )
-       );
     }
 
     public function getOrderId(): OrderId

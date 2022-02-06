@@ -27,12 +27,13 @@ class ScenarioTest extends TestCase
             storage: new InMemoryStorage(),
             eventPublisher: new FileEventPublisher()
         );
+        $snapshotRepository = new InMemorySnapshotRepository(
+            serializer: new PhpSerializer()
+        );
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: $eventStore,
-            snapshotRepository: new InMemorySnapshotRepository(
-                serializer: new PhpSerializer()
-            ),
+            snapshotRepository: $snapshotRepository,
             concurrencyResolvingStrategy: new DoNothingStrategy()
         );
 
@@ -41,7 +42,8 @@ class ScenarioTest extends TestCase
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'name');
         $orderId = new OrderId(Uuid::v4());
-        $order = new Order($orderId,'description');
+        $order = Order::create($orderId,'description');
+
         $aggregateManager->addAggregate($customer);
         $aggregateManager->addAggregate($order);
         $aggregateManager->flush();
@@ -55,14 +57,18 @@ class ScenarioTest extends TestCase
         $this->assertSame($customer->getOrdersIds()[0],$orderId );
 
         // get form repository
+        $aggregateManager->reset();
 
         $customerRepository = new CustomerRepository($aggregateManager);
         $orderRepository = new OrderRepository($aggregateManager);
         $customer2 = $customerRepository->find($customerId);
         $order2 = $orderRepository->find($orderId);
 
-        $this->assertSame($customer, $customer2);
-        $this->assertSame($order, $order2);
+        $this->assertSame($customer->getId(), $customer2->getId());
+        $this->assertSame($order->getId(), $order2->getId());
+
+        //todo:
+        //var_dump($snapshotRepository->getSnapshot($customer->getId()));
     }
 
 }

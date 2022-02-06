@@ -183,18 +183,16 @@ class AggregateManagerTest extends TestCase
         // create and modify
         $customerA = $this->createCustomer();
         $customerA->addOrder(
-            new Order(
+            Order::create(
                 new OrderId(Uuid::v4()),
                 'Order 1',
-                new \DateTimeImmutable()
             )
         );
         $customerA->setName('Test 2');
         $customerA->addOrder(
-            new Order(
+            Order::create(
                 new OrderId(Uuid::v4()),
                 'Order 2',
-                new \DateTimeImmutable()
             )
         );
         $aggregateManager->addAggregate($customerA);

@@ -31,9 +31,26 @@ class AggregateManager
         return $this->snapshotRepository->getSnapshot($aggregateId);
     }
 
+    public function saveSnapshot(AggregateIdInterface $aggregateId): void
+    {
+        $aggregate = $this->unitOfWork->get($aggregateId);
+        if (!$aggregate) {
+            return ;
+        }
+        $this->snapshotRepository->saveSnapshot(
+            $aggregate,
+            $this->unitOfWork->getVersion($aggregate)
+        );
+    }
+
     public function getEventStream(AggregateIdInterface $id, ?Version $afterVersion = null): EventStream
     {
         return $this->eventStore->loadFromStream($id, $afterVersion);
+    }
+
+    public function reset(): void
+    {
+        $this->unitOfWork->reset();
     }
 
     public function flush(): void
@@ -51,8 +68,6 @@ class AggregateManager
             } catch (ConcurrencyException $exception) {
                 $this->concurrencyResolvingStrategy->resolve($exception);
             }
-
-            //todo: publish events
         }
     }
 }
