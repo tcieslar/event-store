@@ -21,12 +21,12 @@ abstract class Aggregate
 
     abstract public function getId(): AggregateIdInterface;
 
-    public function getChanges(): EventCollection
+    public function recordedEvents(): EventCollection
     {
         return $this->changes;
     }
 
-    public function removeChanges(): void
+    public function removeRecordedEvents(): void
     {
         $this->changes = new EventCollection();
     }

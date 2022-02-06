@@ -1,0 +1,1 @@
+ php vendor/bin/phpunit tests --colors --coverage-html tests/coverage --coverage-filter ./src

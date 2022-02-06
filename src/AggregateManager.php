@@ -45,9 +45,9 @@ class AggregateManager
             /** @var Version $version */
             $version = $row['version'];
             try {
-                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $version, $aggregate->getChanges());
+                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $version, $aggregate->recordedEvents());
                 $this->unitOfWork->changeVersion($aggregate, $newVersion);
-                $aggregate->removeChanges();
+                $aggregate->removeRecordedEvents();
             } catch (ConcurrencyException $exception) {
                 $this->concurrencyResolvingStrategy->resolve($exception);
             }

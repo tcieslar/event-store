@@ -64,7 +64,7 @@ class UnitOfWorkTest extends TestCase
         // create outside
         $customer = $this->createCustomer();
         $customerId = $customer->getId();
-        $eventStore->appendToStream($customer->getId(), Version::createZeroVersion(), $customer->getChanges());
+        $eventStore->appendToStream($customer->getId(), Version::createZeroVersion(), $customer->recordedEvents());
         unset($customer);
 
         // load and persist

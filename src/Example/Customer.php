@@ -3,11 +3,13 @@
 namespace Example;
 
 use Aggregate;
+use Symfony\Component\Uid\Uuid;
 
 class Customer extends Aggregate
 {
     private CustomerId $customerId;
     private string $name;
+    private array $orders;
 
     public static function create(CustomerId $customerId, string $name): self
     {
@@ -22,9 +24,9 @@ class Customer extends Aggregate
         return $customer;
     }
 
-    protected function __construct(
-    )
+    protected function __construct()
     {
+        $this->orders = [];
         parent::__construct();
     }
 
@@ -44,6 +46,15 @@ class Customer extends Aggregate
         );
     }
 
+    public function addOrder(Order $order): void
+    {
+        $this->apply(
+            new OrderAddedEvent(
+                $order
+            )
+        );
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -57,5 +68,10 @@ class Customer extends Aggregate
     protected function whenCustomerCredentialSetEvent(CustomerCredentialSetEvent $event): void
     {
         $this->name = $event->name;
+    }
+
+    protected function whenOrderAddedEvent(OrderAddedEvent $event): void
+    {
+        $this->orders[] = $event->order;
     }
 }

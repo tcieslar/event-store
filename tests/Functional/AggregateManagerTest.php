@@ -10,6 +10,8 @@ use Example\CustomerCreatedEvent;
 use Example\CustomerCredentialSetEvent;
 use Example\CustomerId;
 use Example\EventStore;
+use Example\Order;
+use Example\OrderId;
 use InMemorySnapshotRepository;
 use InMemoryStorage;
 use PhpSerializer;
@@ -76,7 +78,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager->flush();
 
         // check aggregate
-        $this->assertEmpty($customer->getChanges());
+        $this->assertEmpty($customer->recordedEvents());
 
         // check identityMap version number
         $identityMap = $unitOfWork->getIdentityMap();
@@ -141,23 +143,54 @@ class AggregateManagerTest extends TestCase
         $customerA->setName('test4');
         $customerC->setName('test5');
 
-        $this->assertCount(1, $customerA->getChanges());
-        $this->assertCount(0, $customerB->getChanges());
-        $this->assertCount(1, $customerC->getChanges());
+        $this->assertCount(1, $customerA->recordedEvents());
+        $this->assertCount(0, $customerB->recordedEvents());
+        $this->assertCount(1, $customerC->recordedEvents());
 
         // second flush
         $aggregateManager->flush();
 
-        $this->assertCount(0, $customerA->getChanges());
-        $this->assertCount(0, $customerC->getChanges());
+        $this->assertCount(0, $customerA->recordedEvents());
+        $this->assertCount(0, $customerC->recordedEvents());
         $this->assertSame('3', $unitOfWork->getIdentityMap()[$customerC->getId()->toString()]['version']->toString());
         $this->assertCount(8, $eventStore->getAllEvents());
     }
 
     public function testMultiEventFlush(): void
     {
-        //todo:
+        $unitOfWork = new UnitOfWork();
+        $eventStore = new EventStore(new InMemoryStorage());
+        $aggregateManager = new AggregateManager(
+            unitOfWork: $unitOfWork,
+            eventStore: $eventStore,
+            snapshotRepository: new InMemorySnapshotRepository(
+                serializer: new PhpSerializer()
+            ),
+            concurrencyResolvingStrategy: new DoNothingStrategy()
+        );
 
+        // create and modify
+        $customerA = $this->createCustomer();
+        $customerA->addOrder(
+            new Order(
+                new OrderId(Uuid::v4()),
+                'Order 1',
+                new \DateTimeImmutable()
+            )
+        );
+        $customerA->setName('Test 2');
+        $customerA->addOrder(
+            new Order(
+                new OrderId(Uuid::v4()),
+                'Order 2',
+                new \DateTimeImmutable()
+            )
+        );
+        $aggregateManager->addAggregate($customerA);
+
+        // flush
+        $aggregateManager->flush();
+        $this->assertSame('5', $unitOfWork->getIdentityMap()[$customerA->getId()->toString()]['version']->toString());
     }
 
     private function createCustomer(): Customer

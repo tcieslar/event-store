@@ -44,8 +44,8 @@ class EventStore implements EventStoreInterface
         }
 
         if (!$expectedVersion->isEqual($version)) {
-            $storedEvents = new EventCollection();
-            throw new ConcurrencyException($aggregateId, $expectedVersion, $events, $storedEvents);
+            $newEventsStream = $this->loadFromStream($aggregateId, $expectedVersion);
+            throw new ConcurrencyException($aggregateId, $expectedVersion, $events, $newEventsStream->events);
         }
 
         return $this->storage->storeEvents($aggregateId, $version, $events);
