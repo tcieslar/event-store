@@ -2,6 +2,7 @@
 
 namespace Aggregate;
 
+use RuntimeException;
 use Snapshot\Snapshot;
 use Exception\ConcurrencyException;
 use ConcurrencyResolving\ConcurrencyResolvingStrategyInterface;
@@ -64,6 +65,7 @@ class AggregateManager
     private function loadFromStore(AggregateIdInterface $aggregateId, string $className): mixed
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId);
+
         $aggregate = $className::loadFromEvents($eventStream->events);
         if (!($aggregate instanceof $className)) {
             throw new RuntimeException('Aggregate type mismatch.');

@@ -5,20 +5,23 @@ namespace Aggregate;
 use Error;
 use Event\EventCollection;
 use Event\EventInterface;
-use RuntimeException;
+use Exception\EventAggregateMismatchException;
 
 abstract class Aggregate
 {
     protected EventCollection $recordedEvents;
 
+    /**
+     * @throws EventAggregateMismatchException
+     */
     public static function loadFromEvents(EventCollection $events): static
     {
-        $obj = new static();
+        $aggregate = new static();
         foreach ($events as $event) {
-            $obj->mutate($event);
+            $aggregate->mutate($event);
         }
 
-        return $obj;
+        return $aggregate;
     }
 
     public function __construct()
@@ -38,17 +41,26 @@ abstract class Aggregate
         $this->recordedEvents = new EventCollection();
     }
 
+    /**
+     * @throws EventAggregateMismatchException
+     */
     protected function apply(EventInterface $event): void
     {
         $this->recordedEvents->add($event);
         $this->mutate($event);
     }
 
+    /**
+     * @throws EventAggregateMismatchException
+     */
     public function reply(EventInterface $event): void
     {
         $this->mutate($event);
     }
 
+    /**
+     * @throws EventAggregateMismatchException
+     */
     protected function mutate(EventInterface $event): void
     {
         $array = explode('\\', get_class($event));
@@ -56,8 +68,7 @@ abstract class Aggregate
         try {
             $this->$name($event);
         } catch (Error $error) {
-            throw new RuntimeException('Event is no supported, or aggregate type mismatch.',
-                0, $error);
+            throw new EventAggregateMismatchException($error, $event);
         }
     }
 }

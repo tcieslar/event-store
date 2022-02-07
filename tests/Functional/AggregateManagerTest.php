@@ -13,6 +13,7 @@ use Example\Aggregate\OrderId;
 use Example\Event\CustomerCreatedEvent;
 use Example\Event\CustomerCredentialSetEvent;
 use EventPublisher\FileEventPublisher;
+use Exception\EventAggregateMismatchException;
 use Snapshot\InMemorySnapshotRepository;
 use Storage\InMemoryStorage;
 use Utils\PhpSerializer;
@@ -196,7 +197,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager->flush();
         $aggregateManager->reset();
 
-        $this->expectExceptionMessage('Event is no supported, or aggregate type mismatch');
+        $this->expectException(EventAggregateMismatchException::class);
         $aggregateManager->findAggregate(Order::class, $customer->getId());
     }
 
