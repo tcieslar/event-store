@@ -18,36 +18,16 @@ class AggregateManager
 
     public function findAggregate(string $className, AggregateIdInterface $aggregateId)
     {
-
-        //todo: metody
         if ($aggregate = $this->unitOfWork->get($aggregateId)) {
             return $aggregate;
         }
 
         $snapshot = $this->snapshotRepository->getSnapshot($aggregateId);
         if (!$snapshot) {
-            $eventStream = $this->eventStore->loadFromStream($aggregateId);
-            $aggregate = $className::loadFromEvents($eventStream->events);
-            if (!($aggregate instanceof $className)) {
-                throw new RuntimeException('Aggregate type mismatch.');
-            }
-            $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
-
-            //todo:
-            $this->snapshotRepository->saveSnapshot(
-                $aggregate,
-                $this->unitOfWork->getVersion($aggregate)
-            );
-
-            return $aggregate;
+            return $this->loadFromStore($aggregateId, $className);
         }
 
-        $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->version);
-        $aggregate = $snapshot->aggregate;
-        foreach ($eventStream->events as $event) {
-            $aggregate->reply($event);
-        }
-        return $aggregate;
+        return $this->loadFromSnapshot($aggregateId, $snapshot);
     }
 
     public function reset(): void
@@ -71,5 +51,34 @@ class AggregateManager
                 $this->concurrencyResolvingStrategy->resolve($exception);
             }
         }
+    }
+
+    private function loadFromStore(AggregateIdInterface $aggregateId, string $className): mixed
+    {
+        $eventStream = $this->eventStore->loadFromStream($aggregateId);
+        $aggregate = $className::loadFromEvents($eventStream->events);
+        if (!($aggregate instanceof $className)) {
+            throw new RuntimeException('Aggregate type mismatch.');
+        }
+        $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
+
+        $this->snapshotRepository->saveSnapshot(
+            $aggregate,
+            $this->unitOfWork->getVersion($aggregate)
+        );
+
+        return $aggregate;
+    }
+
+    private function loadFromSnapshot(AggregateIdInterface $aggregateId, Snapshot $snapshot): Aggregate
+    {
+        $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->version);
+        $aggregate = $snapshot->aggregate;
+
+        foreach ($eventStream->events as $event) {
+            $aggregate->reply($event);
+        }
+        $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
+        return $aggregate;
     }
 }

@@ -2,12 +2,6 @@
 
 interface StorageInterface
 {
-    /**
-     * If aggregate doesn't exists return null
-     *
-     * @param AggregateIdInterface $aggregateId
-     * @return Version|null
-     */
     public function getAggregateVersion(AggregateIdInterface $aggregateId): ?Version;
 
     public function createAggregate(AggregateIdInterface $aggregateId, Version $expectedVersion): void;

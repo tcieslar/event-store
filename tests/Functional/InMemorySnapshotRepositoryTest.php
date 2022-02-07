@@ -2,9 +2,9 @@
 
 namespace Functional;
 
+use EventStore;
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
-use Example\EventStore;
 use FileEventPublisher;
 use InMemorySnapshotRepository;
 use InMemoryStorage;

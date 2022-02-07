@@ -46,6 +46,11 @@ abstract class Aggregate
     {
         $array = explode('\\', get_class($event));
         $name = 'when' . $array[count($array) - 1];
-        $this->$name($event);
+        try{
+            $this->$name($event);
+        } catch (Error $error) {
+            throw new RuntimeException('Event is no supported, or aggregate type mismatch.',
+            0, $error);
+        }
     }
 }

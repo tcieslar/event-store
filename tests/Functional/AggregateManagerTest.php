@@ -5,13 +5,13 @@ namespace Functional;
 use AggregateManager;
 use DoNothingStrategy;
 use EventCollection;
+use EventStore;
 use Example\Aggregate\Customer;
-use Example\Event\CustomerCreatedEvent;
-use Example\Event\CustomerCredentialSetEvent;
 use Example\Aggregate\CustomerId;
-use Example\EventStore;
 use Example\Aggregate\Order;
 use Example\Aggregate\OrderId;
+use Example\Event\CustomerCreatedEvent;
+use Example\Event\CustomerCredentialSetEvent;
 use FileEventPublisher;
 use InMemorySnapshotRepository;
 use InMemoryStorage;
@@ -23,30 +23,6 @@ use Version;
 
 class AggregateManagerTest extends TestCase
 {
-    public function testAddGetAggregate(): void
-    {
-        $aggregateManager = new AggregateManager(
-            unitOfWork: new UnitOfWork(),
-            eventStore: new EventStore(
-                storage: new InMemoryStorage(),
-                eventPublisher: new FileEventPublisher()
-            ),
-            snapshotRepository: new InMemorySnapshotRepository(
-                serializer: new PhpSerializer()
-            ),
-            concurrencyResolvingStrategy: new DoNothingStrategy()
-        );
-
-        // add
-        $customer = $this->createCustomer();
-        $this->assertNull($aggregateManager->getAggregate($customer->getId()));
-        $aggregateManager->addAggregate($customer);
-
-        //get
-        $customer2 = $aggregateManager->getAggregate($customer->getId());
-        $this->assertSame($customer, $customer2);
-    }
-
     public function testFlush(): void
     {
         $customer = $this->createCustomer();
@@ -167,13 +143,12 @@ class AggregateManagerTest extends TestCase
     public function testMultiEventFlush(): void
     {
         $unitOfWork = new UnitOfWork();
-        $eventStore = new EventStore(
-            storage: new InMemoryStorage(),
-            eventPublisher: new FileEventPublisher()
-        );
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
-            eventStore: $eventStore,
+            eventStore: new EventStore(
+                storage: new InMemoryStorage(),
+                eventPublisher: new FileEventPublisher()
+            ),
             snapshotRepository: new InMemorySnapshotRepository(
                 serializer: new PhpSerializer()
             ),
@@ -199,7 +174,107 @@ class AggregateManagerTest extends TestCase
 
         // flush
         $aggregateManager->flush();
-        $this->assertSame('5', $unitOfWork->getIdentityMap()[$customerA->getId()->toString()]['version']->toString());
+        $this->assertSame('5', ($unitOfWork)->getIdentityMap()[$customerA->getId()->toString()]['version']->toString());
+    }
+
+    public function testWrongAggregateType(): void
+    {
+        $aggregateManager = new AggregateManager(
+            unitOfWork: new UnitOfWork(),
+            eventStore: new EventStore(
+                storage: new InMemoryStorage(),
+                eventPublisher: new FileEventPublisher()
+            ),
+            snapshotRepository: new InMemorySnapshotRepository(
+                serializer: new PhpSerializer()
+            ),
+            concurrencyResolvingStrategy: new DoNothingStrategy()
+        );
+
+        $customer = $this->createCustomer();
+        $aggregateManager->addAggregate($customer);
+        $aggregateManager->flush();
+        $aggregateManager->reset();
+
+        $this->expectExceptionMessage('Event is no supported, or aggregate type mismatch');
+        $aggregateManager->findAggregate(Order::class, $customer->getId());
+    }
+
+    public function testSnapshotLoad(): void
+    {
+        $snapshotRepository = new InMemorySnapshotRepository(
+            serializer: new PhpSerializer()
+        );
+        $aggregateManager = new AggregateManager(
+            unitOfWork: new UnitOfWork(),
+            eventStore: new EventStore(
+                storage: new InMemoryStorage(),
+                eventPublisher: new FileEventPublisher()
+            ),
+            snapshotRepository: $snapshotRepository,
+            concurrencyResolvingStrategy: new DoNothingStrategy()
+        );
+
+        // insert
+        $customer = $this->createCustomer();
+        $aggregateManager->addAggregate($customer);
+        $aggregateManager->flush();
+        $aggregateManager->reset();
+
+        // loading from store, snapshot saved
+        $customer = $aggregateManager->findAggregate(Customer::class, $customer->getId());
+        $snapshot = $snapshotRepository->getSnapshot($customer->getId());
+        $this->assertNotNull($snapshot);
+        $this->assertEquals($customer, $snapshot->aggregate);
+        $aggregateManager->reset();
+
+        // loading from snapshot
+        $customer2 = $aggregateManager->findAggregate(Customer::class, $customer->getId());
+        $this->assertEquals($customer, $customer2);
+    }
+
+    public function testSnapshotLoadWithEventReply(): void
+    {
+        $snapshotRepository = new InMemorySnapshotRepository(
+            serializer: new PhpSerializer()
+        );
+        $aggregateManager = new AggregateManager(
+            unitOfWork: new UnitOfWork(),
+            eventStore: new EventStore(
+                storage: new InMemoryStorage(),
+                eventPublisher: new FileEventPublisher()
+            ),
+            snapshotRepository: $snapshotRepository,
+            concurrencyResolvingStrategy: new DoNothingStrategy()
+        );
+
+        // insert
+        $customer = $this->createCustomer();
+        $aggregateManager->addAggregate($customer);
+        $aggregateManager->flush();
+        $aggregateManager->reset();
+
+        // loading from store, snapshot saved
+        $customer = $aggregateManager->findAggregate(Customer::class, $customer->getId());
+        $snapshot = $snapshotRepository->getSnapshot($customer->getId());
+
+        $this->assertNotNull($snapshot);
+        $this->assertEquals($customer, $snapshot->aggregate);
+        $aggregateManager->reset();
+
+
+        // loading from snapshot
+        /** @var Customer $customer2 */
+        $customer2 = $aggregateManager->findAggregate(Customer::class, $customer->getId());
+
+        // store new event
+        $customer2->setName('test 3');
+        $aggregateManager->flush();
+        $aggregateManager->reset();
+
+        // load from snapshot with additional event
+        $customer3 = $aggregateManager->findAggregate(Customer::class, $customer->getId());
+        $this->assertEquals('test 3', $customer3->getName());
     }
 
     private function createCustomer(): Customer

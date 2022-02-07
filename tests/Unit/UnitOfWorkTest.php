@@ -7,6 +7,7 @@ use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
 use FileEventPublisher;
 use InMemoryStorage;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Uid\Uuid;
@@ -39,6 +40,19 @@ class UnitOfWorkTest extends TestCase
         $this->assertEquals('0', $identityMap[$customer->getId()->toString()]['version']->toString());
     }
 
+    public function testInsertException(): void
+    {
+        $unitOfWork = new UnitOfWork();
+        // new customer
+        $customer = $this->createCustomer();
+        $this->assertNull($unitOfWork->get($customer->getId()));
+
+        // insert
+        $unitOfWork->insert($customer);
+        $this->expectException(InvalidArgumentException::class);
+        $unitOfWork->insert($customer);
+    }
+
     public function testReset(): void
     {
         $unitOfWork = new UnitOfWork();
@@ -51,7 +65,6 @@ class UnitOfWorkTest extends TestCase
         $reflectionClass = new ReflectionClass('UnitOfWork');
         $reflectionProperty = $reflectionClass->getProperty('identityMap');
         $identityMap = $reflectionProperty->getValue($unitOfWork);
-
         $this->assertEmpty($identityMap);
     }
 
@@ -104,6 +117,17 @@ class UnitOfWorkTest extends TestCase
         $unitOfWork->changeVersion($customer, Version::createVersion(123456));
         $identityMap = $reflectionProperty->getValue($unitOfWork);
         $this->assertEquals('123456', $identityMap[$customerId->toString()]['version']->toString());
+    }
+
+    public function testVersionException(): void
+    {
+        $unitOfWork = new UnitOfWork();
+        // new customer
+        $customer = $this->createCustomer();
+        $this->assertNull($unitOfWork->get($customer->getId()));
+
+        $this->expectException(InvalidArgumentException::class);
+        $unitOfWork->getVersion($customer);
     }
 
     private function createCustomer(): Customer

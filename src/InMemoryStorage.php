@@ -36,23 +36,21 @@ class InMemoryStorage implements StorageInterface
 
     public function getEventStreamAfterVersion(AggregateIdInterface $aggregateId, Version $afterVersion): EventStream
     {
-        $position = -1;
+        $events = [];
         foreach ($this->events[$aggregateId->toString()] as $key => $eventArray) {
             if ($eventArray['version'] > (int)$afterVersion->toString()) {
-                $position = $key;
-                break;
+                $events[] = $eventArray;
+
             }
         }
 
-        if ($position === -1) {
-            throw new RuntimeException('Wrong version provided.');
-        }
-        $events = array_slice($this->events[$aggregateId->toString()], $position);
-
+        $aggregateVersion = $this->aggregatesVersion[$aggregateId->toString()];
         return new EventStream(
             $aggregateId,
-            Version::createVersion(current($events)['version']),
-            $this->aggregatesVersion[$aggregateId->toString()],
+            !empty($events) ?
+                Version::createVersion(current($events)['version']) :
+                $aggregateVersion,
+            $aggregateVersion,
             new EventCollection(array_column($events, 'event'))
         );
     }
