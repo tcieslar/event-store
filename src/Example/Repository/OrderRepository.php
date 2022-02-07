@@ -2,21 +2,19 @@
 
 namespace Example\Repository;
 
-use Aggregate;
-use EventStream;;
 use Example\Aggregate\Order;
 use Example\Aggregate\OrderId;
 use Repository;
 
 class OrderRepository extends Repository
 {
-    public function find(OrderId $orderId): ?Order
+    public function find(OrderId $customerId): ?Order
     {
-        return $this->findAggregate($orderId);
+        return $this->findOne($customerId);
     }
 
-    protected function createAggregateByEventStream(EventStream $eventStream): Aggregate
+    protected static function getAggregateClassName(): string
     {
-        return Order::loadFromEvents($eventStream->events);
+        return Order::class;
     }
 }

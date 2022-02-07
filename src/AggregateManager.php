@@ -16,36 +16,38 @@ class AggregateManager
         $this->unitOfWork->insert($aggregate);
     }
 
-    public function persistAggregate(Aggregate $aggregate, Version $version): void
+    public function findAggregate(string $className, AggregateIdInterface $aggregateId)
     {
-        $this->unitOfWork->persist($aggregate, $version);
-    }
 
-    public function getAggregate(AggregateIdInterface $aggregateId): ?Aggregate
-    {
-        return $this->unitOfWork->get($aggregateId);
-    }
-
-    public function getSnapshot(AggregateIdInterface $aggregateId): ?Snapshot
-    {
-        return $this->snapshotRepository->getSnapshot($aggregateId);
-    }
-
-    public function saveSnapshot(AggregateIdInterface $aggregateId): void
-    {
-        $aggregate = $this->unitOfWork->get($aggregateId);
-        if (!$aggregate) {
-            return ;
+        //todo: metody
+        if ($aggregate = $this->unitOfWork->get($aggregateId)) {
+            return $aggregate;
         }
-        $this->snapshotRepository->saveSnapshot(
-            $aggregate,
-            $this->unitOfWork->getVersion($aggregate)
-        );
-    }
 
-    public function getEventStream(AggregateIdInterface $id, ?Version $afterVersion = null): EventStream
-    {
-        return $this->eventStore->loadFromStream($id, $afterVersion);
+        $snapshot = $this->snapshotRepository->getSnapshot($aggregateId);
+        if (!$snapshot) {
+            $eventStream = $this->eventStore->loadFromStream($aggregateId);
+            $aggregate = $className::loadFromEvents($eventStream->events);
+            if (!($aggregate instanceof $className)) {
+                throw new RuntimeException('Aggregate type mismatch.');
+            }
+            $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
+
+            //todo:
+            $this->snapshotRepository->saveSnapshot(
+                $aggregate,
+                $this->unitOfWork->getVersion($aggregate)
+            );
+
+            return $aggregate;
+        }
+
+        $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->version);
+        $aggregate = $snapshot->aggregate;
+        foreach ($eventStream->events as $event) {
+            $aggregate->reply($event);
+        }
+        return $aggregate;
     }
 
     public function reset(): void

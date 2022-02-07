@@ -41,6 +41,16 @@ class Order extends Aggregate
         return $this->orderId;
     }
 
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
     protected function whenOrderCreatedEvent(OrderCreatedEvent $event): void
     {
         $this->orderId = $event->orderId;

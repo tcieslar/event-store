@@ -11,7 +11,7 @@ class Customer extends Aggregate
 {
     private CustomerId $customerId;
     private string $name;
-    private array $ordersIds;
+    private array $orderIds;
 
     public static function create(CustomerId $customerId, string $name): self
     {
@@ -28,7 +28,7 @@ class Customer extends Aggregate
 
     protected function __construct()
     {
-        $this->orders = [];
+        $this->orderIds = [];
         parent::__construct();
     }
 
@@ -63,9 +63,9 @@ class Customer extends Aggregate
         return $this->name;
     }
 
-    public function getOrdersIds(): array
+    public function getOrderIds(): array
     {
-        return $this->ordersIds;
+        return $this->orderIds;
 
     }
 
@@ -81,6 +81,6 @@ class Customer extends Aggregate
 
     protected function whenOrderAddedEvent(OrderAddedEvent $event): void
     {
-        $this->ordersIds[] = $event->orderId;
+        $this->orderIds[] = $event->orderId;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use JetBrains\PhpStorm\Pure;
+
 class EventStream
 {
     public function __construct(
@@ -11,8 +13,8 @@ class EventStream
     {
     }
 
-    public function isEmpty(): bool
+    #[Pure] public function isEmpty(): bool
     {
-        return empty($this->events);
+        return $this->events->count() === 0;
     }
 }

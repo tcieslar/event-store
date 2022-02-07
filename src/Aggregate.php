@@ -4,7 +4,7 @@ abstract class Aggregate
 {
     protected EventCollection $recordedEvents;
 
-    public static function loadFromEvents(EventCollection $events): self
+    public static function loadFromEvents(EventCollection $events): static
     {
         $obj = new static();
         foreach ($events as $event) {

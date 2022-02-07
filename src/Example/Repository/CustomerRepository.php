@@ -2,8 +2,6 @@
 
 namespace Example\Repository;
 
-use Aggregate;
-use EventStream;
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
 use Repository;
@@ -12,11 +10,11 @@ class CustomerRepository extends Repository
 {
     public function find(CustomerId $customerId): ?Customer
     {
-        return $this->findAggregate($customerId);
+        return $this->findOne($customerId);
     }
 
-    protected function createAggregateByEventStream(EventStream $eventStream): Aggregate
+    protected static function getAggregateClassName(): string
     {
-        return Customer::loadFromEvents($eventStream->events);
+        return Customer::class;
     }
 }

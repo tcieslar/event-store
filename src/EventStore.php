@@ -1,16 +1,5 @@
 <?php
 
-namespace Example;
-
-use EventCollection;
-use ConcurrencyException;
-use EventPublisherInterface;
-use EventStoreInterface;
-use EventStream;
-use AggregateIdInterface;
-use StorageInterface;
-use Version;
-
 class EventStore implements EventStoreInterface
 {
     public function __construct(
@@ -50,9 +39,9 @@ class EventStore implements EventStoreInterface
             throw new ConcurrencyException($aggregateId, $expectedVersion, $events, $newEventsStream->events);
         }
 
-        $version2 = $this->storage->storeEvents($aggregateId, $version, $events);
+        $newVersion = $this->storage->storeEvents($aggregateId, $version, $events);
         $this->eventPublisher->publish($events);
-        return $version2;
+        return $newVersion;
     }
 
     public function getAllEvents(): EventCollection

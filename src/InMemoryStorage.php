@@ -67,7 +67,8 @@ class InMemoryStorage implements StorageInterface
             $this->events[$idString][] = [
                 'version' => (int)$newVersion->toString(),
                 'occurred_at' => $event->getOccurredAt(),
-                'event' => $event
+                'event' => $event,
+                'type' => $event->getType()
             ];
             $this->aggregatesVersion[$idString] = $newVersion;
         }
