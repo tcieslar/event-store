@@ -4,7 +4,7 @@ namespace Unit;
 
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
-use PhpSerializer;
+use Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 

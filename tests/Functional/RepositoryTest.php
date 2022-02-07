@@ -2,8 +2,8 @@
 
 namespace Functional;
 
-use AggregateManager;
-use DoNothingStrategy;
+use Aggregate\AggregateManager;
+use ConcurrencyResolving\DoNothingStrategy;
 use EventStore;
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
@@ -11,13 +11,13 @@ use Example\Aggregate\Order;
 use Example\Aggregate\OrderId;
 use Example\Repository\CustomerRepository;
 use Example\Repository\OrderRepository;
-use FileEventPublisher;
-use InMemorySnapshotRepository;
-use InMemoryStorage;
-use PhpSerializer;
+use EventPublisher\FileEventPublisher;
+use Snapshot\InMemorySnapshotRepository;
+use Storage\InMemoryStorage;
+use Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
-use UnitOfWork;
+use Aggregate\UnitOfWork;
 
 class RepositoryTest extends TestCase
 {

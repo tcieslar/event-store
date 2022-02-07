@@ -1,5 +1,9 @@
 <?php
 
+namespace Aggregate;
+
+use InvalidArgumentException;
+
 class Version
 {
     private int $number;
@@ -43,6 +47,6 @@ class Version
 
     public function toString(): string
     {
-        return ''.$this->number;
+        return '' . $this->number;
     }
 }

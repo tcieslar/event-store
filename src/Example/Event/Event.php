@@ -3,7 +3,7 @@
 namespace Example\Event;
 
 use DateTimeImmutable;
-use EventInterface;
+use Event\EventInterface;
 
 abstract class Event implements EventInterface
 {

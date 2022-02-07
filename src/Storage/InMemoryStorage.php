@@ -1,5 +1,13 @@
 <?php
 
+namespace Storage;
+
+use Aggregate\AggregateIdInterface;
+use Aggregate\Version;
+use Event\EventCollection;
+use Event\EventInterface;
+use Event\EventStream;
+
 class InMemoryStorage implements StorageInterface
 {
     private array $aggregatesVersion = [];

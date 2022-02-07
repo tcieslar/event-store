@@ -1,5 +1,9 @@
 <?php
 
+namespace Aggregate;
+
+use InvalidArgumentException;
+
 class UnitOfWork
 {
     private array $identityMap = [];

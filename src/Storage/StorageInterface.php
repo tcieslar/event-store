@@ -1,5 +1,12 @@
 <?php
 
+namespace Storage;
+
+use Aggregate\AggregateIdInterface;
+use Aggregate\Version;
+use Event\EventCollection;
+use Event\EventStream;
+
 interface StorageInterface
 {
     public function getAggregateVersion(AggregateIdInterface $aggregateId): ?Version;

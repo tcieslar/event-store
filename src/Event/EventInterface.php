@@ -1,5 +1,7 @@
 <?php
 
+namespace Event;
+
 interface EventInterface
 {
     public function getType(): string;

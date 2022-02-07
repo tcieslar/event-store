@@ -2,7 +2,7 @@
 
 namespace Example\Aggregate;
 
-use AggregateIdInterface;
+use Aggregate\AggregateIdInterface;
 
 class OrderId implements AggregateIdInterface
 {

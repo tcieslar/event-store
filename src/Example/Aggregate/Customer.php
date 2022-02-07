@@ -2,7 +2,7 @@
 
 namespace Example\Aggregate;
 
-use Aggregate;
+use Aggregate\Aggregate;
 use Example\Event\CustomerCreatedEvent;
 use Example\Event\CustomerCredentialSetEvent;
 use Example\Event\OrderAddedEvent;

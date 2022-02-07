@@ -1,5 +1,12 @@
 <?php
 
+namespace Exception;
+
+use Aggregate\AggregateIdInterface;
+use Aggregate\Version;
+use Event\EventCollection;
+use Exception;
+
 class ConcurrencyException extends Exception
 {
     public function __construct(

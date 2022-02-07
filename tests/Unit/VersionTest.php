@@ -4,7 +4,7 @@ namespace Unit;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Version;
+use Aggregate\Version;
 
 class VersionTest extends TestCase
 {

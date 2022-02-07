@@ -1,5 +1,12 @@
 <?php
 
+namespace Snapshot;
+
+use Aggregate\Aggregate;
+use Aggregate\AggregateIdInterface;
+use Aggregate\Version;
+use Utils\SerializerInterface;
+
 class InMemorySnapshotRepository extends AbstractSnapshotRepository
 {
     private array $snapshots = [];

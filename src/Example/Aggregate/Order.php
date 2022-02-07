@@ -2,8 +2,8 @@
 
 namespace Example\Aggregate;
 
-use Aggregate;
-use AggregateIdInterface;
+use Aggregate\Aggregate;
+use Aggregate\AggregateIdInterface;
 use DateTimeImmutable;
 use Example\Event\OrderCreatedEvent;
 

@@ -2,12 +2,12 @@
 
 namespace Unit;
 
-use EventCollection;
-use EventStream;
+use Event\EventCollection;
+use Event\EventStream;
 use Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
-use Version;
+use Aggregate\Version;
 
 class EventStreamTest extends TestCase
 {

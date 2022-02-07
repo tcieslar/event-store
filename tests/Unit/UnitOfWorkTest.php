@@ -5,14 +5,14 @@ namespace Unit;
 use EventStore;
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
-use FileEventPublisher;
-use InMemoryStorage;
+use EventPublisher\FileEventPublisher;
+use Storage\InMemoryStorage;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Uid\Uuid;
-use UnitOfWork;
-use Version;
+use Aggregate\UnitOfWork;
+use Aggregate\Version;
 
 /**
  * @group unit
@@ -33,7 +33,7 @@ class UnitOfWorkTest extends TestCase
         $this->assertInstanceOf(Customer::class, $aggregate);
 
         // insert with version 0
-        $reflectionClass = new ReflectionClass('UnitOfWork');
+        $reflectionClass = new ReflectionClass(UnitOfWork::class);
         $reflectionProperty = $reflectionClass->getProperty('identityMap');
         $identityMap = $reflectionProperty->getValue($unitOfWork);
 
@@ -62,7 +62,7 @@ class UnitOfWorkTest extends TestCase
         $unitOfWork->reset();
 
         // empty identityMap
-        $reflectionClass = new ReflectionClass('UnitOfWork');
+        $reflectionClass = new ReflectionClass(UnitOfWork::class);
         $reflectionProperty = $reflectionClass->getProperty('identityMap');
         $identityMap = $reflectionProperty->getValue($unitOfWork);
         $this->assertEmpty($identityMap);
@@ -87,7 +87,7 @@ class UnitOfWorkTest extends TestCase
         $customer2 = Customer::loadFromEvents($eventStream->events);
         $unitOfWork->persist($customer2, $eventStream->endVersion);
 
-        $reflectionClass = new ReflectionClass('UnitOfWork');
+        $reflectionClass = new ReflectionClass(UnitOfWork::class);
         $reflectionProperty = $reflectionClass->getProperty('identityMap');
         $identityMap = $reflectionProperty->getValue($unitOfWork);
 
@@ -107,7 +107,7 @@ class UnitOfWorkTest extends TestCase
         $unitOfWork->insert($customer);
 
         // version 0
-        $reflectionClass = new ReflectionClass('UnitOfWork');
+        $reflectionClass = new ReflectionClass(UnitOfWork::class);
         $reflectionProperty = $reflectionClass->getProperty('identityMap');
         $identityMap = $reflectionProperty->getValue($unitOfWork);
 

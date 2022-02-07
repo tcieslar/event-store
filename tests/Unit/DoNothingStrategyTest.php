@@ -2,19 +2,19 @@
 
 namespace Unit;
 
-use DoNothingStrategy;
-use EventCollection;
+use ConcurrencyResolving\DoNothingStrategy;
+use Event\EventCollection;
 use Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\Uid\Uuid;
-use Version;
+use Aggregate\Version;
 
 class DoNothingStrategyTest extends TestCase
 {
     public function testHandle(): void
     {
-        $exception = new \ConcurrencyException(
+        $exception = new \Exception\ConcurrencyException(
             new CustomerId(Uuid::v4()),
             Version::createVersion(123),
             new EventCollection(),

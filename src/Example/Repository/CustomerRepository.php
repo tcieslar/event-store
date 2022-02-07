@@ -4,7 +4,7 @@ namespace Example\Repository;
 
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
-use Repository;
+use Aggregate\Repository;
 
 class CustomerRepository extends Repository
 {

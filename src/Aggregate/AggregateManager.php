@@ -1,5 +1,13 @@
 <?php
 
+namespace Aggregate;
+
+use Snapshot\Snapshot;
+use Exception\ConcurrencyException;
+use ConcurrencyResolving\ConcurrencyResolvingStrategyInterface;
+use EventStoreInterface;
+use Snapshot\SnapshotRepositoryInterface;
+
 class AggregateManager
 {
     public function __construct(
@@ -61,7 +69,6 @@ class AggregateManager
             throw new RuntimeException('Aggregate type mismatch.');
         }
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
-
         $this->snapshotRepository->saveSnapshot(
             $aggregate,
             $this->unitOfWork->getVersion($aggregate)
@@ -74,11 +81,11 @@ class AggregateManager
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->version);
         $aggregate = $snapshot->aggregate;
-
         foreach ($eventStream->events as $event) {
             $aggregate->reply($event);
         }
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
+
         return $aggregate;
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Functional;
 
-use AggregateManager;
-use DoNothingStrategy;
-use EventCollection;
+use Aggregate\AggregateManager;
+use ConcurrencyResolving\DoNothingStrategy;
+use Event\EventCollection;
 use EventStore;
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
@@ -12,14 +12,14 @@ use Example\Aggregate\Order;
 use Example\Aggregate\OrderId;
 use Example\Event\CustomerCreatedEvent;
 use Example\Event\CustomerCredentialSetEvent;
-use FileEventPublisher;
-use InMemorySnapshotRepository;
-use InMemoryStorage;
-use PhpSerializer;
+use EventPublisher\FileEventPublisher;
+use Snapshot\InMemorySnapshotRepository;
+use Storage\InMemoryStorage;
+use Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
-use UnitOfWork;
-use Version;
+use Aggregate\UnitOfWork;
+use Aggregate\Version;
 
 class AggregateManagerTest extends TestCase
 {

@@ -4,7 +4,7 @@ namespace Example\Repository;
 
 use Example\Aggregate\Order;
 use Example\Aggregate\OrderId;
-use Repository;
+use Aggregate\Repository;
 
 class OrderRepository extends Repository
 {

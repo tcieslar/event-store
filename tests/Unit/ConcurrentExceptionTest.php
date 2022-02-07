@@ -2,12 +2,12 @@
 
 namespace Unit;
 
-use ConcurrencyException;
-use EventCollection;
+use Exception\ConcurrencyException;
+use Event\EventCollection;
 use Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
-use Version;
+use Aggregate\Version;
 
 class ConcurrentExceptionTest extends TestCase
 {

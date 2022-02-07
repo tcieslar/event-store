@@ -1,6 +1,10 @@
 <?php
 
+namespace Event;
+
+use Aggregate\AggregateIdInterface;
 use JetBrains\PhpStorm\Pure;
+use Aggregate\Version;
 
 class EventStream
 {

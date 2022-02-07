@@ -1,5 +1,13 @@
 <?php
 
+use Aggregate\AggregateIdInterface;
+use Aggregate\Version;
+use Event\EventCollection;
+use EventPublisher\EventPublisherInterface;
+use Event\EventStream;
+use Exception\ConcurrencyException;
+use Storage\StorageInterface;
+
 class EventStore implements EventStoreInterface
 {
     public function __construct(

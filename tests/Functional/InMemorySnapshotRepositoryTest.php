@@ -5,14 +5,14 @@ namespace Functional;
 use EventStore;
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
-use FileEventPublisher;
-use InMemorySnapshotRepository;
-use InMemoryStorage;
-use PhpSerializer;
+use EventPublisher\FileEventPublisher;
+use Snapshot\InMemorySnapshotRepository;
+use Storage\InMemoryStorage;
+use Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Uid\Uuid;
-use Version;
+use Aggregate\Version;
 
 /**
  * @group unit
@@ -42,7 +42,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         $snapshotRepository->saveSnapshot($customer2, $eventStream->endVersion);
 
         // get private snapshots array
-        $reflectionClass = new ReflectionClass('InMemorySnapshotRepository');
+        $reflectionClass = new ReflectionClass(InMemorySnapshotRepository::class);
         $reflectionProperty = $reflectionClass->getProperty('snapshots');
         $snapshots = $reflectionProperty->getValue($snapshotRepository);
 

@@ -1,6 +1,8 @@
 <?php
 
 
+namespace Aggregate;
+
 abstract class Repository
 {
     public function __construct(

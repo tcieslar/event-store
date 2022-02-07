@@ -1,5 +1,7 @@
 <?php
 
+namespace Event;
+
 class EventCollection implements \Countable, \Iterator
 {
     private array $values = [];

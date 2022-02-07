@@ -5,11 +5,11 @@ namespace Functional;
 use EventStore;
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
-use FileEventPublisher;
-use InMemoryStorage;
+use EventPublisher\FileEventPublisher;
+use Storage\InMemoryStorage;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
-use Version;
+use Aggregate\Version;
 
 /**
  * @group unit

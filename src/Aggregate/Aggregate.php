@@ -1,5 +1,12 @@
 <?php
 
+namespace Aggregate;
+
+use Error;
+use Event\EventCollection;
+use Event\EventInterface;
+use RuntimeException;
+
 abstract class Aggregate
 {
     protected EventCollection $recordedEvents;
@@ -46,11 +53,11 @@ abstract class Aggregate
     {
         $array = explode('\\', get_class($event));
         $name = 'when' . $array[count($array) - 1];
-        try{
+        try {
             $this->$name($event);
         } catch (Error $error) {
             throw new RuntimeException('Event is no supported, or aggregate type mismatch.',
-            0, $error);
+                0, $error);
         }
     }
 }
