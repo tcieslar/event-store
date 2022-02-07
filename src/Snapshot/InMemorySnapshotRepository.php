@@ -30,11 +30,11 @@ class InMemorySnapshotRepository extends AbstractSnapshotRepository
             return;
         }
 
-        /** @var Version $currentVersion */
-        $currentVersion = $this->snapshots[$idString]->version;
-        if ($currentVersion->isHigherThen($version)) {
-            return;
-        }
+//        /** @var Version $currentVersion */
+//        $currentVersion = $this->snapshots[$idString]->version;
+//        if ($currentVersion->isHigherThen($version)) {
+//            return;
+//        }
 
         $this->store($version, $aggregate, $idString);
     }
