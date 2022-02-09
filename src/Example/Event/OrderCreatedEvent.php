@@ -2,6 +2,7 @@
 
 namespace Example\Event;
 
+use Aggregate\AggregateIdInterface;
 use Example\Aggregate\OrderId;
 
 class OrderCreatedEvent extends Event
@@ -12,5 +13,10 @@ class OrderCreatedEvent extends Event
     )
     {
         parent::__construct();
+    }
+
+    public function getAggregateId(): AggregateIdInterface
+    {
+        return $this->orderId;
     }
 }

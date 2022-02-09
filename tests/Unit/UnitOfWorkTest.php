@@ -6,7 +6,7 @@ use EventStore;
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
 use EventPublisher\FileEventPublisher;
-use Storage\InMemoryStorage;
+use Storage\InMemoryEventStorage;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -71,7 +71,7 @@ class UnitOfWorkTest extends TestCase
     public function testPersist(): void
     {
         $eventStore = new EventStore(
-            storage: new InMemoryStorage(),
+            storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
         $unitOfWork = new UnitOfWork();

@@ -2,9 +2,14 @@
 
 namespace Event;
 
+use Aggregate\AggregateIdInterface;
+use DateTimeImmutable;
+
 interface EventInterface
 {
-    public function getType(): string;
+    public function getAggregateId(): AggregateIdInterface;
 
-    public function getOccurredAt(): \DateTimeImmutable;
+    public function getEventClass(): string;
+
+    public function getOccurredAt(): DateTimeImmutable;
 }

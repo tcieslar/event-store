@@ -7,7 +7,7 @@ use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
 use EventPublisher\FileEventPublisher;
 use Snapshot\InMemorySnapshotRepository;
-use Storage\InMemoryStorage;
+use Storage\InMemoryEventStorage;
 use Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -22,7 +22,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
     public function testSave(): void
     {
         $eventStore = new EventStore(
-            storage: new InMemoryStorage(),
+            storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
         $serializer = new PhpSerializer();
@@ -52,7 +52,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
     public function testGet(): void
     {
         $eventStore = new EventStore(
-            storage: new InMemoryStorage(),
+            storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
         $serializer = new PhpSerializer();

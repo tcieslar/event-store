@@ -6,7 +6,7 @@ use EventStore;
 use Example\Aggregate\Customer;
 use Example\Aggregate\CustomerId;
 use EventPublisher\FileEventPublisher;
-use Storage\InMemoryStorage;
+use Storage\InMemoryEventStorage;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Aggregate\Version;
@@ -20,7 +20,7 @@ class EventStoreTest extends TestCase
     {
         $customerId = new CustomerId(Uuid::v4());
         $eventStore = new EventStore(
-            storage: new InMemoryStorage(),
+            storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
 
@@ -34,7 +34,7 @@ class EventStoreTest extends TestCase
         $customer = Customer::create($customerId, 'test');
 
         $eventStore = new EventStore(
-            storage: new InMemoryStorage(),
+            storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
         $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
@@ -50,7 +50,7 @@ class EventStoreTest extends TestCase
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
         $eventStore = new EventStore(
-            storage: new InMemoryStorage(),
+            storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
 
@@ -85,7 +85,7 @@ class EventStoreTest extends TestCase
         $customer->setName('test 4');
 
         $eventStore = new EventStore(
-            storage: new InMemoryStorage(),
+            storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
         $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());

@@ -8,7 +8,7 @@ use Event\EventCollection;
 use Event\EventInterface;
 use Event\EventStream;
 
-class InMemoryStorage implements StorageInterface
+class InMemoryEventStorage implements EventStorageInterface
 {
     private array $aggregatesVersion = [];
     private array $events = [];
@@ -74,7 +74,7 @@ class InMemoryStorage implements StorageInterface
                 'version' => (int)$newVersion->toString(),
                 'occurred_at' => $event->getOccurredAt(),
                 'event' => $event,
-                'type' => $event->getType()
+                'type' => $event->getEventClass()
             ];
             $this->aggregatesVersion[$idString] = $newVersion;
         }

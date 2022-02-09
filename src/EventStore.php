@@ -6,12 +6,12 @@ use Event\EventCollection;
 use EventPublisher\EventPublisherInterface;
 use Event\EventStream;
 use Exception\ConcurrencyException;
-use Storage\StorageInterface;
+use Storage\EventStorageInterface;
 
 class EventStore implements EventStoreInterface
 {
     public function __construct(
-        private StorageInterface $storage,
+        private EventStorageInterface   $storage,
         private EventPublisherInterface $eventPublisher
     )
     {

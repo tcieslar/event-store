@@ -1,1 +1,1 @@
- php vendor/bin/phpunit tests --colors --coverage-html tests/coverage --coverage-filter ./src
+ php vendor/bin/phpunit tests --colors --exclude-group integration --coverage-html tests/coverage --coverage-filter ./src

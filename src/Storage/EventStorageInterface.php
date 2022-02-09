@@ -7,7 +7,7 @@ use Aggregate\Version;
 use Event\EventCollection;
 use Event\EventStream;
 
-interface StorageInterface
+interface EventStorageInterface
 {
     public function getAggregateVersion(AggregateIdInterface $aggregateId): ?Version;
 

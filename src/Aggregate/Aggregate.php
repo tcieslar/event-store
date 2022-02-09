@@ -7,7 +7,7 @@ use Event\EventCollection;
 use Event\EventInterface;
 use Exception\EventAggregateMismatchException;
 
-abstract class Aggregate
+abstract class Aggregate implements AggregateInterface
 {
     protected EventCollection $recordedEvents;
 

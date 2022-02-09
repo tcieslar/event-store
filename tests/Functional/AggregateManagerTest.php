@@ -15,7 +15,7 @@ use Example\Event\CustomerCredentialSetEvent;
 use EventPublisher\FileEventPublisher;
 use Exception\EventAggregateMismatchException;
 use Snapshot\InMemorySnapshotRepository;
-use Storage\InMemoryStorage;
+use Storage\InMemoryEventStorage;
 use Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -70,7 +70,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
             eventStore: new EventStore(
-                storage: new InMemoryStorage(),
+                storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: new InMemorySnapshotRepository(
@@ -95,7 +95,7 @@ class AggregateManagerTest extends TestCase
     {
         $unitOfWork = new UnitOfWork();
         $eventStore = new EventStore(
-            storage: new InMemoryStorage(),
+            storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
         $aggregateManager = new AggregateManager(
@@ -147,7 +147,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
             eventStore: new EventStore(
-                storage: new InMemoryStorage(),
+                storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: new InMemorySnapshotRepository(
@@ -183,7 +183,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: new EventStore(
-                storage: new InMemoryStorage(),
+                storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: new InMemorySnapshotRepository(
@@ -209,7 +209,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: new EventStore(
-                storage: new InMemoryStorage(),
+                storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: $snapshotRepository,
@@ -242,7 +242,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: new EventStore(
-                storage: new InMemoryStorage(),
+                storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: $snapshotRepository,

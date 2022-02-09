@@ -20,7 +20,7 @@ class AggregateManager
     {
     }
 
-    public function addAggregate(Aggregate $aggregate): void
+    public function addAggregate(AggregateInterface $aggregate): void
     {
         $this->unitOfWork->insert($aggregate);
     }
@@ -73,7 +73,7 @@ class AggregateManager
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
         $this->snapshotRepository->saveSnapshot(
             $aggregate,
-            $this->unitOfWork->getVersion($aggregate)
+            $eventStream->endVersion
         );
 
         return $aggregate;

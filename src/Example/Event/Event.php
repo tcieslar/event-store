@@ -7,18 +7,18 @@ use Event\EventInterface;
 
 abstract class Event implements EventInterface
 {
-    public readonly string $type;
+    public readonly string $eventClass;
     public readonly DateTimeImmutable $occurredAt;
 
     public function __construct()
     {
-        $this->type = static::class;
+        $this->eventClass = static::class;
         $this->occurredAt = new DateTimeImmutable();
     }
 
-    public function getType(): string
+    public function getEventClass(): string
     {
-        return $this->type;
+        return $this->eventClass;
     }
 
     public function getOccurredAt(): DateTimeImmutable
