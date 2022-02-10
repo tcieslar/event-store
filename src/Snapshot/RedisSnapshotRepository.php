@@ -8,6 +8,9 @@ use Aggregate\Version;
 use Redis;
 use Utils\SerializerInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 class RedisSnapshotRepository implements SnapshotRepositoryInterface
 {
     private Redis $redis;

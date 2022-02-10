@@ -2,7 +2,7 @@
 
 namespace Projection;
 
-use Aggregate\AggregateIdInterface;
+use Event\EventCollection;
 use Event\EventInterface;
 use Storage\ProjectionStorageInterface;
 
@@ -21,6 +21,13 @@ class ProjectionManager
     {
         $this->projections = $projections;
         $this->projectionStorage = $projectionStorage;
+    }
+
+    public function projectViewsByEventCollection(EventCollection $eventCollection): void
+    {
+        foreach ($eventCollection  as $event) {
+            $this->projectViews($event);
+        }
     }
 
     public function projectViews(EventInterface $event): void

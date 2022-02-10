@@ -5,6 +5,7 @@ namespace Example\Projection;
 use Event\EventInterface;
 use Example\Event\CustomerCreatedEvent;
 use Example\Event\CustomerCredentialSetEvent;
+use Example\Event\OrderAddedEvent;
 use Projection\ProjectionInterface;
 use Projection\ViewInterface;
 
@@ -25,6 +26,12 @@ class CustomerProjection implements ProjectionInterface
             $view->name = $event->name;
             return $view;
         }
+
+        if ($event instanceof OrderAddedEvent) {
+            $view->orders ??= [];
+            $view->orders[] = $event->orderDescription;
+            return $view;
+        }
     }
 
     public function getViewClass(): string
@@ -37,7 +44,8 @@ class CustomerProjection implements ProjectionInterface
         return in_array($eventType,
             [
                 CustomerCreatedEvent::class,
-                CustomerCredentialSetEvent::class
+                CustomerCredentialSetEvent::class,
+                OrderAddedEvent::class
             ]);
     }
 }

@@ -53,7 +53,8 @@ class Customer extends Aggregate
         $this->apply(
             new OrderAddedEvent(
                 $this->customerId,
-                $order->getOrderId()
+                $order->getOrderId(),
+                $order->getDescription()
             )
         );
     }

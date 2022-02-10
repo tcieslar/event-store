@@ -25,16 +25,6 @@ class InMemorySnapshotRepository extends AbstractSnapshotRepository
     public function saveSnapshot(Aggregate $aggregate, Version $version): void
     {
         $idString = $aggregate->getId()->toString();
-        if (!isset($this->snapshots[$idString])) {
-            $this->store($version, $aggregate, $idString);
-            return;
-        }
-
-//        /** @var Version $currentVersion */
-//        $currentVersion = $this->snapshots[$idString]->version;
-//        if ($currentVersion->isHigherThen($version)) {
-//            return;
-//        }
 
         $this->store($version, $aggregate, $idString);
     }

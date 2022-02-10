@@ -11,7 +11,8 @@ class OrderAddedEvent extends Event
 {
     public function __construct(
         public readonly CustomerId $customerId,
-        public readonly OrderId $orderId
+        public readonly OrderId $orderId,
+        public readonly string $orderDescription
     )
     {
         parent::__construct();
