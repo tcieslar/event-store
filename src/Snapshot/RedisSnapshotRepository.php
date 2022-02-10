@@ -4,6 +4,7 @@ namespace Snapshot;
 
 use Aggregate\Aggregate;
 use Aggregate\AggregateIdInterface;
+use Aggregate\AggregateInterface;
 use Aggregate\Version;
 use Redis;
 use Utils\SerializerInterface;
@@ -39,7 +40,7 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
         return new Snapshot($aggregate, Version::createVersion((int)$array['v']));
     }
 
-    public function saveSnapshot(Aggregate $aggregate, Version $version): void
+    public function saveSnapshot(AggregateInterface $aggregate, Version $version): void
     {
         $key = $this->getKey($aggregate->getId());
         $this->redis->hMSet($key, [

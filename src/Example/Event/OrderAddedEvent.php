@@ -4,7 +4,6 @@ namespace Example\Event;
 
 use Aggregate\AggregateIdInterface;
 use Example\Aggregate\CustomerId;
-use Example\Event\Event;
 use Example\Aggregate\OrderId;
 
 class OrderAddedEvent extends Event

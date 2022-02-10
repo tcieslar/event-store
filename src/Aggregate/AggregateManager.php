@@ -48,7 +48,7 @@ class AggregateManager
     {
         $identityMap = $this->unitOfWork->getIdentityMap();
         foreach ($identityMap as $row) {
-            /** @var Aggregate $aggregate */
+            /** @var AggregateInterface $aggregate */
             $aggregate = $row['aggregate'];
             /** @var Version $version */
             $version = $row['version'];
@@ -79,7 +79,7 @@ class AggregateManager
         return $aggregate;
     }
 
-    private function loadFromSnapshot(AggregateIdInterface $aggregateId, Snapshot $snapshot): Aggregate
+    private function loadFromSnapshot(AggregateIdInterface $aggregateId, Snapshot $snapshot): AggregateInterface
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->version);
         $aggregate = $snapshot->aggregate;

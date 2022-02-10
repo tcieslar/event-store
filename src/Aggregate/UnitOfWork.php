@@ -46,7 +46,7 @@ class UnitOfWork
         $this->identityMap[$aggregate->getId()->toString()]['version'] = $version;
     }
 
-    public function get(AggregateIdInterface $id): ?Aggregate
+    public function get(AggregateIdInterface $id): ?AggregateInterface
     {
         if (!isset($this->identityMap[$id->toString()])) {
             return null;

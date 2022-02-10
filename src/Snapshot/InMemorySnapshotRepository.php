@@ -2,8 +2,8 @@
 
 namespace Snapshot;
 
-use Aggregate\Aggregate;
 use Aggregate\AggregateIdInterface;
+use Aggregate\AggregateInterface;
 use Aggregate\Version;
 use Utils\SerializerInterface;
 
@@ -22,14 +22,14 @@ class InMemorySnapshotRepository extends AbstractSnapshotRepository
         return $this->snapshots[$idString] ?? null;
     }
 
-    public function saveSnapshot(Aggregate $aggregate, Version $version): void
+    public function saveSnapshot(AggregateInterface $aggregate, Version $version): void
     {
         $idString = $aggregate->getId()->toString();
 
         $this->store($version, $aggregate, $idString);
     }
 
-    private function store(Version $version, Aggregate $aggregate, string $idString): void
+    private function store(Version $version, AggregateInterface $aggregate, string $idString): void
     {
         $this->snapshots[$idString] = new Snapshot($aggregate, $version);
     }

@@ -2,11 +2,11 @@
 
 namespace Utils;
 
-use Aggregate\Aggregate;
+use Aggregate\AggregateInterface;
 
 interface SerializerInterface
 {
-    public function serialize(Aggregate $aggregate): string;
+    public function serialize(AggregateInterface $aggregate): string;
 
-    public function unserialize(string $serializedAggregate): Aggregate;
+    public function unserialize(string $serializedAggregate): AggregateInterface;
 }

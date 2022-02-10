@@ -16,7 +16,7 @@ abstract class Repository
         return $this->aggregateManager->findAggregate(static::getAggregateClassName(), $aggregateId);
     }
 
-    public function add(Aggregate $aggregate): void
+    public function add(AggregateInterface $aggregate): void
     {
         $this->aggregateManager->addAggregate($aggregate);
     }
