@@ -1,11 +1,11 @@
 <?php
 
-namespace Example\Aggregate;
+namespace Tcieslar\EventStore\Example\Aggregate;
 
-use Aggregate\Aggregate;
-use Example\Event\CustomerCreatedEvent;
-use Example\Event\CustomerCredentialSetEvent;
-use Example\Event\OrderAddedEvent;
+use Tcieslar\EventStore\Aggregate\Aggregate;
+use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
+use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
+use Tcieslar\EventStore\Example\Event\OrderAddedEvent;
 
 class Customer extends Aggregate
 {

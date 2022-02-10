@@ -1,8 +1,8 @@
 <?php
 
-namespace Utils;
+namespace Tcieslar\EventStore\Utils;
 
-use Aggregate\AggregateInterface;
+use Tcieslar\EventStore\Aggregate\AggregateInterface;
 
 class PhpSerializer implements SerializerInterface
 {

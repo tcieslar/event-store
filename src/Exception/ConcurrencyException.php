@@ -1,11 +1,11 @@
 <?php
 
-namespace Exception;
+namespace Tcieslar\EventStore\Exception;
 
-use Aggregate\AggregateIdInterface;
-use Aggregate\Version;
-use Event\EventCollection;
 use Exception;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventStore\Event\EventCollection;
 
 class ConcurrencyException extends Exception
 {

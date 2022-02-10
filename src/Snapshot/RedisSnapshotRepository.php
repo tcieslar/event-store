@@ -1,13 +1,12 @@
 <?php
 
-namespace Snapshot;
+namespace Tcieslar\EventStore\Snapshot;
 
-use Aggregate\Aggregate;
-use Aggregate\AggregateIdInterface;
-use Aggregate\AggregateInterface;
-use Aggregate\Version;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\AggregateInterface;
+use Tcieslar\EventStore\Aggregate\Version;
 use Redis;
-use Utils\SerializerInterface;
+use Tcieslar\EventStore\Utils\SerializerInterface;
 
 /**
  * @codeCoverageIgnore

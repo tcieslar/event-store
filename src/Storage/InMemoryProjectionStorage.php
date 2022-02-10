@@ -1,9 +1,9 @@
 <?php
 
-namespace Storage;
+namespace Tcieslar\EventStore\Storage;
 
-use Aggregate\AggregateIdInterface;
-use Projection\ViewInterface;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Projection\ViewInterface;
 
 class InMemoryProjectionStorage implements ProjectionStorageInterface
 {

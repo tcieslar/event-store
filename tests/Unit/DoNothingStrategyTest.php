@@ -1,15 +1,15 @@
 <?php
 
-namespace Unit;
+namespace Tcieslar\EventStore\Tests\Unit;
 
-use ConcurrencyResolving\DoNothingStrategy;
-use Event\EventCollection;
-use Example\Aggregate\CustomerId;
-use Exception\ConcurrencyException;
+use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
+use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Exception\ConcurrencyException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\Uid\Uuid;
-use Aggregate\Version;
+use Tcieslar\EventStore\Aggregate\Version;
 
 class DoNothingStrategyTest extends TestCase
 {

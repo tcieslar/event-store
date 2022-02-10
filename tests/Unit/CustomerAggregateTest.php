@@ -1,11 +1,11 @@
 <?php
 
-namespace Unit;
+namespace Tcieslar\EventStore\Tests\Unit;
 
-use Example\Aggregate\Customer;
-use Example\Event\CustomerCreatedEvent;
-use Example\Event\CustomerCredentialSetEvent;
-use Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
+use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 

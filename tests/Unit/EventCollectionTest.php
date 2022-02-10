@@ -1,11 +1,11 @@
 <?php
 
-namespace Unit;
+namespace Tcieslar\EventStore\Tests\Unit;
 
-use Event\EventCollection;
-use Example\Aggregate\CustomerId;
-use Example\Event\CustomerCreatedEvent;
-use Example\Event\CustomerCredentialSetEvent;
+use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
+use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use PHPUnit\Framework\TestCase;
 
 class EventCollectionTest extends TestCase

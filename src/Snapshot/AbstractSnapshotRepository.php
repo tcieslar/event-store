@@ -1,8 +1,8 @@
 <?php
 
-namespace Snapshot;
+namespace Tcieslar\EventStore\Snapshot;
 
-use Utils\SerializerInterface;
+use Tcieslar\EventStore\Utils\SerializerInterface;
 
 abstract class AbstractSnapshotRepository implements SnapshotRepositoryInterface
 {

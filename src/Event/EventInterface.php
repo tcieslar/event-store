@@ -1,8 +1,8 @@
 <?php
 
-namespace Event;
+namespace Tcieslar\EventStore\Event;
 
-use Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use DateTimeImmutable;
 
 interface EventInterface

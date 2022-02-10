@@ -1,10 +1,10 @@
 <?php
 
-namespace Aggregate;
+namespace Tcieslar\EventStore\Aggregate;
 
-use Event\EventCollection;
-use Event\EventInterface;
-use Exception\EventAggregateMismatchException;
+use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\Event\EventInterface;
+use Tcieslar\EventStore\Exception\EventAggregateMismatchException;
 
 interface AggregateInterface
 {

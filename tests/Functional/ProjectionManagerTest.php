@@ -1,19 +1,19 @@
 <?php
 
-namespace Functional;
+namespace Tcieslar\EventStore\Tests\Functional;
 
-use Event\EventCollection;
-use Example\Aggregate\CustomerId;
-use Example\Aggregate\OrderId;
-use Example\Event\CustomerCreatedEvent;
-use Example\Event\CustomerCredentialSetEvent;
-use Example\Event\OrderAddedEvent;
-use Example\Projection\CustomerProjection;
-use Example\Projection\CustomerView;
-use Example\Projection\OrderProjection;
+use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
+use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
+use Tcieslar\EventStore\Example\Event\OrderAddedEvent;
+use Tcieslar\EventStore\Example\Projection\CustomerProjection;
+use Tcieslar\EventStore\Example\Projection\CustomerView;
+use Tcieslar\EventStore\Example\Projection\OrderProjection;
 use PHPUnit\Framework\TestCase;
-use Projection\ProjectionManager;
-use Storage\InMemoryProjectionStorage;
+use Tcieslar\EventStore\Projection\ProjectionManager;
+use Tcieslar\EventStore\Storage\InMemoryProjectionStorage;
 use Symfony\Component\Uid\Uuid;
 
 class ProjectionManagerTest extends TestCase

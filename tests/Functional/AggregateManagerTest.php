@@ -1,26 +1,26 @@
 <?php
 
-namespace Functional;
+namespace Tcieslar\EventStore\Tests\Functional;
 
-use Aggregate\AggregateManager;
-use ConcurrencyResolving\DoNothingStrategy;
-use Event\EventCollection;
-use EventStore;
-use Example\Aggregate\Customer;
-use Example\Aggregate\CustomerId;
-use Example\Aggregate\Order;
-use Example\Aggregate\OrderId;
-use Example\Event\CustomerCreatedEvent;
-use Example\Event\CustomerCredentialSetEvent;
-use EventPublisher\FileEventPublisher;
-use Exception\EventAggregateMismatchException;
-use Snapshot\InMemorySnapshotRepository;
-use Storage\InMemoryEventStorage;
-use Utils\PhpSerializer;
+use Tcieslar\EventStore\Aggregate\AggregateManager;
+use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
+use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Example\Aggregate\Order;
+use Tcieslar\EventStore\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
+use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
+use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
+use Tcieslar\EventStore\Exception\EventAggregateMismatchException;
+use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
+use Tcieslar\EventStore\Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
-use Aggregate\UnitOfWork;
-use Aggregate\Version;
+use Tcieslar\EventStore\Aggregate\UnitOfWork;
+use Tcieslar\EventStore\Aggregate\Version;
 
 class AggregateManagerTest extends TestCase
 {

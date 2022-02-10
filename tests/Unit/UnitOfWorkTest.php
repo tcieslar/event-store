@@ -1,18 +1,18 @@
 <?php
 
-namespace Unit;
+namespace Tcieslar\EventStore\Tests\Unit;
 
-use EventStore;
-use Example\Aggregate\Customer;
-use Example\Aggregate\CustomerId;
-use EventPublisher\FileEventPublisher;
-use Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
+use Tcieslar\EventStore\Storage\InMemoryEventStorage;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Uid\Uuid;
-use Aggregate\UnitOfWork;
-use Aggregate\Version;
+use Tcieslar\EventStore\Aggregate\UnitOfWork;
+use Tcieslar\EventStore\Aggregate\Version;
 
 /**
  * @group unit

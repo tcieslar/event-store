@@ -1,10 +1,10 @@
 <?php
 
-namespace Example\Projection;
+namespace Tcieslar\EventStore\Example\Projection;
 
-use Event\EventInterface;
-use Projection\ProjectionInterface;
-use Projection\ViewInterface;
+use Tcieslar\EventStore\Event\EventInterface;
+use Tcieslar\EventStore\Projection\ProjectionInterface;
+use Tcieslar\EventStore\Projection\ViewInterface;
 
 class OrderProjection implements ProjectionInterface
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Exception;
+namespace Tcieslar\EventStore\Exception;
 
-use Event\EventInterface;
+use Tcieslar\EventStore\Event\EventInterface;
 use Exception;
 use Throwable;
 

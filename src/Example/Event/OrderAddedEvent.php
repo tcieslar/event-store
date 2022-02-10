@@ -1,10 +1,10 @@
 <?php
 
-namespace Example\Event;
+namespace Tcieslar\EventStore\Example\Event;
 
-use Aggregate\AggregateIdInterface;
-use Example\Aggregate\CustomerId;
-use Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Example\Aggregate\OrderId;
 
 class OrderAddedEvent extends Event
 {

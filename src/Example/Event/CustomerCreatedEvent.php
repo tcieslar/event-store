@@ -1,9 +1,9 @@
 <?php
 
-namespace Example\Event;
+namespace Tcieslar\EventStore\Example\Event;
 
-use Aggregate\AggregateIdInterface;
-use Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 
 class CustomerCreatedEvent extends Event
 {

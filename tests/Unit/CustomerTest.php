@@ -1,9 +1,9 @@
 <?php
 
-namespace Unit;
+namespace Tcieslar\EventStore\Tests\Unit;
 
-use Example\Aggregate\Customer;
-use Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 

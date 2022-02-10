@@ -1,11 +1,11 @@
 <?php
 
-namespace Storage;
+namespace Tcieslar\EventStore\Storage;
 
-use Aggregate\AggregateIdInterface;
-use Aggregate\Version;
-use Event\EventCollection;
-use Event\EventStream;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\Event\EventStream;
 
 interface EventStorageInterface
 {

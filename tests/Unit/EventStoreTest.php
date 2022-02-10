@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit;
+namespace Tcieslar\EventStore\Tests\Unit;
 
 class EventStoreTest
 {

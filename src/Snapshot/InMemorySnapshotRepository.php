@@ -1,11 +1,11 @@
 <?php
 
-namespace Snapshot;
+namespace Tcieslar\EventStore\Snapshot;
 
-use Aggregate\AggregateIdInterface;
-use Aggregate\AggregateInterface;
-use Aggregate\Version;
-use Utils\SerializerInterface;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\AggregateInterface;
+use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventStore\Utils\SerializerInterface;
 
 class InMemorySnapshotRepository extends AbstractSnapshotRepository
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Example\Event;
+namespace Tcieslar\EventStore\Example\Event;
 
 use DateTimeImmutable;
-use Event\EventInterface;
+use Tcieslar\EventStore\Event\EventInterface;
 
 abstract class Event implements EventInterface
 {

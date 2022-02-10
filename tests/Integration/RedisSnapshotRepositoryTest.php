@@ -1,14 +1,14 @@
 <?php
 
-namespace Integration;
+namespace Tcieslar\EventStore\Tests\Integration;
 
-use Aggregate\Version;
-use Example\Aggregate\Customer;
-use Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
-use Snapshot\RedisSnapshotRepository;
+use Tcieslar\EventStore\Snapshot\RedisSnapshotRepository;
 use Symfony\Component\Uid\Uuid;
-use Utils\PhpSerializer;
+use Tcieslar\EventStore\Utils\PhpSerializer;
 
 /**
  * @group integration

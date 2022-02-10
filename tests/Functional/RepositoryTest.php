@@ -1,23 +1,23 @@
 <?php
 
-namespace Functional;
+namespace Tcieslar\EventStore\Tests\Functional;
 
-use Aggregate\AggregateManager;
-use ConcurrencyResolving\DoNothingStrategy;
-use EventStore;
-use Example\Aggregate\Customer;
-use Example\Aggregate\CustomerId;
-use Example\Aggregate\Order;
-use Example\Aggregate\OrderId;
-use Example\Repository\CustomerRepository;
-use Example\Repository\OrderRepository;
-use EventPublisher\FileEventPublisher;
-use Snapshot\InMemorySnapshotRepository;
-use Storage\InMemoryEventStorage;
-use Utils\PhpSerializer;
+use Tcieslar\EventStore\Aggregate\AggregateManager;
+use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
+use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Example\Aggregate\Order;
+use Tcieslar\EventStore\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Example\Repository\CustomerRepository;
+use Tcieslar\EventStore\Example\Repository\OrderRepository;
+use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
+use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
+use Tcieslar\EventStore\Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
-use Aggregate\UnitOfWork;
+use Tcieslar\EventStore\Aggregate\UnitOfWork;
 
 class RepositoryTest extends TestCase
 {

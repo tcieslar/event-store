@@ -1,10 +1,10 @@
 <?php
 
-namespace Example\Repository;
+namespace Tcieslar\EventStore\Example\Repository;
 
-use Example\Aggregate\Order;
-use Example\Aggregate\OrderId;
-use Aggregate\Repository;
+use Tcieslar\EventStore\Example\Aggregate\Order;
+use Tcieslar\EventStore\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Aggregate\Repository;
 
 class OrderRepository extends Repository
 {

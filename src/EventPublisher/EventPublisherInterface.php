@@ -1,8 +1,8 @@
 <?php
 
-namespace EventPublisher;
+namespace Tcieslar\EventStore\EventPublisher;
 
-use Event\EventCollection;
+use Tcieslar\EventStore\Event\EventCollection;
 
 interface EventPublisherInterface
 {

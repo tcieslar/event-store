@@ -1,8 +1,8 @@
 <?php
 
-namespace ConcurrencyResolving;
+namespace Tcieslar\EventStore\ConcurrencyResolving;
 
-use Exception\ConcurrencyException;
+use Tcieslar\EventStore\Exception\ConcurrencyException;
 
 interface ConcurrencyResolvingStrategyInterface
 {

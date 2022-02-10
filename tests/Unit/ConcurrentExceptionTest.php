@@ -1,13 +1,13 @@
 <?php
 
-namespace Unit;
+namespace Tcieslar\EventStore\Tests\Unit;
 
-use Exception\ConcurrencyException;
-use Event\EventCollection;
-use Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Exception\ConcurrencyException;
+use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
-use Aggregate\Version;
+use Tcieslar\EventStore\Aggregate\Version;
 
 class ConcurrentExceptionTest extends TestCase
 {

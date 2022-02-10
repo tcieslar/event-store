@@ -1,13 +1,13 @@
 <?php
 
-namespace Aggregate;
+namespace Tcieslar\EventStore\Aggregate;
 
 use RuntimeException;
-use Snapshot\Snapshot;
-use Exception\ConcurrencyException;
-use ConcurrencyResolving\ConcurrencyResolvingStrategyInterface;
-use EventStoreInterface;
-use Snapshot\SnapshotRepositoryInterface;
+use Tcieslar\EventStore\Snapshot\Snapshot;
+use Tcieslar\EventStore\Exception\ConcurrencyException;
+use Tcieslar\EventStore\ConcurrencyResolving\ConcurrencyResolvingStrategyInterface;
+use Tcieslar\EventStore\EventStoreInterface;
+use Tcieslar\EventStore\Snapshot\SnapshotRepositoryInterface;
 
 class AggregateManager
 {

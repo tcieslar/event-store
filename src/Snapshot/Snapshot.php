@@ -1,9 +1,9 @@
 <?php
 
-namespace Snapshot;
+namespace Tcieslar\EventStore\Snapshot;
 
-use Aggregate\AggregateInterface;
-use Aggregate\Version;
+use Tcieslar\EventStore\Aggregate\AggregateInterface;
+use Tcieslar\EventStore\Aggregate\Version;
 
 class Snapshot
 {

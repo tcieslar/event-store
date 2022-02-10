@@ -1,6 +1,6 @@
 <?php
 
-namespace Example\Projection;
+namespace Tcieslar\EventStore\Example\Projection;
 
 class OrderView
 {

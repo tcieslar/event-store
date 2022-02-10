@@ -1,10 +1,10 @@
 <?php
 
-namespace Projection;
+namespace Tcieslar\EventStore\Projection;
 
-use Event\EventCollection;
-use Event\EventInterface;
-use Storage\ProjectionStorageInterface;
+use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\Event\EventInterface;
+use Tcieslar\EventStore\Storage\ProjectionStorageInterface;
 
 class ProjectionManager
 {

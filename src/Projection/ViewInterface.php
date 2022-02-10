@@ -1,8 +1,8 @@
 <?php
 
-namespace Projection;
+namespace Tcieslar\EventStore\Projection;
 
-use Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 
 interface ViewInterface
 {

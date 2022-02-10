@@ -1,8 +1,8 @@
 <?php
 
-namespace Example\Aggregate;
+namespace Tcieslar\EventStore\Example\Aggregate;
 
-use Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 
 class CustomerId implements AggregateIdInterface
 {

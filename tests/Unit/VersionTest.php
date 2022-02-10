@@ -1,10 +1,10 @@
 <?php
 
-namespace Unit;
+namespace Tcieslar\EventStore\Tests\Unit;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Aggregate\Version;
+use Tcieslar\EventStore\Aggregate\Version;
 
 class VersionTest extends TestCase
 {

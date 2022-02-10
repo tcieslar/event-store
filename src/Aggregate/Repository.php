@@ -1,7 +1,6 @@
 <?php
 
-
-namespace Aggregate;
+namespace Tcieslar\EventStore\Aggregate;
 
 abstract class Repository
 {

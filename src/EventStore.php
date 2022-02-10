@@ -1,12 +1,14 @@
 <?php
 
-use Aggregate\AggregateIdInterface;
-use Aggregate\Version;
-use Event\EventCollection;
-use EventPublisher\EventPublisherInterface;
-use Event\EventStream;
-use Exception\ConcurrencyException;
-use Storage\EventStorageInterface;
+namespace Tcieslar\EventStore;
+
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\EventPublisher\EventPublisherInterface;
+use Tcieslar\EventStore\Event\EventStream;
+use Tcieslar\EventStore\Exception\ConcurrencyException;
+use Tcieslar\EventStore\Storage\EventStorageInterface;
 
 class EventStore implements EventStoreInterface
 {

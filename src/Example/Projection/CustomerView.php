@@ -1,9 +1,11 @@
 <?php
-namespace  Example\Projection;
-use Aggregate\AggregateIdInterface;
+
+namespace Tcieslar\EventStore\Example\Projection;
+
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use DateTimeImmutable;
-use Example\Aggregate\CustomerId;
-use Projection\ViewInterface;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Projection\ViewInterface;
 
 class CustomerView implements ViewInterface
 {

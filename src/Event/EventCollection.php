@@ -1,6 +1,6 @@
 <?php
 
-namespace Event;
+namespace Tcieslar\EventStore\Event;
 
 class EventCollection implements \Countable, \Iterator
 {

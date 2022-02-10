@@ -1,8 +1,8 @@
 <?php
 
-namespace Projection;
+namespace Tcieslar\EventStore\Projection;
 
-use Event\EventInterface;
+use Tcieslar\EventStore\Event\EventInterface;
 
 interface ProjectionInterface
 {

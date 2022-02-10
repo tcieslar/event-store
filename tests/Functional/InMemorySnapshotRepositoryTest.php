@@ -1,18 +1,18 @@
 <?php
 
-namespace Functional;
+namespace Tcieslar\EventStore\Tests\Functional;
 
-use EventStore;
-use Example\Aggregate\Customer;
-use Example\Aggregate\CustomerId;
-use EventPublisher\FileEventPublisher;
-use Snapshot\InMemorySnapshotRepository;
-use Storage\InMemoryEventStorage;
-use Utils\PhpSerializer;
+use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
+use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
+use Tcieslar\EventStore\Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Uid\Uuid;
-use Aggregate\Version;
+use Tcieslar\EventStore\Aggregate\Version;
 
 /**
  * @group unit

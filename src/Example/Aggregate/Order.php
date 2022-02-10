@@ -1,11 +1,11 @@
 <?php
 
-namespace Example\Aggregate;
+namespace Tcieslar\EventStore\Example\Aggregate;
 
-use Aggregate\Aggregate;
-use Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\Aggregate;
+use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use DateTimeImmutable;
-use Example\Event\OrderCreatedEvent;
+use Tcieslar\EventStore\Example\Event\OrderCreatedEvent;
 
 class Order extends Aggregate
 {
