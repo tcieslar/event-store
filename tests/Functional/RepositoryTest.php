@@ -4,7 +4,7 @@ namespace Tcieslar\EventStore\Tests\Functional;
 
 use Tcieslar\EventStore\Aggregate\AggregateManager;
 use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
-use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Example\Aggregate\Order;
@@ -13,7 +13,7 @@ use Tcieslar\EventStore\Example\Repository\CustomerRepository;
 use Tcieslar\EventStore\Example\Repository\OrderRepository;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
-use Tcieslar\EventStore\Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use Tcieslar\EventStore\Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -23,7 +23,7 @@ class RepositoryTest extends TestCase
 {
     public function testAdd(): void
     {
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
@@ -51,7 +51,7 @@ class RepositoryTest extends TestCase
         $unitOfWork = new UnitOfWork();
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
-            eventStore: new EventStore(
+            eventStore: new InMemoryEventStore(
                 storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
@@ -81,7 +81,7 @@ class RepositoryTest extends TestCase
 
     public function testScenario(): void
     {
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );

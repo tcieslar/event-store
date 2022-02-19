@@ -2,11 +2,11 @@
 
 namespace Tcieslar\EventStore\Tests\Unit;
 
-use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
-use Tcieslar\EventStore\Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -70,7 +70,7 @@ class UnitOfWorkTest extends TestCase
 
     public function testPersist(): void
     {
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );

@@ -1,12 +1,13 @@
 <?php
 
-namespace Tcieslar\EventStore\Storage;
+namespace Tcieslar\EventStore\Store;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventInterface;
 use Tcieslar\EventStore\Event\EventStream;
+use Tcieslar\EventStore\Store\EventStorageInterface;
 
 class InMemoryEventStorage implements EventStorageInterface
 {

@@ -1,16 +1,17 @@
 <?php
 
-namespace Tcieslar\EventStore;
+namespace Tcieslar\EventStore\Store;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\EventPublisher\EventPublisherInterface;
 use Tcieslar\EventStore\Event\EventStream;
+use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
-use Tcieslar\EventStore\Storage\EventStorageInterface;
+use Tcieslar\EventStore\Store\EventStorageInterface;
 
-class EventStore implements EventStoreInterface
+class InMemoryEventStore implements EventStoreInterface
 {
     public function __construct(
         private EventStorageInterface   $storage,

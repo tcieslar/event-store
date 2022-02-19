@@ -5,7 +5,7 @@ namespace Tcieslar\EventStore\Tests\Functional;
 use Tcieslar\EventStore\Aggregate\AggregateManager;
 use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
 use Tcieslar\EventStore\Event\EventCollection;
-use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Example\Aggregate\Order;
@@ -15,7 +15,7 @@ use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Exception\EventAggregateMismatchException;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
-use Tcieslar\EventStore\Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use Tcieslar\EventStore\Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -29,7 +29,7 @@ class AggregateManagerTest extends TestCase
         $customer = $this->createCustomer();
 
         // append To Stream
-        $eventStore = $this->createMock(EventStore::class);
+        $eventStore = $this->createMock(InMemoryEventStore::class);
         $eventStore->expects($this->once())
             ->method('appendToStream')
             ->with($this->equalTo($customer->getId()),
@@ -69,7 +69,7 @@ class AggregateManagerTest extends TestCase
         $unitOfWork = new UnitOfWork();
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
-            eventStore: new EventStore(
+            eventStore: new InMemoryEventStore(
                 storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
@@ -94,7 +94,7 @@ class AggregateManagerTest extends TestCase
     public function testMultiAggregateFlush(): void
     {
         $unitOfWork = new UnitOfWork();
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
@@ -146,7 +146,7 @@ class AggregateManagerTest extends TestCase
         $unitOfWork = new UnitOfWork();
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
-            eventStore: new EventStore(
+            eventStore: new InMemoryEventStore(
                 storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
@@ -182,7 +182,7 @@ class AggregateManagerTest extends TestCase
     {
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
-            eventStore: new EventStore(
+            eventStore: new InMemoryEventStore(
                 storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
@@ -208,7 +208,7 @@ class AggregateManagerTest extends TestCase
         );
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
-            eventStore: new EventStore(
+            eventStore: new InMemoryEventStore(
                 storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
@@ -241,7 +241,7 @@ class AggregateManagerTest extends TestCase
         );
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
-            eventStore: new EventStore(
+            eventStore: new InMemoryEventStore(
                 storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),

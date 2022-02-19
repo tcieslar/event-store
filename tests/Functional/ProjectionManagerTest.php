@@ -13,7 +13,7 @@ use Tcieslar\EventStore\Example\Projection\CustomerView;
 use Tcieslar\EventStore\Example\Projection\OrderProjection;
 use PHPUnit\Framework\TestCase;
 use Tcieslar\EventStore\Projection\ProjectionManager;
-use Tcieslar\EventStore\Storage\InMemoryProjectionStorage;
+use Tcieslar\EventStore\Projection\InMemoryProjectionStorage;
 use Symfony\Component\Uid\Uuid;
 
 class ProjectionManagerTest extends TestCase

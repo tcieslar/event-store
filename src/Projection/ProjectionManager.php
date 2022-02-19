@@ -4,7 +4,7 @@ namespace Tcieslar\EventStore\Projection;
 
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventInterface;
-use Tcieslar\EventStore\Storage\ProjectionStorageInterface;
+use Tcieslar\EventStore\Projection\ProjectionStorageInterface;
 
 class ProjectionManager
 {

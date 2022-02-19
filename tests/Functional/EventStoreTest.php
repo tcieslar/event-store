@@ -2,11 +2,11 @@
 
 namespace Tcieslar\EventStore\Tests\Functional;
 
-use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
-use Tcieslar\EventStore\Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Tcieslar\EventStore\Aggregate\Version;
@@ -19,7 +19,7 @@ class EventStoreTest extends TestCase
     public function testLoadEmpty(): void
     {
         $customerId = new CustomerId(Uuid::v4());
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
@@ -33,7 +33,7 @@ class EventStoreTest extends TestCase
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
 
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
@@ -49,7 +49,7 @@ class EventStoreTest extends TestCase
         // create
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
@@ -84,7 +84,7 @@ class EventStoreTest extends TestCase
         $customer->setName('test 3');
         $customer->setName('test 4');
 
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );

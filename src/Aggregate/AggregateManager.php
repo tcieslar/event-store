@@ -3,13 +3,14 @@
 namespace Tcieslar\EventStore\Aggregate;
 
 use RuntimeException;
+use Tcieslar\EventStore\AggregateManagerInterface;
 use Tcieslar\EventStore\Snapshot\Snapshot;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventStore\ConcurrencyResolving\ConcurrencyResolvingStrategyInterface;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Snapshot\SnapshotRepositoryInterface;
 
-class AggregateManager
+class AggregateManager implements AggregateManagerInterface
 {
     public function __construct(
         private UnitOfWork                            $unitOfWork,

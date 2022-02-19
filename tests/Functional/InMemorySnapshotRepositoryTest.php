@@ -2,12 +2,12 @@
 
 namespace Tcieslar\EventStore\Tests\Functional;
 
-use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
-use Tcieslar\EventStore\Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use Tcieslar\EventStore\Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -21,7 +21,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
 {
     public function testSave(): void
     {
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
@@ -51,7 +51,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
 
     public function testGet(): void
     {
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );

@@ -1,9 +1,8 @@
 <?php
 
-namespace Tcieslar\EventStore\Storage;
+namespace Tcieslar\EventStore\Projection;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
-use Tcieslar\EventStore\Projection\ViewInterface;
 
 interface ProjectionStorageInterface
 {
