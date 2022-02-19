@@ -33,7 +33,7 @@ class AggregateManagerTest extends TestCase
         $eventStore->expects($this->once())
             ->method('appendToStream')
             ->with($this->equalTo($customer->getId()),
-                $this->equalTo(Version::createZeroVersion()),
+                $this->equalTo(Version::zero()),
                 $this->callback(function (EventCollection $changes) {
                     return count($changes) === 2 &&
                         $changes->get(0) instanceof CustomerCreatedEvent &&
@@ -276,6 +276,32 @@ class AggregateManagerTest extends TestCase
         // load from snapshot with additional event
         $customer3 = $aggregateManager->findAggregate(Customer::class, $customer->getId());
         $this->assertEquals('test 3', $customer3->getName());
+    }
+
+    public function testTypeMismatchException(): void
+    {
+        $aggregateManager = new AggregateManager(
+            unitOfWork: new UnitOfWork(),
+            eventStore: new InMemoryEventStore(
+                storage: new InMemoryEventStorage(),
+                eventPublisher: new FileEventPublisher()
+            ),
+            snapshotRepository: new InMemorySnapshotRepository(
+                serializer: new PhpSerializer()
+            ),
+            concurrencyResolvingStrategy: new DoNothingStrategy()
+        );
+
+        // create Customer
+        $customer = $this->createCustomer();
+        $aggregateManager->addAggregate($customer);
+        $aggregateManager->flush();
+        $aggregateManager->reset();
+
+        $this->expectException(EventAggregateMismatchException::class);
+
+        // try to load Customer as Order
+        $aggregateManager->findAggregate(Order::class, $customer->getId());
     }
 
     private function createCustomer(): Customer

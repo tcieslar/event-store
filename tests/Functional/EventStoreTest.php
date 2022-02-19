@@ -37,7 +37,7 @@ class EventStoreTest extends TestCase
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, Version::zero(), $customer->recordedEvents());
 
         $eventStream = $eventStore->loadFromStream($customerId);
         $this->assertCount(2, $eventStream->events);
@@ -57,7 +57,7 @@ class EventStoreTest extends TestCase
         $this->assertEquals('test', $customer->getName());
 
         // insert
-        $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, Version::zero(), $customer->recordedEvents());
 
         // read
         $eventStream = $eventStore->loadFromStream($customerId);
@@ -88,9 +88,9 @@ class EventStoreTest extends TestCase
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, Version::zero(), $customer->recordedEvents());
 
-        $eventStream = $eventStore->loadFromStream($customerId, Version::createZeroVersion());
+        $eventStream = $eventStore->loadFromStream($customerId, Version::zero());
         $this->assertCount(5, $eventStream->events);
         $eventStream = $eventStore->loadFromStream($customerId, Version::createVersion(1));
         $this->assertCount(4, $eventStream->events);

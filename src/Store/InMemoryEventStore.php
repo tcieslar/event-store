@@ -14,7 +14,7 @@ use Tcieslar\EventStore\Store\EventStorageInterface;
 class InMemoryEventStore implements EventStoreInterface
 {
     public function __construct(
-        private EventStorageInterface   $storage,
+        private InMemoryEventStorage   $storage,
         private EventPublisherInterface $eventPublisher
     )
     {
@@ -39,18 +39,18 @@ class InMemoryEventStore implements EventStoreInterface
      */
     public function appendToStream(AggregateIdInterface $aggregateId, Version $expectedVersion, EventCollection $events): Version
     {
-        $version = $this->storage->getAggregateVersion($aggregateId);
-        if (!$version) {
+        $actualVersion = $this->storage->getAggregateVersion($aggregateId);
+        if (!$actualVersion) {
             $this->storage->createAggregate($aggregateId, $expectedVersion);
-            $version = $expectedVersion;
+            $actualVersion = $expectedVersion;
         }
 
-        if (!$expectedVersion->isEqual($version)) {
+        if (!$expectedVersion->isEqual($actualVersion)) {
             $newEventsStream = $this->loadFromStream($aggregateId, $expectedVersion);
-            throw new ConcurrencyException($aggregateId, $expectedVersion, $events, $newEventsStream->events);
+            throw new ConcurrencyException($aggregateId, $expectedVersion, $actualVersion, $events, $newEventsStream->events);
         }
 
-        $newVersion = $this->storage->storeEvents($aggregateId, $version, $events);
+        $newVersion = $this->storage->storeEvents($aggregateId, $actualVersion, $events);
         $this->eventPublisher->publish($events);
         return $newVersion;
     }

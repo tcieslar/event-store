@@ -79,7 +79,7 @@ class UnitOfWorkTest extends TestCase
         // create outside
         $customer = $this->createCustomer();
         $customerId = $customer->getId();
-        $eventStore->appendToStream($customer->getId(), Version::createZeroVersion(), $customer->recordedEvents());
+        $eventStore->appendToStream($customer->getId(), Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load and persist
@@ -122,12 +122,18 @@ class UnitOfWorkTest extends TestCase
     public function testVersionException(): void
     {
         $unitOfWork = new UnitOfWork();
-        // new customer
         $customer = $this->createCustomer();
         $this->assertNull($unitOfWork->get($customer->getId()));
-
         $this->expectException(InvalidArgumentException::class);
         $unitOfWork->getVersion($customer);
+    }
+
+    public function testGetVersion(): void
+    {
+        $unitOfWork = new UnitOfWork();
+        $customer = $this->createCustomer();
+        $unitOfWork->insert($customer);
+        $this->assertEquals(Version::zero(), $unitOfWork->getVersion($customer));
     }
 
     private function createCustomer(): Customer

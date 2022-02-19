@@ -18,7 +18,7 @@ class UnitOfWork
         $this->throwExceptionIfAggregateAlreadyExists($aggregate, 'Aggregate already exists.');
         $this->identityMap[$aggregate->getId()->toString()] =
             [
-                'version' => Version::createZeroVersion(),
+                'version' => Version::zero(),
                 'aggregate' => $aggregate
             ];
     }
@@ -53,6 +53,11 @@ class UnitOfWork
         }
 
         return $this->identityMap[$id->toString()]['aggregate'];
+    }
+
+    public function resetById(AggregateIdInterface $id): void
+    {
+        unset($this->identityMap[$id->toString()]);
     }
 
     public function reset(): void

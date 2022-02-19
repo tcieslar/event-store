@@ -18,6 +18,7 @@ class DoNothingStrategyTest extends TestCase
         $exception = new ConcurrencyException(
             new CustomerId(Uuid::v4()),
             Version::createVersion(123),
+            Version::createVersion(122),
             new EventCollection(),
             new EventCollection()
         );

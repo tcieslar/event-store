@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Aggregate;
 
 use RuntimeException;
 use Tcieslar\EventStore\AggregateManagerInterface;
+use Tcieslar\EventStore\Exception\AggregateReloadNeedException;
 use Tcieslar\EventStore\Snapshot\Snapshot;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventStore\ConcurrencyResolving\ConcurrencyResolvingStrategyInterface;
@@ -45,20 +47,26 @@ class AggregateManager implements AggregateManagerInterface
         $this->unitOfWork->reset();
     }
 
+    /**
+     * @throws AggregateReloadNeedException
+     */
     public function flush(): void
     {
         $identityMap = $this->unitOfWork->getIdentityMap();
         foreach ($identityMap as $row) {
             /** @var AggregateInterface $aggregate */
             $aggregate = $row['aggregate'];
-            /** @var Version $version */
-            $version = $row['version'];
+            /** @var Version $currentVersion */
+            $currentVersion = $row['version'];
             try {
-                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $version, $aggregate->recordedEvents());
+                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $currentVersion, $aggregate->recordedEvents());
                 $this->unitOfWork->changeVersion($aggregate, $newVersion);
                 $aggregate->removeRecordedEvents();
             } catch (ConcurrencyException $exception) {
+                $this->unitOfWork->resetById($aggregate->getId());
                 $this->concurrencyResolvingStrategy->resolve($exception);
+
+                throw new AggregateReloadNeedException($aggregate->getId());
             }
         }
     }
@@ -66,11 +74,7 @@ class AggregateManager implements AggregateManagerInterface
     private function loadFromStore(AggregateIdInterface $aggregateId, string $className): mixed
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId);
-
         $aggregate = $className::loadFromEvents($eventStream->events);
-        if (!($aggregate instanceof $className)) {
-            throw new RuntimeException('Aggregate type mismatch.');
-        }
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
         $this->snapshotRepository->saveSnapshot(
             $aggregate,

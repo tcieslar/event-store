@@ -31,7 +31,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         // create aggregate
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
-        $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load aggregate
@@ -61,7 +61,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         // create aggregate
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
-        $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load aggregate

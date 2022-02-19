@@ -12,7 +12,7 @@ class Version
     {
     }
 
-    public static function createZeroVersion(): self
+    public static function zero(): self
     {
         return self::createVersion(0);
     }

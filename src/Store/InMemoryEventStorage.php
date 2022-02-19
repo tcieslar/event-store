@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tcieslar\EventStore\Store;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
@@ -7,9 +9,8 @@ use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventInterface;
 use Tcieslar\EventStore\Event\EventStream;
-use Tcieslar\EventStore\Store\EventStorageInterface;
 
-class InMemoryEventStorage implements EventStorageInterface
+class InMemoryEventStorage
 {
     private array $aggregatesVersion = [];
     private array $events = [];
@@ -37,7 +38,7 @@ class InMemoryEventStorage implements EventStorageInterface
 
         return new EventStream(
             aggregateId: $aggregateId,
-            startVersion: Version::createZeroVersion(),
+            startVersion: Version::zero(),
             endVersion: $this->aggregatesVersion[$idString],
             events: new EventCollection($eventsColumn)
         );
