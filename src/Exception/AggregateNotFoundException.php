@@ -9,6 +9,6 @@ class AggregateNotFoundException extends \Exception
     public function __construct(
         public readonly AggregateIdInterface $aggregateId)
     {
-        parent::__construct();
+        parent::__construct('Aggregate not found.');
     }
 }

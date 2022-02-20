@@ -82,10 +82,6 @@ class AggregateManager implements AggregateManagerInterface
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId);
         $classFqcn = $eventStream->aggregateType->classFqcn;
-        if (!$classFqcn) {
-            throw new AggregateNotFoundException($aggregateId);
-        }
-
         $aggregate = $classFqcn::loadFromEvents($eventStream->events);
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
         $this->snapshotRepository->saveSnapshot(

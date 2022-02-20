@@ -9,6 +9,7 @@ use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\EventPublisher\EventPublisherInterface;
 use Tcieslar\EventStore\Event\EventStream;
 use Tcieslar\EventStore\EventStoreInterface;
+use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 
 class InMemoryEventStore implements EventStoreInterface
@@ -23,7 +24,7 @@ class InMemoryEventStore implements EventStoreInterface
     public function loadFromStream(AggregateIdInterface $aggregateId, ?Version $afterVersion = null): EventStream
     {
         if (!$this->storage->getAggregateVersion($aggregateId)) {
-            throw new \InvalidArgumentException('Aggregate not found.');
+            throw new AggregateNotFoundException($aggregateId);
         }
 
         if (!$afterVersion) {

@@ -7,10 +7,14 @@ use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventStream;
+use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 
 interface EventStoreInterface
 {
+    /**
+     * @throws AggregateNotFoundException
+     */
     public function loadFromStream(AggregateIdInterface $aggregateId, ?Version $afterVersion = null): EventStream;
 
     /**
