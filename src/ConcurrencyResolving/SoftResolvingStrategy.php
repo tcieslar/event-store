@@ -27,7 +27,7 @@ class SoftResolvingStrategy implements ConcurrencyResolvingStrategyInterface
             /** @var EventInterface $storedEvent */
             $store = true;
             foreach ($exception->storedEvents as $storedEvent) {
-                if ($storedEvent->getEventType() === $event->getEventType()) {
+                if ($storedEvent->getEventType()->equals($event->getEventType())) {
                     $store = false;
                     break;
                 }

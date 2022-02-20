@@ -3,6 +3,7 @@
 namespace Tcieslar\EventStore\Projection;
 
 use Tcieslar\EventStore\Event\EventInterface;
+use Tcieslar\EventStore\Event\EventType;
 
 interface ProjectionInterface
 {
@@ -10,5 +11,5 @@ interface ProjectionInterface
 
     public function getViewClass(): string;
 
-    public function consumeEvent(string $eventType): bool;
+    public function consumeEvent(EventType $eventType): bool;
 }

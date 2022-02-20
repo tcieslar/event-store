@@ -3,6 +3,7 @@
 namespace Tcieslar\EventStore\Example\Projection;
 
 use Tcieslar\EventStore\Event\EventInterface;
+use Tcieslar\EventStore\Event\EventType;
 use Tcieslar\EventStore\Projection\ProjectionInterface;
 use Tcieslar\EventStore\Projection\ViewInterface;
 
@@ -19,7 +20,7 @@ class OrderProjection implements ProjectionInterface
         return OrderView::class;
     }
 
-    public function consumeEvent(string $eventType): bool
+    public function consumeEvent(EventType $eventType): bool
     {
         return false;
     }

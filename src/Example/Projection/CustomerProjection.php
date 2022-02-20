@@ -3,6 +3,7 @@
 namespace Tcieslar\EventStore\Example\Projection;
 
 use Tcieslar\EventStore\Event\EventInterface;
+use Tcieslar\EventStore\Event\EventType;
 use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use Tcieslar\EventStore\Example\Event\OrderAddedEvent;
@@ -39,13 +40,13 @@ class CustomerProjection implements ProjectionInterface
         return CustomerView::class;
     }
 
-    public function consumeEvent(string $eventType): bool
+    public function consumeEvent(EventType $eventType): bool
     {
         return in_array($eventType,
             [
-                CustomerCreatedEvent::class,
-                CustomerCredentialSetEvent::class,
-                OrderAddedEvent::class
-            ]);
+                EventType::byEventClass(CustomerCreatedEvent::class),
+                EventType::byEventClass(CustomerCredentialSetEvent::class),
+                EventType::byEventClass(OrderAddedEvent::class
+                )]);
     }
 }

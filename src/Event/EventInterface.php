@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Event;
 
@@ -9,7 +9,7 @@ interface EventInterface
 {
     public function getAggregateId(): AggregateIdInterface;
 
-    public function getEventType(): string;
+    public function getEventType(): EventType;
 
     public function getOccurredAt(): DateTimeImmutable;
 }
