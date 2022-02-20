@@ -7,7 +7,7 @@ use JetBrains\PhpStorm\Pure;
 class EventType
 {
     public function __construct(
-        public readonly string $classFqcn
+        private string $classFqcn
     )
     {
     }
@@ -31,5 +31,10 @@ class EventType
     public function equals(self $eventType): bool
     {
         return $eventType->classFqcn === $this->classFqcn;
+    }
+
+    public function toString(): string
+    {
+        return $this->classFqcn;
     }
 }

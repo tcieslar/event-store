@@ -19,20 +19,30 @@ class DbalEventStoreTest extends TestCase
 {
     public function testAppendToStream(): void
     {
+        $customerId = new CustomerId(Uuid::v4());
+        $customer = Customer::create($customerId, 'name 1');
+
         $db = new DbalEventStore();
-        $aggregateId = new CustomerId(Uuid::v4());
-        $db->appendToStream($aggregateId,
-            new AggregateType(Customer::class),
+        $db->appendToStream($customer->getId(),
+            $customer->getType(),
             Version::zero(),
-            new EventCollection(
-                [new CustomerCreatedEvent($aggregateId)]
-            ));
+            $customer->recordedEvents()
+        );
     }
 
     public function testLoadStream(): void
     {
+        $customerId = new CustomerId(Uuid::v4());
+        $customer = Customer::create($customerId, 'name 1');
+
         $db = new DbalEventStore();
-        $db->loadFromStream(new CustomerId('4b6acb89-0871-4e40-844d-5345e56753ff'));
+        $db->appendToStream($customer->getId(),
+            $customer->getType(),
+            Version::zero(),
+            $customer->recordedEvents()
+        );
+
+        $eventStream = $db->loadFromStream($customerId);
     }
 
 }

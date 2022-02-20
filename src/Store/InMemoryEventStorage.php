@@ -85,7 +85,7 @@ class InMemoryEventStorage
                 'version' => (int)$newVersion->toString(),
                 'occurred_at' => $event->getOccurredAt(),
                 'event' => $event,
-                'type' => $event->getEventType()->classFqcn
+                'type' => $event->getEventType()->toString()
             ];
             $this->aggregatesVersion[$idString] = $newVersion;
         }

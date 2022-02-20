@@ -7,7 +7,7 @@ use JetBrains\PhpStorm\Pure;
 class AggregateType
 {
     public function __construct(
-        public readonly string $classFqcn
+        private string $classFqcn
     )
     {
     }
@@ -21,5 +21,10 @@ class AggregateType
     {
         $array = explode('\\', $this->classFqcn);
         return $array[count($array) - 1];
+    }
+
+    public function toString(): string
+    {
+        return $this->classFqcn;
     }
 }

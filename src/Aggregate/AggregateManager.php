@@ -81,7 +81,7 @@ class AggregateManager implements AggregateManagerInterface
     private function loadFromStore(AggregateIdInterface $aggregateId): mixed
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId);
-        $classFqcn = $eventStream->aggregateType->classFqcn;
+        $classFqcn = $eventStream->aggregateType->toString();
         $aggregate = $classFqcn::loadFromEvents($eventStream->events);
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
         $this->snapshotRepository->saveSnapshot(
