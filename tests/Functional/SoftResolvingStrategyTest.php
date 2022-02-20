@@ -102,7 +102,9 @@ class SoftResolvingStrategyTest extends TestCase
         try {
             $aggregateManager->flush();
         } catch (AggregateReloadNeedException $exception) {
-            $this->assertEquals($customer->getId(), $exception->aggregateId);
+            foreach ($exception->aggregatesIds as $aggregateId) {
+                $this->assertEquals($customer->getId(), $aggregateId);
+            }
         }
 
         $this->assertCount(4, $eventStore->getAllEvents());

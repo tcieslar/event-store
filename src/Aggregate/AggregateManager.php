@@ -52,11 +52,13 @@ class AggregateManager implements AggregateManagerInterface
     public function flush(): void
     {
         $identityMap = $this->unitOfWork->getIdentityMap();
+        $aggregatesIdsToReload = [];
         foreach ($identityMap as $row) {
             /** @var AggregateInterface $aggregate */
             $aggregate = $row['aggregate'];
             /** @var Version $currentVersion */
             $currentVersion = $row['version'];
+
             try {
                 $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $aggregate->getType(), $currentVersion, $aggregate->recordedEvents());
                 $this->unitOfWork->changeVersion($aggregate, $newVersion);
@@ -64,9 +66,12 @@ class AggregateManager implements AggregateManagerInterface
             } catch (ConcurrencyException $exception) {
                 $this->unitOfWork->resetById($aggregate->getId());
                 $this->concurrencyResolvingStrategy->resolve($exception);
-
-                throw new AggregateReloadNeedException($aggregate->getId());
+                $aggregatesIdsToReload[] = $aggregate->getId();
             }
+        }
+
+        if (!empty($aggregatesIdsToReload)) {
+            throw new AggregateReloadNeedException($aggregatesIdsToReload);
         }
     }
 
