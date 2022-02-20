@@ -59,9 +59,4 @@ class InMemoryEventStore implements EventStoreInterface
     {
         return $this->storage->getAllEvents();
     }
-
-    public function getAggregateType(AggregateIdInterface $aggregateId): ?AggregateType
-    {
-        return $this->storage->getAggregateType($aggregateId);
-    }
 }

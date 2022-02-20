@@ -36,7 +36,7 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
         }
         $aggregate = $this->serializer->unserialize($array['o']);
 
-        return new Snapshot($aggregate, Version::createVersion((int)$array['v']));
+        return new Snapshot($aggregate, Version::number((int)$array['v']));
     }
 
     public function saveSnapshot(AggregateInterface $aggregate, Version $version): void

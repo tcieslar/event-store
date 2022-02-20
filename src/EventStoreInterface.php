@@ -17,6 +17,4 @@ interface EventStoreInterface
      * @throws ConcurrencyException
      */
     public function appendToStream(AggregateIdInterface $aggregateId, AggregateType $aggregateType, Version $expectedVersion, EventCollection $events): Version;
-
-    public function getAggregateType(AggregateIdInterface $aggregateId): ?AggregateType;
 }

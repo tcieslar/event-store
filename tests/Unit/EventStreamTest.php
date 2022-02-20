@@ -2,8 +2,10 @@
 
 namespace Tcieslar\EventStore\Tests\Unit;
 
+use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventStream;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -15,8 +17,9 @@ class EventStreamTest extends TestCase
     {
         $eventStream = new EventStream(
             new CustomerId(Uuid::v4()),
-            Version::createVersion(1),
-            Version::createVersion(1),
+            new AggregateType(Customer::class),
+            Version::number(1),
+            Version::number(1),
             new EventCollection()
         );
 

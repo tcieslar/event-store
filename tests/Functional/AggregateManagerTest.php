@@ -35,7 +35,7 @@ class AggregateManagerTest extends TestCase
             ->method('appendToStream')
             ->with($this->equalTo($customer->getId()),
                 $this->equalTo(
-                    AggregateType::createByAggregate($customer)
+                    $customer->getType()
                 ),
                 $this->equalTo(Version::zero()),
                 $this->callback(function (EventCollection $changes) {
@@ -44,7 +44,7 @@ class AggregateManagerTest extends TestCase
                         $changes->get(1) instanceof CustomerCredentialSetEvent;
                 })
             )
-            ->willReturn(Version::createVersion(2));
+            ->willReturn(Version::number(2));
 
         $unitOfWork = new UnitOfWork();
         $aggregateManager = new AggregateManager(

@@ -58,8 +58,7 @@ class AggregateManager implements AggregateManagerInterface
             /** @var Version $currentVersion */
             $currentVersion = $row['version'];
             try {
-                $aggregateType = AggregateType::createByAggregate($aggregate);
-                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $aggregateType, $currentVersion, $aggregate->recordedEvents());
+                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $aggregate->getType(), $currentVersion, $aggregate->recordedEvents());
                 $this->unitOfWork->changeVersion($aggregate, $newVersion);
                 $aggregate->removeRecordedEvents();
             } catch (ConcurrencyException $exception) {
@@ -77,8 +76,7 @@ class AggregateManager implements AggregateManagerInterface
     private function loadFromStore(AggregateIdInterface $aggregateId): mixed
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId);
-        $aggregateType = $this->eventStore->getAggregateType($aggregateId);
-        $classFqcn = $aggregateType?->classFqcn;
+        $classFqcn = $eventStream->aggregateType->classFqcn;
         if (!$classFqcn) {
             throw new AggregateNotFoundException($aggregateId);
         }

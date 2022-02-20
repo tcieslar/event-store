@@ -15,6 +15,8 @@ interface AggregateInterface
 
     public function getId(): AggregateIdInterface;
 
+    public function getType(): AggregateType;
+
     public function recordedEvents(): EventCollection;
 
     public function removeRecordedEvents(): void;

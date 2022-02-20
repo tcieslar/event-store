@@ -18,8 +18,8 @@ class ConcurrentExceptionTest extends TestCase
         $exception = new ConcurrencyException(
             new CustomerId(Uuid::v4()),
             new AggregateType(Customer::class),
-            Version::createVersion(123),
-            Version::createVersion(123),
+            Version::number(123),
+            Version::number(123),
             new EventCollection(),
             new EventCollection()
         );

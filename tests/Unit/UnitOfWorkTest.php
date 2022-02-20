@@ -80,7 +80,7 @@ class UnitOfWorkTest extends TestCase
         // create outside
         $customer = $this->createCustomer();
         $customerId = $customer->getId();
-        $eventStore->appendToStream($customer->getId(), AggregateType::createByAggregate($customer), Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customer->getId(), $customer->getType(), Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load and persist
@@ -115,7 +115,7 @@ class UnitOfWorkTest extends TestCase
         $this->assertNotEmpty($identityMap);
         $this->assertEquals('0', $identityMap[$customerId->toString()]['version']->toString());
 
-        $unitOfWork->changeVersion($customer, Version::createVersion(123456));
+        $unitOfWork->changeVersion($customer, Version::number(123456));
         $identityMap = $reflectionProperty->getValue($unitOfWork);
         $this->assertEquals('123456', $identityMap[$customerId->toString()]['version']->toString());
     }

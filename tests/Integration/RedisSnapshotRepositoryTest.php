@@ -21,7 +21,7 @@ class RedisSnapshotRepositoryTest extends TestCase
             new PhpSerializer()
         );
         $customer = Customer::create(new CustomerId(Uuid::v4()), 'name');
-        $repository->saveSnapshot($customer, Version::createVersion(3));
+        $repository->saveSnapshot($customer, Version::number(3));
         $customer2 = $repository->getSnapshot($customer->getId());
 
         $this->assertEquals($customer, $customer2->aggregate);
