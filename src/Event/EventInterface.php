@@ -9,7 +9,7 @@ interface EventInterface
 {
     public function getAggregateId(): AggregateIdInterface;
 
-    public function getEventClass(): string;
+    public function getEventType(): string;
 
     public function getOccurredAt(): DateTimeImmutable;
 }

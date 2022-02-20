@@ -16,7 +16,7 @@ abstract class Event implements EventInterface
         $this->occurredAt = new DateTimeImmutable();
     }
 
-    public function getEventClass(): string
+    public function getEventType(): string
     {
         return $this->eventClass;
     }

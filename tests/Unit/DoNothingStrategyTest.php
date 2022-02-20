@@ -2,8 +2,10 @@
 
 namespace Tcieslar\EventStore\Tests\Unit;
 
+use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
 use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use PHPUnit\Framework\TestCase;
@@ -17,6 +19,7 @@ class DoNothingStrategyTest extends TestCase
     {
         $exception = new ConcurrencyException(
             new CustomerId(Uuid::v4()),
+            new AggregateType(Customer::class),
             Version::createVersion(123),
             Version::createVersion(122),
             new EventCollection(),

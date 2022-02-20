@@ -9,7 +9,7 @@ interface AggregateManagerInterface
 {
     public function addAggregate(AggregateInterface $aggregate): void;
 
-    public function findAggregate(string $className, AggregateIdInterface $aggregateId);
+    public function findAggregate(AggregateIdInterface $aggregateId): mixed;
 
     public function reset(): void;
 

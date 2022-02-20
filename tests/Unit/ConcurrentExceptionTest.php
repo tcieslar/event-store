@@ -2,6 +2,8 @@
 
 namespace Tcieslar\EventStore\Tests\Unit;
 
+use Tcieslar\EventStore\Aggregate\AggregateType;
+use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
@@ -15,6 +17,7 @@ class ConcurrentExceptionTest extends TestCase
     {
         $exception = new ConcurrencyException(
             new CustomerId(Uuid::v4()),
+            new AggregateType(Customer::class),
             Version::createVersion(123),
             Version::createVersion(123),
             new EventCollection(),

@@ -2,6 +2,7 @@
 
 namespace Tcieslar\EventStore\Tests\Unit;
 
+use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
@@ -79,7 +80,7 @@ class UnitOfWorkTest extends TestCase
         // create outside
         $customer = $this->createCustomer();
         $customerId = $customer->getId();
-        $eventStore->appendToStream($customer->getId(), Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customer->getId(), AggregateType::createByAggregate($customer), Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load and persist

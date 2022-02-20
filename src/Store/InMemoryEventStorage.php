@@ -1,10 +1,9 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Store;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventInterface;
@@ -13,6 +12,7 @@ use Tcieslar\EventStore\Event\EventStream;
 class InMemoryEventStorage
 {
     private array $aggregatesVersion = [];
+    private array $aggregatesType = [];
     private array $events = [];
 
     public function getAggregateVersion(AggregateIdInterface $aggregateId): ?Version
@@ -21,11 +21,18 @@ class InMemoryEventStorage
         return $this->aggregatesVersion[$idString] ?? null;
     }
 
-    public function createAggregate(AggregateIdInterface $aggregateId, Version $expectedVersion): void
+    public function getAggregateType(AggregateIdInterface $aggregateId): ?AggregateType
+    {
+        $idString = $aggregateId->toString();
+        return $this->aggregatesType[$idString] ?? null;
+    }
+
+    public function createAggregate(AggregateIdInterface $aggregateId, AggregateType $aggregateType, Version $expectedVersion): void
     {
         $idString = $aggregateId->toString();
 
         $this->aggregatesVersion[$idString] = $expectedVersion;
+        $this->aggregatesType[$idString] = $aggregateType;
         $this->events[$idString] = [];
     }
 
@@ -76,7 +83,7 @@ class InMemoryEventStorage
                 'version' => (int)$newVersion->toString(),
                 'occurred_at' => $event->getOccurredAt(),
                 'event' => $event,
-                'type' => $event->getEventClass()
+                'type' => $event->getEventType()
             ];
             $this->aggregatesVersion[$idString] = $newVersion;
         }

@@ -12,13 +12,11 @@ abstract class Repository
 
     public function findOne(AggregateIdInterface $aggregateId)
     {
-        return $this->aggregateManager->findAggregate(static::getAggregateClassName(), $aggregateId);
+        return $this->aggregateManager->findAggregate($aggregateId);
     }
 
     public function add(AggregateInterface $aggregate): void
     {
         $this->aggregateManager->addAggregate($aggregate);
     }
-
-    abstract protected static function getAggregateClassName(): string;
 }

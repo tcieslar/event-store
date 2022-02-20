@@ -2,6 +2,7 @@
 
 namespace Tcieslar\EventStore\Tests\Functional;
 
+use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
@@ -31,7 +32,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         // create aggregate
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
-        $eventStore->appendToStream($customerId, Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, AggregateType::createByAggregate($customer), Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load aggregate
@@ -61,7 +62,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         // create aggregate
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'test');
-        $eventStore->appendToStream($customerId, Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, AggregateType::createByAggregate($customer), Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load aggregate

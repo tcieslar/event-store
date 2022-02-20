@@ -12,9 +12,4 @@ class CustomerRepository extends Repository
     {
         return $this->findOne($customerId);
     }
-
-    protected static function getAggregateClassName(): string
-    {
-        return Customer::class;
-    }
 }
