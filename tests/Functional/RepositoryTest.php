@@ -14,7 +14,6 @@ use Tcieslar\EventStore\Example\Repository\OrderRepository;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;
-use Tcieslar\EventStore\Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Tcieslar\EventStore\Aggregate\UnitOfWork;
@@ -29,9 +28,7 @@ class RepositoryTest extends TestCase
         );
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
-            eventStore: $eventStore, snapshotRepository: new InMemorySnapshotRepository(
-            serializer: new PhpSerializer()
-        ),
+            eventStore: $eventStore, snapshotRepository: new InMemorySnapshotRepository(),
             concurrencyResolvingStrategy: new DoNothingStrategy()
         );
         $repository = new CustomerRepository($aggregateManager);
@@ -55,9 +52,7 @@ class RepositoryTest extends TestCase
                 storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
-            snapshotRepository: new InMemorySnapshotRepository(
-            serializer: new PhpSerializer()
-        ),
+            snapshotRepository: new InMemorySnapshotRepository(),
             concurrencyResolvingStrategy: new DoNothingStrategy()
         );
         $repository = new CustomerRepository($aggregateManager);
@@ -85,9 +80,7 @@ class RepositoryTest extends TestCase
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $snapshotRepository = new InMemorySnapshotRepository(
-            serializer: new PhpSerializer()
-        );
+        $snapshotRepository = new InMemorySnapshotRepository();
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: $eventStore,
@@ -100,7 +93,7 @@ class RepositoryTest extends TestCase
         $customerId = new CustomerId(Uuid::v4());
         $customer = Customer::create($customerId, 'name');
         $orderId = new OrderId(Uuid::v4());
-        $order = Order::create($orderId,'description');
+        $order = Order::create($orderId, 'description');
 
         $aggregateManager->addAggregate($customer);
         $aggregateManager->addAggregate($order);
@@ -112,7 +105,7 @@ class RepositoryTest extends TestCase
         $customer->addOrder($order);
         $aggregateManager->flush();
         $this->assertCount(4, $eventStore->getAllEvents());
-        $this->assertSame($customer->getOrderIds()[0],$orderId );
+        $this->assertSame($customer->getOrderIds()[0], $orderId);
 
         // get form repository
         $aggregateManager->reset();

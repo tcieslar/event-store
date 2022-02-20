@@ -7,13 +7,12 @@ use Tcieslar\EventStore\Aggregate\AggregateInterface;
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Utils\SerializerInterface;
 
-class InMemorySnapshotRepository extends AbstractSnapshotRepository
+class InMemorySnapshotRepository implements SnapshotRepositoryInterface
 {
     private array $snapshots = [];
 
-    public function __construct(SerializerInterface $serializer)
+    public function __construct()
     {
-        parent::__construct($serializer);
     }
 
     public function getSnapshot(AggregateIdInterface $aggregateId): ?Snapshot

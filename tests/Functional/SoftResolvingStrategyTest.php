@@ -17,7 +17,6 @@ use Tcieslar\EventStore\Exception\RealConcurrencyException;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
-use Tcieslar\EventStore\Utils\PhpSerializer;
 
 class SoftResolvingStrategyTest extends TestCase
 {
@@ -27,9 +26,7 @@ class SoftResolvingStrategyTest extends TestCase
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $snapshotRepository = new InMemorySnapshotRepository(
-            serializer: new PhpSerializer()
-        );
+        $snapshotRepository = new InMemorySnapshotRepository();
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: $eventStore,
@@ -68,9 +65,7 @@ class SoftResolvingStrategyTest extends TestCase
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $snapshotRepository = new InMemorySnapshotRepository(
-            serializer: new PhpSerializer()
-        );
+        $snapshotRepository = new InMemorySnapshotRepository();
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: $eventStore,

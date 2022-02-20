@@ -14,10 +14,8 @@ use Tcieslar\EventStore\Example\Aggregate\OrderId;
 use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
-use Tcieslar\EventStore\Exception\EventAggregateMismatchException;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;
-use Tcieslar\EventStore\Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Tcieslar\EventStore\Aggregate\UnitOfWork;
@@ -50,9 +48,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
             eventStore: $eventStore,
-            snapshotRepository: new InMemorySnapshotRepository(
-                serializer: new PhpSerializer()
-            ),
+            snapshotRepository: new InMemorySnapshotRepository(),
             concurrencyResolvingStrategy: new DoNothingStrategy()
         );
 
@@ -77,9 +73,7 @@ class AggregateManagerTest extends TestCase
                 storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
-            snapshotRepository: new InMemorySnapshotRepository(
-                serializer: new PhpSerializer()
-            ),
+            snapshotRepository: new InMemorySnapshotRepository(),
             concurrencyResolvingStrategy: new DoNothingStrategy()
         );
 
@@ -105,9 +99,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager = new AggregateManager(
             unitOfWork: $unitOfWork,
             eventStore: $eventStore,
-            snapshotRepository: new InMemorySnapshotRepository(
-                serializer: new PhpSerializer()
-            ),
+            snapshotRepository: new InMemorySnapshotRepository(),
             concurrencyResolvingStrategy: new DoNothingStrategy()
         );
 
@@ -154,9 +146,7 @@ class AggregateManagerTest extends TestCase
                 storage: new InMemoryEventStorage(),
                 eventPublisher: new FileEventPublisher()
             ),
-            snapshotRepository: new InMemorySnapshotRepository(
-                serializer: new PhpSerializer()
-            ),
+            snapshotRepository: new InMemorySnapshotRepository(),
             concurrencyResolvingStrategy: new DoNothingStrategy()
         );
 
@@ -207,9 +197,7 @@ class AggregateManagerTest extends TestCase
 
     public function testSnapshotLoad(): void
     {
-        $snapshotRepository = new InMemorySnapshotRepository(
-            serializer: new PhpSerializer()
-        );
+        $snapshotRepository = new InMemorySnapshotRepository();
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: new InMemoryEventStore(
@@ -240,9 +228,7 @@ class AggregateManagerTest extends TestCase
 
     public function testSnapshotLoadWithEventReply(): void
     {
-        $snapshotRepository = new InMemorySnapshotRepository(
-            serializer: new PhpSerializer()
-        );
+        $snapshotRepository = new InMemorySnapshotRepository();
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: new InMemoryEventStore(

@@ -5,6 +5,10 @@ namespace Tcieslar\EventStore\Store;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\TransactionIsolationLevel;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
@@ -14,19 +18,15 @@ use Tcieslar\EventStore\Event\EventStream;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
-use Tcieslar\EventStore\Utils\SerializerInterface;
 
 class DbalEventStore implements EventStoreInterface
 {
-
     private Connection $connection;
 
     /**
      * @throws \Doctrine\DBAL\Exception
      */
-    public function __construct(
-
-    )
+    public function __construct()
     {
         $this->connect();
     }
@@ -42,28 +42,46 @@ class DbalEventStore implements EventStoreInterface
      */
     public function loadFromStream(AggregateIdInterface $aggregateId, ?Version $afterVersion = null): EventStream
     {
-        $stmt = $this->connection->prepare('SELECT id FROM aggregate WHERE aggregate_id = ?;');
+        $stmt = $this->connection->prepare('SELECT id, type FROM aggregate WHERE aggregate_id = ?;');
         $stmt->bindValue(1, $aggregateId->toString());
         $result = $stmt->executeQuery();
 
-        if ($result->rowCount() !== 1) {
+        if (($aggregateRow = $result->fetchAssociative()) === false) {
             throw new AggregateNotFoundException($aggregateId);
         }
 
-        $stmt = $this->connection->prepare('SELECT * FROM event WHERE aggregate_id = ? ORDER BY version');
-        $stmt->bindValue(1, $aggregateId->toString());
-        $result = $stmt->executeQuery();
-        $resultAss = $result->fetchAssociative();
-        if (false !== $resultAss) {
-            foreach ($resultAss as $item) {
-                //var_dump($item);
-            }
+        if (!$afterVersion) {
+            $stmt = $this->connection->prepare('SELECT * FROM event WHERE aggregate_id = ? ORDER BY version');
+            $stmt->bindValue(1, $aggregateId->toString());
+
+        } else {
+            $stmt = $this->connection->prepare('SELECT * FROM event WHERE aggregate_id = ? AND version > ? ORDER BY version');
+            $stmt->bindValue(1, $aggregateId->toString());
+            $stmt->bindValue(2, $afterVersion->toString());
         }
 
-        /*if (!$afterVersion) {
-            return $this->storage->getEventStream($aggregateId);
-        }*/
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
 
+        $eventCollection = new EventCollection();
+        $result = $stmt->executeQuery();
+        $startVersion = null;
+        $endVersion = null;
+        while (($row = $result->fetchAssociative()) !== false) {
+            $startVersion = $startVersion ?? Version::number($row['version']);
+            $endVersion = Version::number($row['version']);
+            $event = $serializer->deserialize($row['data'], $row['type'], 'json');
+            $eventCollection->add($event);
+        }
+
+        return new EventStream(
+            aggregateId: $aggregateId,
+            aggregateType: new AggregateType($aggregateRow['type']),
+            startVersion: $startVersion,
+            endVersion: $endVersion,
+            events: $eventCollection
+        );
     }
 
     /**
@@ -71,6 +89,10 @@ class DbalEventStore implements EventStoreInterface
      */
     public function appendToStream(AggregateIdInterface $aggregateId, AggregateType $aggregateType, Version $expectedVersion, EventCollection $events): Version
     {
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+
         $this->connection->beginTransaction();
         try {
             $stmt = $this->connection->prepare('SELECT version FROM aggregate WHERE aggregate_id = ?;');
@@ -100,8 +122,10 @@ class DbalEventStore implements EventStoreInterface
 
                 $stmt = $this->connection->prepare('INSERT INTO event(id, aggregate_id, data, type, version, occurred_at) VALUES(nextval(\'event_id_seq\'), ?, ?, ?, ?, ?);');
                 $stmt->bindValue(1, $aggregateId->toString());
-                // todo:
-                $stmt->bindValue(2, json_encode($event, JSON_THROW_ON_ERROR));
+                $stmt->bindValue(2, $serializer->serialize(
+                    $event,
+                    'json',
+                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['eventType', 'occurredAt', 'aggregateId']]));
                 $stmt->bindValue(3, $event->getEventType()->toString());
                 $stmt->bindValue(4, $newVersion->toString());
                 $stmt->bindValue(5, $event->getOccurredAt()->format('Y-m-d H:i:s'));

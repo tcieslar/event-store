@@ -2,14 +2,12 @@
 
 namespace Tcieslar\EventStore\Tests\Functional;
 
-use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;
-use Tcieslar\EventStore\Utils\PhpSerializer;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Uid\Uuid;
@@ -26,8 +24,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $serializer = new PhpSerializer();
-        $snapshotRepository = new InMemorySnapshotRepository($serializer);
+        $snapshotRepository = new InMemorySnapshotRepository();
 
         // create aggregate
         $customerId = new CustomerId(Uuid::v4());
@@ -56,8 +53,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $serializer = new PhpSerializer();
-        $snapshotRepository = new InMemorySnapshotRepository($serializer);
+        $snapshotRepository = new InMemorySnapshotRepository();
 
         // create aggregate
         $customerId = new CustomerId(Uuid::v4());

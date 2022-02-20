@@ -6,7 +6,6 @@ use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateInterface;
 use Tcieslar\EventStore\Aggregate\Version;
 use Redis;
-use Tcieslar\EventStore\Utils\SerializerInterface;
 
 /**
  * @codeCoverageIgnore
@@ -14,11 +13,9 @@ use Tcieslar\EventStore\Utils\SerializerInterface;
 class RedisSnapshotRepository implements SnapshotRepositoryInterface
 {
     private Redis $redis;
-    private SerializerInterface $serializer;
 
-    public function __construct(SerializerInterface $serializer)
+    public function __construct()
     {
-        $this->serializer = $serializer;
         $this->connect();
     }
 
@@ -34,7 +31,7 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
         if (empty($array)) {
             return null;
         }
-        $aggregate = $this->serializer->unserialize($array['o']);
+        $aggregate = unserialize($array['o']);
 
         return new Snapshot($aggregate, Version::number((int)$array['v']));
     }
@@ -44,7 +41,7 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
         $key = $this->getKey($aggregate->getId());
         $this->redis->hMSet($key, [
             'v' => $version->toString(),
-            'o' => $this->serializer->serialize($aggregate)
+            'o' => serialize($aggregate)
         ]);
     }
 

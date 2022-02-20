@@ -46,7 +46,7 @@ class InMemoryEventStorage
         return new EventStream(
             aggregateId: $aggregateId,
             aggregateType: $this->getAggregateType($aggregateId),
-            startVersion: Version::zero(),
+            startVersion: Version::number(1),
             endVersion: $this->aggregatesVersion[$idString],
             events: new EventCollection($eventsColumn)
         );
