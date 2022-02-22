@@ -5,10 +5,8 @@ namespace Tcieslar\EventStore\Store;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\TransactionIsolationLevel;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
@@ -22,13 +20,15 @@ use Tcieslar\EventStore\Exception\ConcurrencyException;
 class DbalEventStore implements EventStoreInterface
 {
     private Connection $connection;
+    private SerializerInterface $serializer;
 
     /**
      * @throws \Doctrine\DBAL\Exception
      */
-    public function __construct()
+    public function __construct(string $url, SerializerInterface $serializer)
     {
-        $this->connect();
+        $this->connect($url);
+        $this->serializer = $serializer;
     }
 
     public function __destruct()
@@ -53,27 +53,23 @@ class DbalEventStore implements EventStoreInterface
         if (!$afterVersion) {
             $stmt = $this->connection->prepare('SELECT * FROM event WHERE aggregate_id = ? ORDER BY version');
             $stmt->bindValue(1, $aggregateId->toString());
-
+            $startVersion = Version::zero();
         } else {
             $stmt = $this->connection->prepare('SELECT * FROM event WHERE aggregate_id = ? AND version > ? ORDER BY version');
             $stmt->bindValue(1, $aggregateId->toString());
             $stmt->bindValue(2, $afterVersion->toString());
+            $startVersion = clone $afterVersion;
         }
-
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers, $encoders);
 
         $eventCollection = new EventCollection();
         $result = $stmt->executeQuery();
-        $startVersion = null;
         $endVersion = null;
         while (($row = $result->fetchAssociative()) !== false) {
-            $startVersion = $startVersion ?? Version::number($row['version']);
             $endVersion = Version::number($row['version']);
-            $event = $serializer->deserialize($row['data'], $row['type'], 'json');
+            $event = $this->serializer->deserialize($row['data'], $row['type'], 'json');
             $eventCollection->add($event);
         }
+        $endVersion ??= $startVersion;
 
         return new EventStream(
             aggregateId: $aggregateId,
@@ -89,17 +85,15 @@ class DbalEventStore implements EventStoreInterface
      */
     public function appendToStream(AggregateIdInterface $aggregateId, AggregateType $aggregateType, Version $expectedVersion, EventCollection $events): Version
     {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers, $encoders);
-
         $this->connection->beginTransaction();
         try {
             $stmt = $this->connection->prepare('SELECT version FROM aggregate WHERE aggregate_id = ?;');
             $stmt->bindValue(1, $aggregateId->toString());
             $result = $stmt->executeQuery();
 
-            $actualVersion = $result->fetchOne() ? Version::number($result->fetchOne()) : null;
+            $versionNumber = $result->fetchOne();
+            $actualVersion = $versionNumber!== false ? Version::number($versionNumber) : null;
+
             if (!$actualVersion) {
                 $stmt = $this->connection->prepare('INSERT INTO aggregate(id, aggregate_id, type, version) VALUES(nextval(\'aggregate_id_seq\'), ?, ?, ?);');
                 $stmt->bindValue(1, $aggregateId->toString());
@@ -115,14 +109,14 @@ class DbalEventStore implements EventStoreInterface
             }
             assert($actualVersion instanceof Version);
 
-            $newVersion = $actualVersion;
+            $newVersion = clone $actualVersion;
             /** @var EventInterface $event */
             foreach ($events->getAll() as $event) {
                 $newVersion = $newVersion->incremented();
 
                 $stmt = $this->connection->prepare('INSERT INTO event(id, aggregate_id, data, type, version, occurred_at) VALUES(nextval(\'event_id_seq\'), ?, ?, ?, ?, ?);');
                 $stmt->bindValue(1, $aggregateId->toString());
-                $stmt->bindValue(2, $serializer->serialize(
+                $stmt->bindValue(2, $this->serializer->serialize(
                     $event,
                     'json',
                     [AbstractNormalizer::IGNORED_ATTRIBUTES => ['eventType', 'occurredAt', 'aggregateId']]));
@@ -130,12 +124,13 @@ class DbalEventStore implements EventStoreInterface
                 $stmt->bindValue(4, $newVersion->toString());
                 $stmt->bindValue(5, $event->getOccurredAt()->format('Y-m-d H:i:s'));
                 $stmt->executeQuery();
-
-                $stmt = $this->connection->prepare('UPDATE aggregate SET version = ? WHERE aggregate_id = ?;');
-                $stmt->bindValue(1, $newVersion->toString());
-                $stmt->bindValue(2, $aggregateId->toString());
-
             }
+
+            $stmt3 = $this->connection->prepare('UPDATE aggregate SET version = ? WHERE aggregate_id = ?;');
+            $stmt3->bindValue(1, $newVersion->toString());
+            $stmt3->bindValue(2, $aggregateId->toString());
+            $stmt3->executeQuery();
+
             // $this->eventPublisher->publish($events);
             $this->connection->commit();
 
@@ -150,10 +145,10 @@ class DbalEventStore implements EventStoreInterface
     /**
      * @throws \Doctrine\DBAL\Exception
      */
-    private function connect(): void
+    private function connect(string $url): void
     {
         $connectionParams = array(
-            'url' => 'postgresql://postgres:test@localhost:5432/event_store?serverVersion=14&charset=utf8',
+            'url' => $url,
         );
         $this->connection = DriverManager::getConnection($connectionParams);
         $this->connection->setTransactionIsolation(TransactionIsolationLevel::REPEATABLE_READ);

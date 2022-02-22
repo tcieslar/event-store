@@ -14,9 +14,9 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
 {
     private Redis $redis;
 
-    public function __construct()
+    public function __construct(string $host, int $port = 6379)
     {
-        $this->connect();
+        $this->connect($host, $port);
     }
 
     public function __destruct()
@@ -50,11 +50,12 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
         return 'aggregate-' . $aggregateId->toString();
     }
 
-    private function connect(): void
+    private function connect(string $host, int $port): void
     {
         $this->redis = new Redis();
         $this->redis->connect(
-            '127.0.0.1'
+            $host,
+            $port
         );
     }
 

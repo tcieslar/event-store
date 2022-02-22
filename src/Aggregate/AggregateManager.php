@@ -27,6 +27,9 @@ class AggregateManager implements AggregateManagerInterface
         $this->unitOfWork->insert($aggregate);
     }
 
+    /**
+     * @throws AggregateNotFoundException
+     */
     public function findAggregate(AggregateIdInterface $aggregateId): mixed
     {
         if ($aggregate = $this->unitOfWork->get($aggregateId)) {
@@ -94,7 +97,7 @@ class AggregateManager implements AggregateManagerInterface
 
     private function loadFromSnapshot(AggregateIdInterface $aggregateId, Snapshot $snapshot): AggregateInterface
     {
-        $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->version);
+        $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->endVersion);
         $aggregate = $snapshot->aggregate;
         foreach ($eventStream->events as $event) {
             $aggregate->reply($event);

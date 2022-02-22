@@ -69,6 +69,6 @@ class InMemorySnapshotRepositoryTest extends TestCase
         $snapshotRepository->saveSnapshot($customer2, $eventStream->endVersion);
         $snapshot = $snapshotRepository->getSnapshot($customerId);
         $this->assertSame($snapshot->aggregate->getId(), $customerId);
-        $this->assertSame($snapshot->version, $eventStream->endVersion);
+        $this->assertSame($snapshot->endVersion, $eventStream->endVersion);
     }
 }

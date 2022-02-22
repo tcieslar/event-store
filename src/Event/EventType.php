@@ -12,7 +12,7 @@ class EventType
     {
     }
 
-    #[Pure] public static function byEvent(EventInterface $event): self
+    public static function byEvent(EventInterface $event): self
     {
         return new self(get_class($event));
     }

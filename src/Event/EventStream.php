@@ -19,7 +19,7 @@ class EventStream
     {
     }
 
-    #[Pure] public function isEmpty(): bool
+    public function isEmpty(): bool
     {
         return $this->events->count() === 0;
     }

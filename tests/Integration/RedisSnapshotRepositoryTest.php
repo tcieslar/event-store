@@ -14,9 +14,11 @@ use Symfony\Component\Uid\Uuid;
  */
 class RedisSnapshotRepositoryTest extends TestCase
 {
+    private static $redisHost = '127.0.0.1';
+
     public function testSaveAndGet(): void
     {
-        $repository = new RedisSnapshotRepository();
+        $repository = new RedisSnapshotRepository(self::$redisHost);
         $customer = Customer::create(new CustomerId(Uuid::v4()), 'name');
         $repository->saveSnapshot($customer, Version::number(3));
         $customer2 = $repository->getSnapshot($customer->getId());
@@ -26,7 +28,7 @@ class RedisSnapshotRepositoryTest extends TestCase
 
     public function testNotFound(): void
     {
-        $repository = new RedisSnapshotRepository();
+        $repository = new RedisSnapshotRepository(self::$redisHost);
 
         $customerId = new CustomerId(Uuid::v4());
         $customer2 = $repository->getSnapshot($customerId);

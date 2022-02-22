@@ -41,7 +41,7 @@ class EventStoreTest extends TestCase
 
         $eventStream = $eventStore->loadFromStream($customerId);
         $this->assertCount(2, $eventStream->events);
-        $this->assertEquals('1', $eventStream->startVersion->toString());
+        $this->assertEquals('0', $eventStream->startVersion->toString());
         $this->assertEquals('2', $eventStream->endVersion->toString());
     }
 

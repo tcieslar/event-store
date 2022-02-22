@@ -2,8 +2,6 @@
 
 namespace Tcieslar\EventStore\Aggregate;
 
-use JetBrains\PhpStorm\Pure;
-
 class AggregateType
 {
     public function __construct(
@@ -12,7 +10,7 @@ class AggregateType
     {
     }
 
-    #[Pure] public static function byAggregate(AggregateInterface $aggregate): self
+    public static function byAggregate(AggregateInterface $aggregate): self
     {
         return new self(get_class($aggregate));
     }

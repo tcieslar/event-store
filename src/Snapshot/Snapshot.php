@@ -9,7 +9,7 @@ class Snapshot
 {
     public function __construct(
         public readonly AggregateInterface $aggregate,
-        public readonly Version $version
+        public readonly Version $endVersion
     )
     {
     }
