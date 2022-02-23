@@ -2,8 +2,6 @@
 
 namespace Tcieslar\EventStore\Event;
 
-use JetBrains\PhpStorm\Pure;
-
 class EventType
 {
     public function __construct(

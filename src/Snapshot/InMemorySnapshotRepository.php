@@ -5,7 +5,6 @@ namespace Tcieslar\EventStore\Snapshot;
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateInterface;
 use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Utils\SerializerInterface;
 
 class InMemorySnapshotRepository implements SnapshotRepositoryInterface
 {
@@ -30,6 +29,6 @@ class InMemorySnapshotRepository implements SnapshotRepositoryInterface
 
     private function store(Version $version, AggregateInterface $aggregate, string $idString): void
     {
-        $this->snapshots[$idString] = new Snapshot($aggregate, $version);
+        $this->snapshots[$idString] = new Snapshot($aggregate, $version, new \DateTimeImmutable());
     }
 }

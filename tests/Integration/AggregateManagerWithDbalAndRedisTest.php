@@ -10,6 +10,7 @@ use Symfony\Component\Uid\Uuid;
 use Tcieslar\EventStore\Aggregate\AggregateManager;
 use Tcieslar\EventStore\Aggregate\UnitOfWork;
 use Tcieslar\EventStore\ConcurrencyResolving\SoftResolvingStrategy;
+use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Example\Repository\CustomerRepository;
@@ -30,7 +31,8 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
         $unitOfWork = new UnitOfWork();
-        $eventStore = new DbalEventStore(self::$postgreUrl, $serializer);
+        $eventPublisher = new FileEventPublisher();
+        $eventStore = new DbalEventStore(self::$postgreUrl, $serializer, $eventPublisher);
         $snapshotRepository = new RedisSnapshotRepository(self::$redisHost);
         $concurrencyResolvingStrategy = new SoftResolvingStrategy(
             eventStore: $eventStore

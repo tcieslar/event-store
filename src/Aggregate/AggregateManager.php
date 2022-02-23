@@ -5,7 +5,6 @@ namespace Tcieslar\EventStore\Aggregate;
 use Tcieslar\EventStore\AggregateManagerInterface;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\AggregateReloadNeedException;
-use Tcieslar\EventStore\Snapshot\Snapshot;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventStore\ConcurrencyResolving\ConcurrencyResolvingStrategyInterface;
 use Tcieslar\EventStore\EventStoreInterface;
@@ -30,18 +29,17 @@ class AggregateManager implements AggregateManagerInterface
     /**
      * @throws AggregateNotFoundException
      */
-    public function findAggregate(AggregateIdInterface $aggregateId): mixed
+    public function findAggregate(AggregateIdInterface $aggregateId): ?AggregateInterface
     {
-        if ($aggregate = $this->unitOfWork->get($aggregateId)) {
+        if ($aggregate = $this->loadFromMemory($aggregateId)) {
             return $aggregate;
         }
 
-        $snapshot = $this->snapshotRepository->getSnapshot($aggregateId);
-        if (!$snapshot) {
-            return $this->loadFromStore($aggregateId);
+        if ($aggregate = $this->loadFromSnapshot($aggregateId)) {
+            return $aggregate;
         }
 
-        return $this->loadFromSnapshot($aggregateId, $snapshot);
+        return $this->loadFromStore($aggregateId);
     }
 
     public function reset(): void
@@ -78,10 +76,15 @@ class AggregateManager implements AggregateManagerInterface
         }
     }
 
+    private function loadFromMemory(AggregateIdInterface $aggregateId): ?AggregateInterface
+    {
+        return $this->unitOfWork->get($aggregateId);
+    }
+
     /**
      * @throws AggregateNotFoundException
      */
-    private function loadFromStore(AggregateIdInterface $aggregateId): mixed
+    private function loadFromStore(AggregateIdInterface $aggregateId): AggregateInterface
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId);
         $classFqcn = $eventStream->aggregateType->toString();
@@ -95,8 +98,13 @@ class AggregateManager implements AggregateManagerInterface
         return $aggregate;
     }
 
-    private function loadFromSnapshot(AggregateIdInterface $aggregateId, Snapshot $snapshot): AggregateInterface
+    private function loadFromSnapshot(AggregateIdInterface $aggregateId): ?AggregateInterface
     {
+        $snapshot = $this->snapshotRepository->getSnapshot($aggregateId);
+        if (!$snapshot) {
+            return null;
+        }
+
         $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->endVersion);
         $aggregate = $snapshot->aggregate;
         foreach ($eventStream->events as $event) {

@@ -12,36 +12,47 @@ use Redis;
  */
 class RedisSnapshotRepository implements SnapshotRepositoryInterface
 {
-    private Redis $redis;
+    private ?Redis $redis = null;
 
-    public function __construct(string $host, int $port = 6379)
+    public function __construct(
+        private string $host,
+        private int    $port = 6379
+    )
     {
-        $this->connect($host, $port);
     }
 
     public function __destruct()
     {
-        $this->disconnect();
+        $this->redis?->close();
     }
 
     public function getSnapshot(AggregateIdInterface $aggregateId): ?Snapshot
     {
+        if (!$this->redis) {
+            $this->connect();
+        }
         $key = $this->getKey($aggregateId);
-        $array = $this->redis->hGetAll($key);
-        if (empty($array)) {
+        /** @var array $data */
+        $data = $this->redis->hGetAll($key);
+        if (!isset($data['o'], $data['t'], $data['v'])) {
             return null;
         }
-        $aggregate = unserialize($array['o']);
+        $aggregate = unserialize($data["o"], ['allowed_classes' => true]);
+        $createdAt = (new \DateTimeImmutable)->setTimestamp($data['t']);
 
-        return new Snapshot($aggregate, Version::number((int)$array['v']));
+        return new Snapshot($aggregate, Version::number((int)$data['v']), $createdAt);
     }
 
     public function saveSnapshot(AggregateInterface $aggregate, Version $version): void
     {
+        if (!$this->redis) {
+            $this->connect();
+        }
         $key = $this->getKey($aggregate->getId());
         $this->redis->hMSet($key, [
             'v' => $version->toString(),
-            'o' => serialize($aggregate)
+            'o' => serialize($aggregate),
+            't' => (new \DateTimeImmutable())->getTimestamp()
         ]);
     }
 
@@ -50,17 +61,12 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
         return 'aggregate-' . $aggregateId->toString();
     }
 
-    private function connect(string $host, int $port): void
+    private function connect(): void
     {
         $this->redis = new Redis();
         $this->redis->connect(
-            $host,
-            $port
+            $this->host,
+            $this->port
         );
-    }
-
-    private function disconnect(): void
-    {
-        $this->redis->close();
     }
 }

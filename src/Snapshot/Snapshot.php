@@ -9,7 +9,8 @@ class Snapshot
 {
     public function __construct(
         public readonly AggregateInterface $aggregate,
-        public readonly Version $endVersion
+        public readonly Version $endVersion,
+        public readonly \DateTimeImmutable $createdAt
     )
     {
     }

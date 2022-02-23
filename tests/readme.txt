@@ -1,2 +1,2 @@
 ./vendor/bin/phpunit tests --colors --exclude-group integration --coverage-html tests/coverage --coverage-filter ./src
-./vendor/bin/psalm
+./vendor/bin/psalm --no-cache

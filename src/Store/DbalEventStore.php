@@ -13,27 +13,29 @@ use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventInterface;
 use Tcieslar\EventStore\Event\EventStream;
+use Tcieslar\EventStore\EventPublisher\EventPublisherInterface;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 
 class DbalEventStore implements EventStoreInterface
 {
-    private Connection $connection;
-    private SerializerInterface $serializer;
+    private ?Connection $connection = null;
 
     /**
      * @throws \Doctrine\DBAL\Exception
      */
-    public function __construct(string $url, SerializerInterface $serializer)
+    public function __construct(
+        private string      $url,
+        private SerializerInterface $serializer,
+        private EventPublisherInterface $eventPublisher
+    )
     {
-        $this->connect($url);
-        $this->serializer = $serializer;
     }
 
     public function __destruct()
     {
-        $this->connection->close();
+        $this->connection?->close();
     }
 
     /**
@@ -42,6 +44,9 @@ class DbalEventStore implements EventStoreInterface
      */
     public function loadFromStream(AggregateIdInterface $aggregateId, ?Version $afterVersion = null): EventStream
     {
+        if (!$this->connection) {
+            $this->connect();
+        }
         $stmt = $this->connection->prepare('SELECT id, type FROM aggregate WHERE aggregate_id = ?;');
         $stmt->bindValue(1, $aggregateId->toString());
         $result = $stmt->executeQuery();
@@ -49,7 +54,6 @@ class DbalEventStore implements EventStoreInterface
         if (($aggregateRow = $result->fetchAssociative()) === false) {
             throw new AggregateNotFoundException($aggregateId);
         }
-
         if (!$afterVersion) {
             $stmt = $this->connection->prepare('SELECT * FROM event WHERE aggregate_id = ? ORDER BY version');
             $stmt->bindValue(1, $aggregateId->toString());
@@ -85,6 +89,9 @@ class DbalEventStore implements EventStoreInterface
      */
     public function appendToStream(AggregateIdInterface $aggregateId, AggregateType $aggregateType, Version $expectedVersion, EventCollection $events): Version
     {
+        if (!$this->connection) {
+            $this->connect();
+        }
         $this->connection->beginTransaction();
         try {
             $stmt = $this->connection->prepare('SELECT version FROM aggregate WHERE aggregate_id = ?;');
@@ -92,14 +99,14 @@ class DbalEventStore implements EventStoreInterface
             $result = $stmt->executeQuery();
 
             $versionNumber = $result->fetchOne();
-            $actualVersion = $versionNumber!== false ? Version::number($versionNumber) : null;
+            $actualVersion = $versionNumber !== false ? Version::number($versionNumber) : null;
 
             if (!$actualVersion) {
-                $stmt = $this->connection->prepare('INSERT INTO aggregate(id, aggregate_id, type, version) VALUES(nextval(\'aggregate_id_seq\'), ?, ?, ?);');
-                $stmt->bindValue(1, $aggregateId->toString());
-                $stmt->bindValue(2, $aggregateType->toString());
-                $stmt->bindValue(3, $expectedVersion->toString());
-                $stmt->executeQuery();
+                $stmt2 = $this->connection->prepare('INSERT INTO aggregate(id, aggregate_id, type, version) VALUES(nextval(\'aggregate_id_seq\'), ?, ?, ?);');
+                $stmt2->bindValue(1, $aggregateId->toString());
+                $stmt2->bindValue(2, $aggregateType->toString());
+                $stmt2->bindValue(3, $expectedVersion->toString());
+                $stmt2->executeQuery();
                 $actualVersion = $expectedVersion;
             }
 
@@ -107,37 +114,35 @@ class DbalEventStore implements EventStoreInterface
                 $newEventsStream = $this->loadFromStream($aggregateId, $expectedVersion);
                 throw new ConcurrencyException($aggregateId, $aggregateType, $expectedVersion, $actualVersion, $events, $newEventsStream->events);
             }
-            assert($actualVersion instanceof Version);
 
             $newVersion = clone $actualVersion;
             /** @var EventInterface $event */
             foreach ($events->getAll() as $event) {
                 $newVersion = $newVersion->incremented();
 
-                $stmt = $this->connection->prepare('INSERT INTO event(id, aggregate_id, data, type, version, occurred_at) VALUES(nextval(\'event_id_seq\'), ?, ?, ?, ?, ?);');
-                $stmt->bindValue(1, $aggregateId->toString());
-                $stmt->bindValue(2, $this->serializer->serialize(
+                $stmt3 = $this->connection->prepare('INSERT INTO event(id, aggregate_id, data, type, version, occurred_at) VALUES(nextval(\'event_id_seq\'), ?, ?, ?, ?, ?);');
+                $stmt3->bindValue(1, $aggregateId->toString());
+                $stmt3->bindValue(2, $this->serializer->serialize(
                     $event,
                     'json',
                     [AbstractNormalizer::IGNORED_ATTRIBUTES => ['eventType', 'occurredAt', 'aggregateId']]));
-                $stmt->bindValue(3, $event->getEventType()->toString());
-                $stmt->bindValue(4, $newVersion->toString());
-                $stmt->bindValue(5, $event->getOccurredAt()->format('Y-m-d H:i:s'));
-                $stmt->executeQuery();
+                $stmt3->bindValue(3, $event->getEventType()->toString());
+                $stmt3->bindValue(4, $newVersion->toString());
+                $stmt3->bindValue(5, $event->getOccurredAt()->format('Y-m-d H:i:s'));
+                $stmt3->executeQuery();
             }
 
-            $stmt3 = $this->connection->prepare('UPDATE aggregate SET version = ? WHERE aggregate_id = ?;');
-            $stmt3->bindValue(1, $newVersion->toString());
-            $stmt3->bindValue(2, $aggregateId->toString());
-            $stmt3->executeQuery();
-
-            // $this->eventPublisher->publish($events);
+            $stmt4 = $this->connection->prepare('UPDATE aggregate SET version = ? WHERE aggregate_id = ?;');
+            $stmt4->bindValue(1, $newVersion->toString());
+            $stmt4->bindValue(2, $aggregateId->toString());
+            $stmt4->executeQuery();
             $this->connection->commit();
 
         } catch (\Throwable $throwable) {
             $this->connection->rollBack();
             throw $throwable;
         }
+        $this->eventPublisher->publish($events);
 
         return $newVersion;
     }
@@ -145,10 +150,10 @@ class DbalEventStore implements EventStoreInterface
     /**
      * @throws \Doctrine\DBAL\Exception
      */
-    private function connect(string $url): void
+    private function connect(): void
     {
         $connectionParams = array(
-            'url' => $url,
+            'url' => $this->url,
         );
         $this->connection = DriverManager::getConnection($connectionParams);
         $this->connection->setTransactionIsolation(TransactionIsolationLevel::REPEATABLE_READ);
