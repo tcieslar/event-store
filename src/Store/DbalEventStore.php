@@ -70,7 +70,7 @@ class DbalEventStore implements EventStoreInterface
         $endVersion = null;
         while (($row = $result->fetchAssociative()) !== false) {
             $endVersion = Version::number($row['version']);
-            $event = $this->serializer->deserialize($row['data'], $row['type'], 'json');
+            $event = $row['type']::denormalize(json_decode($row['data'], true));
             $eventCollection->add($event);
         }
         $endVersion ??= $startVersion;
@@ -120,15 +120,16 @@ class DbalEventStore implements EventStoreInterface
             foreach ($events->getAll() as $event) {
                 $newVersion = $newVersion->incremented();
 
-                $stmt3 = $this->connection->prepare('INSERT INTO event(id, aggregate_id, data, type, version, occurred_at) VALUES(nextval(\'event_id_seq\'), ?, ?, ?, ?, ?);');
-                $stmt3->bindValue(1, $aggregateId->toString());
-                $stmt3->bindValue(2, $this->serializer->serialize(
-                    $event,
+                $stmt3 = $this->connection->prepare('INSERT INTO event(id, event_id, aggregate_id, data, type, version, occurred_at) VALUES(nextval(\'event_id_seq\'), ?, ?, ?, ?, ?, ?);');
+                $stmt3->bindValue(1, $event->getEventId()->toString());
+                $stmt3->bindValue(2, $aggregateId->toString());
+                $stmt3->bindValue(3, $this->serializer->serialize(
+                    $event->normalize(),
                     'json',
-                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['eventType', 'occurredAt', 'aggregateId']]));
-                $stmt3->bindValue(3, $event->getEventType()->toString());
-                $stmt3->bindValue(4, $newVersion->toString());
-                $stmt3->bindValue(5, $event->getOccurredAt()->format('Y-m-d H:i:s'));
+                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['occurredAt', 'aggregateId']]));
+                $stmt3->bindValue(4, get_class($event));
+                $stmt3->bindValue(5, $newVersion->toString());
+                $stmt3->bindValue(6, $event->getOccurredAt()->format('Y-m-d H:i:s'));
                 $stmt3->executeQuery();
             }
 
@@ -180,6 +181,7 @@ WHERE  table_name = \'event\' OR table_name = \'aggregate\'
         $this->connection->executeQuery('CREATE TABLE event
 (
     id           INT                            NOT NULL,
+    event_id     UUID                           NOT NULL,
     aggregate_id UUID                           NOT NULL,
     data         JSON                           NOT NULL,
     type         VARCHAR(255)                   NOT NULL,

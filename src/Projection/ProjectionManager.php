@@ -33,7 +33,7 @@ class ProjectionManager
     public function projectViews(EventInterface $event): void
     {
         foreach ($this->projections as $projection) {
-            if (!$projection->consumeEvent($event->getEventType())) {
+            if (!$projection->consumeEvent($event)) {
                 continue;
             }
 

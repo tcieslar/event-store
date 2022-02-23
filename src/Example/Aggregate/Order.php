@@ -53,8 +53,8 @@ class Order extends Aggregate
 
     protected function whenOrderCreatedEvent(OrderCreatedEvent $event): void
     {
-        $this->orderId = $event->orderId;
-        $this->description = $event->description;
-        $this->createdAt = $event->occurredAt;
+        $this->orderId = $event->getOrderId();
+        $this->description = $event->getDescription();
+        $this->createdAt = $event->getOccurredAt();
     }
 }

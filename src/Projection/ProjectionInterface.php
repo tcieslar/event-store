@@ -11,5 +11,5 @@ interface ProjectionInterface
 
     public function getViewClass(): string;
 
-    public function consumeEvent(EventType $eventType): bool;
+    public function consumeEvent(EventInterface $event): bool;
 }

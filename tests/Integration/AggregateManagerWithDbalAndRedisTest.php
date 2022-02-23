@@ -13,6 +13,8 @@ use Tcieslar\EventStore\ConcurrencyResolving\SoftResolvingStrategy;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Example\Aggregate\Order;
+use Tcieslar\EventStore\Example\Aggregate\OrderId;
 use Tcieslar\EventStore\Example\Repository\CustomerRepository;
 use Tcieslar\EventStore\Snapshot\RedisSnapshotRepository;
 use Tcieslar\EventStore\Store\DbalEventStore;
@@ -64,6 +66,7 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
 
         // add event
         $customer3->setName('name 2');
+        $customer3->addOrder(Order::create(new OrderId(Uuid::v4()), 'test'));
         $aggregateManager->flush();
         $aggregateManager->reset();
 

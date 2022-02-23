@@ -3,22 +3,62 @@
 namespace Tcieslar\EventStore\Example\Event;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
+use Tcieslar\EventStore\Event\EventId;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Example\Aggregate\OrderId;
 
 class OrderAddedEvent extends Event
 {
     public function __construct(
-        public readonly CustomerId $customerId,
-        public readonly OrderId $orderId,
-        public readonly string $orderDescription
+        private CustomerId  $customerId,
+        private OrderId     $orderId,
+        private string      $orderDescription,
+        ?EventId            $eventId = null,
+        ?\DateTimeImmutable $occurredAt = null
     )
     {
-        parent::__construct();
+        parent::__construct(
+            $eventId,
+            $occurredAt
+        );
     }
 
     public function getAggregateId(): AggregateIdInterface
     {
         return $this->customerId;
     }
+
+    public function getOrderId(): OrderId
+    {
+        return $this->orderId;
+    }
+
+    public function getOrderDescription(): string
+    {
+        return $this->orderDescription;
+    }
+
+    public function normalize(): array
+    {
+        return [
+            'customer_id' => $this->getAggregateId()->toString(),
+            'order_id' => $this->getOrderId()->toString(),
+            'description' => $this->getOrderDescription(),
+            'event_id' => $this->eventId->toString(),
+            'occurred_at' => $this->occurredAt->format(DATE_RFC3339)
+        ];
+    }
+
+    public static function denormalize(array $data): static
+    {
+        return new self(
+            new CustomerId($data['customer_id']),
+            new OrderId($data['order_id']),
+            $data['description'],
+            EventId::fromString($data['event_id']),
+            \DateTimeImmutable::createFromFormat(DATE_RFC3339, $data['occurred_at'])
+        );
+    }
+
+
 }

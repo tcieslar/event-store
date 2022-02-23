@@ -7,9 +7,9 @@ use DateTimeImmutable;
 
 interface EventInterface
 {
-    public function getAggregateId(): AggregateIdInterface;
+    public function getEventId(): EventId;
 
-    public function getEventType(): EventType;
+    public function getAggregateId(): AggregateIdInterface;
 
     public function getOccurredAt(): DateTimeImmutable;
 }

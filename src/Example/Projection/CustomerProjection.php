@@ -16,7 +16,7 @@ class CustomerProjection implements ProjectionInterface
     public function projectView(?ViewInterface $view, EventInterface $event): ViewInterface
     {
         if ($event instanceof CustomerCreatedEvent) {
-            return new CustomerView($event->customerId, $event->occurredAt);
+            return new CustomerView($event->getCustomerId(), $event->getOccurredAt());
         }
 
         if (!$view instanceof CustomerView) {
@@ -24,13 +24,13 @@ class CustomerProjection implements ProjectionInterface
         }
 
         if ($event instanceof CustomerCredentialSetEvent) {
-            $view->name = $event->name;
+            $view->name = $event->getName();
             return $view;
         }
 
         if ($event instanceof OrderAddedEvent) {
             $view->orders ??= [];
-            $view->orders[] = $event->orderDescription;
+            $view->orders[] = $event->getOrderDescription();
             return $view;
         }
     }
@@ -40,13 +40,13 @@ class CustomerProjection implements ProjectionInterface
         return CustomerView::class;
     }
 
-    public function consumeEvent(EventType $eventType): bool
+    public function consumeEvent(EventInterface $eventType): bool
     {
-        return in_array($eventType,
+        return in_array(get_class($eventType),
             [
-                EventType::byEventClass(CustomerCreatedEvent::class),
-                EventType::byEventClass(CustomerCredentialSetEvent::class),
-                EventType::byEventClass(OrderAddedEvent::class
-                )]);
+                CustomerCreatedEvent::class,
+                CustomerCredentialSetEvent::class,
+                OrderAddedEvent::class
+            ]);
     }
 }

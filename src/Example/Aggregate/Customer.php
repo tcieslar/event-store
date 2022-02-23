@@ -72,16 +72,16 @@ class Customer extends Aggregate
 
     protected function whenCustomerCreatedEvent(CustomerCreatedEvent $event): void
     {
-        $this->customerId = $event->customerId;
+        $this->customerId = $event->getCustomerId();
     }
 
     protected function whenCustomerCredentialSetEvent(CustomerCredentialSetEvent $event): void
     {
-        $this->name = $event->name;
+        $this->name = $event->getName();
     }
 
     protected function whenOrderAddedEvent(OrderAddedEvent $event): void
     {
-        $this->orderIds[] = $event->orderId;
+        $this->orderIds[] = $event->getOrderId();
     }
 }

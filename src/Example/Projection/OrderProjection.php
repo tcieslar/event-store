@@ -20,7 +20,7 @@ class OrderProjection implements ProjectionInterface
         return OrderView::class;
     }
 
-    public function consumeEvent(EventType $eventType): bool
+    public function consumeEvent(EventInterface $eventType): bool
     {
         return false;
     }

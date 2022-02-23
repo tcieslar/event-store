@@ -135,7 +135,9 @@ class DbalEventStoreTest extends TestCase
                 $events->get(1) instanceof CustomerCredentialSetEvent &&
                 $events->get(2) instanceof CustomerCredentialSetEvent &&
                 $events->get(3) instanceof CustomerCredentialSetEvent &&
-                $events->get(4) instanceof CustomerCredentialSetEvent
+                ($e5 = $events->get(4)) instanceof CustomerCredentialSetEvent &&
+                $e5->getName() === 'test 4'
+
             ));
         $eventStore = new DbalEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
         $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());

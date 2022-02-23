@@ -3,27 +3,34 @@
 namespace Tcieslar\EventStore\Example\Event;
 
 use DateTimeImmutable;
+use Tcieslar\EventStore\Event\EventId;
 use Tcieslar\EventStore\Event\EventInterface;
-use Tcieslar\EventStore\Event\EventType;
 
 abstract class Event implements EventInterface
 {
-    public readonly EventType $eventType;
-    public readonly DateTimeImmutable $occurredAt;
+    protected EventId $eventId;
+    protected DateTimeImmutable $occurredAt;
 
-    public function __construct()
+    public function __construct(
+        ?EventId           $eventId,
+        ?DateTimeImmutable $occurredAt
+    )
     {
-        $this->eventType = new EventType(static::class);
-        $this->occurredAt = new DateTimeImmutable();
+        $this->eventId = $eventId ?? new EventId();
+        $this->occurredAt = $occurredAt ?? new \DateTimeImmutable();
     }
 
-    public function getEventType(): EventType
+    public function getEventId(): EventId
     {
-        return $this->eventType;
+        return $this->eventId;
     }
 
     public function getOccurredAt(): DateTimeImmutable
     {
         return $this->occurredAt;
     }
+
+    abstract public function normalize(): array;
+
+    abstract public static function denormalize(array $data): static;
 }
