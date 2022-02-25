@@ -5,8 +5,6 @@ namespace Tcieslar\EventStore\Store;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\TransactionIsolationLevel;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
@@ -17,6 +15,7 @@ use Tcieslar\EventStore\EventPublisher\EventPublisherInterface;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
+use Tcieslar\EventStore\Utils\EventSerializerInterface;
 
 class DbalEventStore implements EventStoreInterface
 {
@@ -26,9 +25,9 @@ class DbalEventStore implements EventStoreInterface
      * @throws \Doctrine\DBAL\Exception
      */
     public function __construct(
-        private string      $url,
-        private SerializerInterface $serializer,
-        private EventPublisherInterface $eventPublisher
+        private string                   $url,
+        private EventSerializerInterface $serializer,
+        private EventPublisherInterface  $eventPublisher
     )
     {
     }
@@ -47,7 +46,7 @@ class DbalEventStore implements EventStoreInterface
         if (!$this->connection) {
             $this->connect();
         }
-        $stmt = $this->connection->prepare('SELECT id, type FROM aggregate WHERE aggregate_id = ?;');
+        $stmt = $this->connection->prepare('SELECT type FROM aggregate WHERE aggregate_id = ?;');
         $stmt->bindValue(1, $aggregateId->toString());
         $result = $stmt->executeQuery();
 
@@ -55,11 +54,11 @@ class DbalEventStore implements EventStoreInterface
             throw new AggregateNotFoundException($aggregateId);
         }
         if (!$afterVersion) {
-            $stmt = $this->connection->prepare('SELECT * FROM event WHERE aggregate_id = ? ORDER BY version');
+            $stmt = $this->connection->prepare('SELECT event_id, aggregate_id, data, type, version, occurred_at FROM event WHERE aggregate_id = ? ORDER BY version');
             $stmt->bindValue(1, $aggregateId->toString());
             $startVersion = Version::zero();
         } else {
-            $stmt = $this->connection->prepare('SELECT * FROM event WHERE aggregate_id = ? AND version > ? ORDER BY version');
+            $stmt = $this->connection->prepare('SELECT event_id, aggregate_id, data, type, version, occurred_at FROM event WHERE aggregate_id = ? AND version > ? ORDER BY version');
             $stmt->bindValue(1, $aggregateId->toString());
             $stmt->bindValue(2, $afterVersion->toString());
             $startVersion = clone $afterVersion;
@@ -70,7 +69,14 @@ class DbalEventStore implements EventStoreInterface
         $endVersion = null;
         while (($row = $result->fetchAssociative()) !== false) {
             $endVersion = Version::number($row['version']);
-            $event = $row['type']::denormalize(json_decode($row['data'], true));
+            $event = $this->serializer->deseriazlize($row['data'], $row['type'],
+                [
+                    EventSerializerInterface::ADD_PROPERTY => [
+                        'event_id' => $row['event_id'],
+                        'aggregate_id' => $row['aggregate_id'],
+                        'occurred_at' => \DateTimeImmutable::createFromFormat('Y-m-d H:i:sO', $row['occurred_at'])->format(DATE_RFC3339)
+                    ]
+                ]);
             $eventCollection->add($event);
         }
         $endVersion ??= $startVersion;
@@ -123,13 +129,20 @@ class DbalEventStore implements EventStoreInterface
                 $stmt3 = $this->connection->prepare('INSERT INTO event(id, event_id, aggregate_id, data, type, version, occurred_at) VALUES(nextval(\'event_id_seq\'), ?, ?, ?, ?, ?, ?);');
                 $stmt3->bindValue(1, $event->getEventId()->toString());
                 $stmt3->bindValue(2, $aggregateId->toString());
-                $stmt3->bindValue(3, $this->serializer->serialize(
-                    $event->normalize(),
-                    'json',
-                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['occurredAt', 'aggregateId']]));
+                $stmt3->bindValue(3,
+                    $this->serializer->seriazlize($event,
+                        [
+                            EventSerializerInterface::IGNORE_PROPERTY => [
+                                'aggregate_id',
+                                'occurred_at',
+                                'event_id'
+                            ]
+                        ]
+                    )
+                );
                 $stmt3->bindValue(4, get_class($event));
                 $stmt3->bindValue(5, $newVersion->toString());
-                $stmt3->bindValue(6, $event->getOccurredAt()->format('Y-m-d H:i:s'));
+                $stmt3->bindValue(6, $event->getOccurredAt()->format(DATE_ATOM));
                 $stmt3->executeQuery();
             }
 
@@ -168,17 +181,13 @@ class DbalEventStore implements EventStoreInterface
     {
         $stmt = $this->connection->prepare('SELECT EXISTS (
 SELECT FROM information_schema.tables 
-WHERE  table_name = \'event\' OR table_name = \'aggregate\'
+WHERE  table_name = \'event\'
    );
 ');
         $result = $stmt->executeQuery();
-        if ($result->fetchAllAssociative()[0]['exists']) {
-            return;
-        }
-
-        $this->connection->executeQuery('CREATE SEQUENCE event_id_seq INCREMENT BY 1 MINVALUE 1 START 1;');
-        $this->connection->executeQuery('CREATE SEQUENCE aggregate_id_seq INCREMENT BY 1 MINVALUE 1 START 1;');
-        $this->connection->executeQuery('CREATE TABLE event
+        if (!$result->fetchAllAssociative()[0]['exists']) {
+            $this->connection->executeQuery('CREATE SEQUENCE event_id_seq INCREMENT BY 1 MINVALUE 1 START 1;');
+            $this->connection->executeQuery('CREATE TABLE event
 (
     id           INT                            NOT NULL,
     event_id     UUID                           NOT NULL,
@@ -186,11 +195,22 @@ WHERE  table_name = \'event\' OR table_name = \'aggregate\'
     data         JSON                           NOT NULL,
     type         VARCHAR(255)                   NOT NULL,
     version      BIGINT                         NOT NULL,
-    occurred_at  TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    occurred_at  TIMESTAMP(0) WITH TIME ZONE    NOT NULL,
     PRIMARY KEY (id)
 );');
-        $this->connection->executeQuery('COMMENT ON COLUMN event.occurred_at IS \'(DC2Type:datetime_immutable)\';');
-        $this->connection->executeQuery('CREATE TABLE aggregate
+            $this->connection->executeQuery('COMMENT ON COLUMN event.occurred_at IS \'(DC2Type:datetime_immutable)\';');
+            $this->connection->executeQuery('CREATE INDEX event_idx ON event (aggregate_id, version);');
+        }
+
+        $stmt = $this->connection->prepare('SELECT EXISTS (
+SELECT FROM information_schema.tables 
+WHERE  table_name = \'aggregate\'
+   );
+');
+        $result = $stmt->executeQuery();
+        if (!$result->fetchAllAssociative()[0]['exists']) {
+            $this->connection->executeQuery('CREATE SEQUENCE aggregate_id_seq INCREMENT BY 1 MINVALUE 1 START 1;');
+            $this->connection->executeQuery('CREATE TABLE aggregate
 (
     id           INT          NOT NULL,
     aggregate_id UUID         NOT NULL,
@@ -198,7 +218,7 @@ WHERE  table_name = \'event\' OR table_name = \'aggregate\'
     version      BIGINT       NOT NULL,
     PRIMARY KEY (id)
 );');
-        $this->connection->executeQuery('CREATE INDEX event_idx ON event (aggregate_id, version);');
-        $this->connection->executeQuery('CREATE INDEX aggregate_idx ON aggregate (aggregate_id);');
+            $this->connection->executeQuery('CREATE INDEX aggregate_idx ON aggregate (aggregate_id);');
+        }
     }
 }

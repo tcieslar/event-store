@@ -18,6 +18,7 @@ use Tcieslar\EventStore\Example\Aggregate\OrderId;
 use Tcieslar\EventStore\Example\Repository\CustomerRepository;
 use Tcieslar\EventStore\Snapshot\RedisSnapshotRepository;
 use Tcieslar\EventStore\Store\DbalEventStore;
+use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
 
 /**
  * @group integration
@@ -29,9 +30,7 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
 
     public function testIntegration(): void
     {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = new JsonSerializerAdapter();
         $unitOfWork = new UnitOfWork();
         $eventPublisher = new FileEventPublisher();
         $eventStore = new DbalEventStore(self::$postgreUrl, $serializer, $eventPublisher);

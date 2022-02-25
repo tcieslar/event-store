@@ -7,7 +7,7 @@ use Tcieslar\EventStore\Event\EventId;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Example\Aggregate\OrderId;
 
-class OrderAddedEvent extends Event
+class OrderAddedEvent extends DomainEventExample
 {
     public function __construct(
         private CustomerId  $customerId,

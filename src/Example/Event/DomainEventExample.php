@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use Tcieslar\EventStore\Event\EventId;
 use Tcieslar\EventStore\Event\EventInterface;
 
-abstract class Event implements EventInterface
+abstract class DomainEventExample implements EventInterface
 {
     protected EventId $eventId;
     protected DateTimeImmutable $occurredAt;
@@ -17,7 +17,10 @@ abstract class Event implements EventInterface
     )
     {
         $this->eventId = $eventId ?? new EventId();
-        $this->occurredAt = $occurredAt ?? new \DateTimeImmutable();
+        $this->occurredAt = $occurredAt ?? DateTimeImmutable::createFromFormat(
+                DATE_RFC3339,
+                (new \DateTimeImmutable())->format(DATE_RFC3339)
+            );
     }
 
     public function getEventId(): EventId

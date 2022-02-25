@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Event\EventCollection;
@@ -16,6 +15,8 @@ use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use Tcieslar\EventStore\Store\DbalEventStore;
+use Tcieslar\EventStore\Utils\EventSerializerInterface;
+use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
 
 /**
  * @group integration
@@ -98,12 +99,15 @@ class DbalEventStoreTest extends TestCase
             ->method('publish');
         $eventStore = new DbalEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
         $this->assertEquals('test', $customer->getName());
+        $event1 = $customer->recordedEvents()->get(0);
 
         // insert
         $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());
 
         // read
         $eventStream = $eventStore->loadFromStream($customerId);
+
+        $this->assertEquals($eventStream->events->get(0), $event1);
 
         // insert 2
         $customer = Customer::loadFromEvents($eventStream->events);
@@ -152,10 +156,8 @@ class DbalEventStoreTest extends TestCase
         $this->assertCount(1, $eventStream->events);
     }
 
-    private function getSerializer(): SerializerInterface
+    private function getSerializer(): EventSerializerInterface
     {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        return new Serializer($normalizers, $encoders);
+        return new JsonSerializerAdapter();
     }
 }

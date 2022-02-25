@@ -56,12 +56,14 @@ class EventStoreTest extends TestCase
         );
 
         $this->assertEquals('test', $customer->getName());
+        $event1 = $customer->recordedEvents()->get(0);
 
         // insert
         $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());
 
         // read
         $eventStream = $eventStore->loadFromStream($customerId);
+        $this->assertEquals($eventStream->events->get(0), $event1);
 
         // insert 2
         $customer = Customer::loadFromEvents($eventStream->events);
