@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\AggregateManager;
 use Tcieslar\EventStore\Aggregate\UnitOfWork;
 use Tcieslar\EventStore\ConcurrencyResolving\SoftResolvingStrategy;
@@ -17,7 +17,7 @@ use Tcieslar\EventStore\Example\Aggregate\Order;
 use Tcieslar\EventStore\Example\Aggregate\OrderId;
 use Tcieslar\EventStore\Example\Repository\CustomerRepository;
 use Tcieslar\EventStore\Snapshot\RedisSnapshotRepository;
-use Tcieslar\EventStore\Store\DbalEventStore;
+use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
 
 /**
@@ -25,7 +25,7 @@ use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
  */
 class AggregateManagerWithDbalAndRedisTest extends TestCase
 {
-    private static string $postgreUrl = 'postgresql://postgres:test@localhost:5432/event_store?serverVersion=14&charset=utf8';
+    private static string $postgreUrl = 'postgres:test@localhost:5432/event_store?serverVersion=14&charset=utf8';
     private static string $redisHost = '127.0.0.1';
 
     public function testIntegration(): void
@@ -33,7 +33,7 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
         $serializer = new JsonSerializerAdapter();
         $unitOfWork = new UnitOfWork();
         $eventPublisher = new FileEventPublisher();
-        $eventStore = new DbalEventStore(self::$postgreUrl, $serializer, $eventPublisher);
+        $eventStore = new PsqlEventStore(self::$postgreUrl, $serializer, $eventPublisher);
         $snapshotRepository = new RedisSnapshotRepository(self::$redisHost);
         $concurrencyResolvingStrategy = new SoftResolvingStrategy(
             eventStore: $eventStore
@@ -47,7 +47,7 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
         $customerRepository = new CustomerRepository($aggregateManager);
 
         // save
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'name 1');
         $customerRepository->add($customer);
         $aggregateManager->flush();
@@ -65,7 +65,7 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
 
         // add event
         $customer3->setName('name 2');
-        $customer3->addOrder(Order::create(new OrderId(Uuid::v4()), 'test'));
+        $customer3->addOrder(Order::create(OrderId::create(), 'test'));
         $aggregateManager->flush();
         $aggregateManager->reset();
 

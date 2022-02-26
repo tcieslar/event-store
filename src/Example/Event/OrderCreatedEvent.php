@@ -45,7 +45,7 @@ class OrderCreatedEvent extends DomainEventExample
     public static function denormalize(array $data): static
     {
         return new self(
-            new OrderId($data['order_id']),
+            OrderId::fromString($data['order_id']),
             $data['description'],
             EventId::fromString($data['event_id']),
             \DateTimeImmutable::createFromFormat(DATE_RFC3339, $data['occurred_at'])

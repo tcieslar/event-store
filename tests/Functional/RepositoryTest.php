@@ -15,7 +15,7 @@ use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\UnitOfWork;
 
 class RepositoryTest extends TestCase
@@ -33,7 +33,7 @@ class RepositoryTest extends TestCase
         );
         $repository = new CustomerRepository($aggregateManager);
 
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
         $repository->add($customer);
 
@@ -58,7 +58,7 @@ class RepositoryTest extends TestCase
         $repository = new CustomerRepository($aggregateManager);
 
         // insert
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
         $repository->add($customer);
         $aggregateManager->flush();
@@ -90,9 +90,9 @@ class RepositoryTest extends TestCase
 
         // insert
 
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'name');
-        $orderId = new OrderId(Uuid::v4());
+        $orderId = OrderId::create();
         $order = Order::create($orderId, 'description');
 
         $aggregateManager->addAggregate($customer);

@@ -11,7 +11,7 @@ use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\UnitOfWork;
 use Tcieslar\EventStore\Aggregate\Version;
 
@@ -139,7 +139,7 @@ class UnitOfWorkTest extends TestCase
 
     private function createCustomer(): Customer
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         return Customer::create($customerId, 'name');
     }
 }

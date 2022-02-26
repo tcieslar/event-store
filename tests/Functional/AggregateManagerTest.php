@@ -3,7 +3,6 @@
 namespace Tcieslar\EventStore\Tests\Functional;
 
 use Tcieslar\EventStore\Aggregate\AggregateManager;
-use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
@@ -17,7 +16,6 @@ use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Uid\Uuid;
 use Tcieslar\EventStore\Aggregate\UnitOfWork;
 use Tcieslar\EventStore\Aggregate\Version;
 
@@ -154,14 +152,14 @@ class AggregateManagerTest extends TestCase
         $customerA = $this->createCustomer();
         $customerA->addOrder(
             Order::create(
-                new OrderId(Uuid::v4()),
+                OrderId::create(),
                 'Order 1',
             )
         );
         $customerA->setName('Test 2');
         $customerA->addOrder(
             Order::create(
-                new OrderId(Uuid::v4()),
+                OrderId::create(),
                 'Order 2',
             )
         );
@@ -296,7 +294,7 @@ class AggregateManagerTest extends TestCase
 
     private function createCustomer(): Customer
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         return Customer::create($customerId, 'name');
     }
 }

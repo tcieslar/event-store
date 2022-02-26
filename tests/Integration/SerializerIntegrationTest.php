@@ -7,7 +7,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Example\Aggregate\OrderId;
 use Tcieslar\EventStore\Example\Event\OrderAddedEvent;
@@ -21,8 +21,8 @@ class SerializerIntegrationTest
         $serializer = new Serializer($normalizers, $encoders);
 
         $event = new OrderAddedEvent(
-            new CustomerId(Uuid::v4()),
-            new OrderId(Uuid::v4()),
+            CustomerId::create(),
+            OrderId::create(),
             'test'
         );
         $test = $serializer->serialize($event, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['occurredAt', 'eventType', 'aggregateId']]);

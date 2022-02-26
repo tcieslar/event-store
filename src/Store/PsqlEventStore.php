@@ -17,7 +17,7 @@ use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
 
-class DbalEventStore implements EventStoreInterface
+class PsqlEventStore implements EventStoreInterface
 {
     private ?Connection $connection = null;
 
@@ -167,7 +167,7 @@ class DbalEventStore implements EventStoreInterface
     private function connect(): void
     {
         $connectionParams = array(
-            'url' => $this->url,
+            'url' => 'postgresql://' . $this->url,
         );
         $this->connection = DriverManager::getConnection($connectionParams);
         $this->connection->setTransactionIsolation(TransactionIsolationLevel::REPEATABLE_READ);

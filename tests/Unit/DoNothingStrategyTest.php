@@ -10,7 +10,7 @@ use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\Version;
 
 class DoNothingStrategyTest extends TestCase
@@ -18,7 +18,7 @@ class DoNothingStrategyTest extends TestCase
     public function testHandle(): void
     {
         $exception = new ConcurrencyException(
-            new CustomerId(Uuid::v4()),
+            CustomerId::create(),
             new AggregateType(Customer::class),
             Version::number(123),
             Version::number(122),

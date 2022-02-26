@@ -8,7 +8,7 @@ use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\Version;
 
 /**
@@ -18,7 +18,7 @@ class EventStoreTest extends TestCase
 {
     public function testLoadEmpty(): void
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
@@ -30,7 +30,7 @@ class EventStoreTest extends TestCase
 
     public function testNewAggregate(): void
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
 
         $eventStore = new InMemoryEventStore(
@@ -48,7 +48,7 @@ class EventStoreTest extends TestCase
     public function testUpdateAggregate(): void
     {
         // create
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
         $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
@@ -81,7 +81,7 @@ class EventStoreTest extends TestCase
 
     public function testLoadFromStream(): void
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
         $customer->setName('test 2');
         $customer->setName('test 3');

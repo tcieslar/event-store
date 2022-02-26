@@ -10,7 +10,7 @@ use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\Version;
 
 /**
@@ -27,7 +27,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         $snapshotRepository = new InMemorySnapshotRepository();
 
         // create aggregate
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
         $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());
         unset($customer);
@@ -56,7 +56,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         $snapshotRepository = new InMemorySnapshotRepository();
 
         // create aggregate
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
         $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());
         unset($customer);

@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\EventPublisher\EventPublisherInterface;
@@ -14,20 +14,20 @@ use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
-use Tcieslar\EventStore\Store\DbalEventStore;
+use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
 use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
 
 /**
  * @group integration
  */
-class DbalEventStoreTest extends TestCase
+class PsqlEventStoreTest extends TestCase
 {
-    private static string $postgreUrl = 'postgresql://postgres:test@localhost:5432/event_store?serverVersion=14&charset=utf8';
+    private static string $postgreUrl = 'postgres:test@localhost:5432/event_store?serverVersion=14&charset=utf8';
 
     public function testAppendAndLoad(): void
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'name 1');
         $eventPublisher = $this->createMock(EventPublisherInterface::class);
         $eventPublisher
@@ -38,7 +38,7 @@ class DbalEventStoreTest extends TestCase
                 $events->get(0) instanceof CustomerCreatedEvent &&
                 $events->get(1) instanceof CustomerCredentialSetEvent
             ));
-        $eventStore = new DbalEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
+        $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
         $eventStore->appendToStream($customer->getId(),
             $customer->getType(),
             Version::zero(),
@@ -55,12 +55,12 @@ class DbalEventStoreTest extends TestCase
 
     public function testLoadEmpty(): void
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $eventPublisher = $this->createMock(EventPublisherInterface::class);
         $eventPublisher
             ->expects($this->never())
             ->method('publish');
-        $eventStore = new DbalEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
+        $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
 
         $this->expectExceptionMessage('Aggregate not found.');
         $eventStore->loadFromStream($customerId);
@@ -68,7 +68,7 @@ class DbalEventStoreTest extends TestCase
 
     public function testNewAggregate(): void
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
         $eventPublisher = $this->createMock(EventPublisherInterface::class);
         $eventPublisher
@@ -79,7 +79,7 @@ class DbalEventStoreTest extends TestCase
                 $events->get(0) instanceof CustomerCreatedEvent &&
                 $events->get(1) instanceof CustomerCredentialSetEvent
             ));
-        $eventStore = new DbalEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
+        $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
         $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());
 
         $eventStream = $eventStore->loadFromStream($customerId);
@@ -91,13 +91,13 @@ class DbalEventStoreTest extends TestCase
     public function testUpdateAggregate(): void
     {
         // create
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
         $eventPublisher = $this->createMock(EventPublisherInterface::class);
         $eventPublisher
             ->expects($this->exactly(2))
             ->method('publish');
-        $eventStore = new DbalEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
+        $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
         $this->assertEquals('test', $customer->getName());
         $event1 = $customer->recordedEvents()->get(0);
 
@@ -124,7 +124,7 @@ class DbalEventStoreTest extends TestCase
 
     public function testLoadFromStream(): void
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
         $customer->setName('test 2');
         $customer->setName('test 3');
@@ -143,7 +143,7 @@ class DbalEventStoreTest extends TestCase
                 $e5->getName() === 'test 4'
 
             ));
-        $eventStore = new DbalEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
+        $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
         $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());
 
         $eventStream = $eventStore->loadFromStream($customerId, Version::zero());

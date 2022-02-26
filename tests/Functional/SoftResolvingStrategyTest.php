@@ -3,7 +3,7 @@
 namespace Tcieslar\EventStore\Tests\Functional;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\AggregateManager;
 use Tcieslar\EventStore\Aggregate\UnitOfWork;
 use Tcieslar\EventStore\ConcurrencyResolving\SoftResolvingStrategy;
@@ -92,7 +92,7 @@ class SoftResolvingStrategyTest extends TestCase
         $aggregateManager2->flush();
 
         //store different event in first thread
-        $customer->addOrder(Order::create(new OrderId(Uuid::v4()), 'test desc'));
+        $customer->addOrder(Order::create(OrderId::create(), 'test desc'));
 
         try {
             $aggregateManager->flush();
@@ -110,7 +110,7 @@ class SoftResolvingStrategyTest extends TestCase
 
     private function createCustomer(): Customer
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         return Customer::create($customerId, 'name');
     }
 }

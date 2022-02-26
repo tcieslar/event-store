@@ -14,7 +14,6 @@ use Tcieslar\EventStore\Example\Projection\OrderProjection;
 use PHPUnit\Framework\TestCase;
 use Tcieslar\EventStore\Projection\ProjectionManager;
 use Tcieslar\EventStore\Projection\InMemoryProjectionStorage;
-use Symfony\Component\Uid\Uuid;
 
 class ProjectionManagerTest extends TestCase
 {
@@ -28,9 +27,7 @@ class ProjectionManagerTest extends TestCase
             ]
         );
 
-        $customerId = new CustomerId(
-            Uuid::v4()
-        );
+        $customerId = CustomerId::create();
         $projectionManager->projectViews(
             new CustomerCreatedEvent(
                 $customerId
@@ -46,7 +43,7 @@ class ProjectionManagerTest extends TestCase
         $projectionManager->projectViews(
             new OrderAddedEvent(
                 $customerId,
-                new OrderId(Uuid::v4()),
+                OrderId::create(),
                 'to jest zamównienie'
             )
         );
@@ -54,7 +51,7 @@ class ProjectionManagerTest extends TestCase
         $projectionManager->projectViews(
             new OrderAddedEvent(
                 $customerId,
-                new OrderId(Uuid::v4()),
+                OrderId::create(),
                 'to jest zamównienie 2'
             )
         );
@@ -84,9 +81,7 @@ class ProjectionManagerTest extends TestCase
             ]
         );
 
-        $customerId = new CustomerId(
-            Uuid::v4()
-        );
+        $customerId = CustomerId::create();
         $eventCollection = new EventCollection();
         $eventCollection->add(
             new CustomerCreatedEvent(
@@ -102,14 +97,14 @@ class ProjectionManagerTest extends TestCase
         $eventCollection->add(
             new OrderAddedEvent(
                 $customerId,
-                new OrderId(Uuid::v4()),
+                OrderId::create(),
                 'to jest zamównienie'
             )
         );
         $eventCollection->add(
             new OrderAddedEvent(
                 $customerId,
-                new OrderId(Uuid::v4()),
+                OrderId::create(),
                 'to jest zamównienie 2'
             )
         );
