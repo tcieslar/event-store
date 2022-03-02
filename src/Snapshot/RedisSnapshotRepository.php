@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Snapshot;
 
@@ -38,7 +38,7 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
             return null;
         }
         $aggregate = unserialize($data["o"], ['allowed_classes' => true]);
-        $createdAt = (new \DateTimeImmutable)->setTimestamp($data['t']);
+        $createdAt = (new \DateTimeImmutable)->setTimestamp((int)$data['t']);
 
         return new Snapshot($aggregate, Version::number((int)$data['v']), $createdAt);
     }

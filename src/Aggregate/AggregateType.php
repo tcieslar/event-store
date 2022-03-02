@@ -21,6 +21,10 @@ class AggregateType
         return $array[count($array) - 1];
     }
 
+
+    /**
+     * @return class-string
+     */
     public function toString(): string
     {
         return $this->classFqcn;

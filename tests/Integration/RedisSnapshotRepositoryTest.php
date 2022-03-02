@@ -25,7 +25,6 @@ class RedisSnapshotRepositoryTest extends TestCase
 
         $this->assertEquals($customer, $snapshot->aggregate);
         $this->assertInstanceOf(\DateTimeImmutable::class, $snapshot->createdAt);
-
     }
 
     public function testNotFound(): void

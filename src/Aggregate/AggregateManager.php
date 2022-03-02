@@ -110,6 +110,13 @@ class AggregateManager implements AggregateManagerInterface
         foreach ($eventStream->events as $event) {
             $aggregate->reply($event);
         }
+
+        //todo :
+        $this->snapshotRepository->saveSnapshot(
+            $aggregate,
+            $eventStream->endVersion
+        );
+
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
 
         return $aggregate;
