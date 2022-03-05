@@ -31,10 +31,6 @@ abstract class Aggregate implements AggregateInterface
 
     abstract public function getId(): AggregateIdInterface;
 
-    public function getType(): AggregateType
-    {
-        return new AggregateType(static::class);
-    }
 
     public function recordedEvents(): EventCollection
     {

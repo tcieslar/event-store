@@ -2,6 +2,7 @@
 
 namespace Tcieslar\EventStore\Tests\Functional;
 
+use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
@@ -37,7 +38,8 @@ class EventStoreTest extends TestCase
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());
+        $aggregateType = AggregateType::byAggregate($customer);
+        $eventStore->appendToStream($customerId, $aggregateType, Version::zero(), $customer->recordedEvents());
 
         $eventStream = $eventStore->loadFromStream($customerId);
         $this->assertCount(2, $eventStream->events);
@@ -50,6 +52,7 @@ class EventStoreTest extends TestCase
         // create
         $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
+        $aggregateType = AggregateType::byAggregate($customer);
         $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
@@ -59,7 +62,7 @@ class EventStoreTest extends TestCase
         $event1 = $customer->recordedEvents()->get(0);
 
         // insert
-        $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, $aggregateType, Version::zero(), $customer->recordedEvents());
 
         // read
         $eventStream = $eventStore->loadFromStream($customerId);
@@ -68,7 +71,7 @@ class EventStoreTest extends TestCase
         // insert 2
         $customer = Customer::loadFromEvents($eventStream->events);
         $customer->setName('test2');
-        $eventStore->appendToStream($customerId, $customer->getType(), $eventStream->endVersion, $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, $aggregateType, $eventStream->endVersion, $customer->recordedEvents());
 
         //read 2
         $eventStream = $eventStore->loadFromStream($customerId);
@@ -83,6 +86,7 @@ class EventStoreTest extends TestCase
     {
         $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
+        $aggregateType = AggregateType::byAggregate($customer);
         $customer->setName('test 2');
         $customer->setName('test 3');
         $customer->setName('test 4');
@@ -91,7 +95,7 @@ class EventStoreTest extends TestCase
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $eventStore->appendToStream($customerId, $customer->getType(), Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId, $aggregateType, Version::zero(), $customer->recordedEvents());
 
         $eventStream = $eventStore->loadFromStream($customerId, Version::zero());
         $this->assertCount(5, $eventStream->events);

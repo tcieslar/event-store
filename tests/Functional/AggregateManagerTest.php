@@ -3,6 +3,7 @@
 namespace Tcieslar\EventStore\Tests\Functional;
 
 use Tcieslar\EventStore\Aggregate\AggregateManager;
+use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
@@ -25,6 +26,7 @@ class AggregateManagerTest extends TestCase
     public function testFlush(): void
     {
         $customer = $this->createCustomer();
+        $aggregateType = AggregateType::byAggregate($customer);
 
         // append To Stream
         $eventStore = $this->createMock(InMemoryEventStore::class);
@@ -32,7 +34,7 @@ class AggregateManagerTest extends TestCase
             ->method('appendToStream')
             ->with($this->equalTo($customer->getId()),
                 $this->equalTo(
-                    $customer->getType()
+                    $aggregateType
                 ),
                 $this->equalTo(Version::zero()),
                 $this->callback(function (EventCollection $changes) {

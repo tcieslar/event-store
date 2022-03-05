@@ -79,8 +79,9 @@ class UnitOfWorkTest extends TestCase
 
         // create outside
         $customer = $this->createCustomer();
+        $aggregateType = AggregateType::byAggregate($customer);
         $customerId = $customer->getId();
-        $eventStore->appendToStream($customer->getId(), $customer->getType(), Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customer->getId(), $aggregateType, Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load and persist
