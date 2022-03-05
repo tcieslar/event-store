@@ -2,10 +2,9 @@
 
 namespace Tcieslar\EventStore\Example\Aggregate;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Utils\Uuid;
 
-class OrderId implements AggregateIdInterface
+class OrderId
 {
     private Uuid $uuid;
 
@@ -20,6 +19,16 @@ class OrderId implements AggregateIdInterface
         }
     }
 
+    public function getUuid(): Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function toString(): string
+    {
+        return $this->uuid->toString();
+    }
+
     public static function create(): self
     {
         return new self();
@@ -28,10 +37,5 @@ class OrderId implements AggregateIdInterface
     public static function fromString(string $uuid): self
     {
         return new self($uuid);
-    }
-
-    public function toUuidString(): string
-    {
-        return $this->uuid->toString();
     }
 }

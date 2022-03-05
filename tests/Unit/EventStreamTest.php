@@ -16,7 +16,7 @@ class EventStreamTest extends TestCase
     public function testIsEmpty(): void
     {
         $eventStream = new EventStream(
-            CustomerId::create(),
+            CustomerId::create()->getUuid(),
             new AggregateType(Customer::class),
             Version::number(1),
             Version::number(1),

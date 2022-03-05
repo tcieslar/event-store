@@ -9,16 +9,17 @@ use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventStream;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
+use Tcieslar\EventStore\Utils\Uuid;
 
 interface EventStoreInterface
 {
     /**
      * @throws AggregateNotFoundException
      */
-    public function loadFromStream(AggregateIdInterface $aggregateId, ?Version $afterVersion = null): EventStream;
+    public function loadFromStream(Uuid $aggregateId, ?Version $afterVersion = null): EventStream;
 
     /**
      * @throws ConcurrencyException
      */
-    public function appendToStream(AggregateIdInterface $aggregateId, AggregateType $aggregateType, Version $expectedVersion, EventCollection $events): Version;
+    public function appendToStream(Uuid $aggregateId, AggregateType $aggregateType, Version $expectedVersion, EventCollection $events): Version;
 }

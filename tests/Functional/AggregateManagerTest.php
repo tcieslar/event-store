@@ -3,6 +3,7 @@
 namespace Tcieslar\EventStore\Tests\Functional;
 
 use Tcieslar\EventStore\Aggregate\AggregateManager;
+use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
@@ -25,6 +26,7 @@ class AggregateManagerTest extends TestCase
     public function testFlush(): void
     {
         $customer = $this->createCustomer();
+        $aggregateType = AggregateType::byAggregate($customer);
 
         // append To Stream
         $eventStore = $this->createMock(InMemoryEventStore::class);
@@ -32,7 +34,7 @@ class AggregateManagerTest extends TestCase
             ->method('appendToStream')
             ->with($this->equalTo($customer->getId()),
                 $this->equalTo(
-                    $customer->getType()
+                    $aggregateType
                 ),
                 $this->equalTo(Version::zero()),
                 $this->callback(function (EventCollection $changes) {
@@ -61,7 +63,7 @@ class AggregateManagerTest extends TestCase
 
         // check identityMap version number
         $identityMap = $unitOfWork->getIdentityMap();
-        $this->assertSame('2', $identityMap[$customer->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('2', $identityMap[$customer->getId()->toString()]['version']->toString());
     }
 
     public function testSecondFlush(): void
@@ -87,7 +89,7 @@ class AggregateManagerTest extends TestCase
 
         // check identityMap version number
         $identityMap = $unitOfWork->getIdentityMap();
-        $this->assertSame('2', $identityMap[$customer->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('2', $identityMap[$customer->getId()->toString()]['version']->toString());
     }
 
     public function testMultiAggregateFlush(): void
@@ -117,9 +119,9 @@ class AggregateManagerTest extends TestCase
         $aggregateManager->flush();
 
         // check identityMap version number
-        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerA->getId()->toUuidString()]['version']->toString());
-        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerB->getId()->toUuidString()]['version']->toString());
-        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerC->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerA->getId()->toString()]['version']->toString());
+        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerB->getId()->toString()]['version']->toString());
+        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerC->getId()->toString()]['version']->toString());
         $this->assertCount(6, $eventStore->getAllEvents());
 
         // update after flush
@@ -135,7 +137,7 @@ class AggregateManagerTest extends TestCase
 
         $this->assertCount(0, $customerA->recordedEvents());
         $this->assertCount(0, $customerC->recordedEvents());
-        $this->assertSame('3', $unitOfWork->getIdentityMap()[$customerC->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('3', $unitOfWork->getIdentityMap()[$customerC->getId()->toString()]['version']->toString());
         $this->assertCount(8, $eventStore->getAllEvents());
     }
 
@@ -172,7 +174,7 @@ class AggregateManagerTest extends TestCase
 
         // flush
         $aggregateManager->flush();
-        $this->assertSame('5', ($unitOfWork)->getIdentityMap()[$customerA->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('5', ($unitOfWork)->getIdentityMap()[$customerA->getId()->toString()]['version']->toString());
     }
 
 //    public function testWrongAggregateType(): void

@@ -2,6 +2,9 @@
 
 namespace Tcieslar\EventStore\Aggregate;
 
+use Tcieslar\EventStore\Exception\AggregateNotFoundException;
+use Tcieslar\EventStore\Utils\Uuid;
+
 abstract class Repository
 {
     public function __construct(
@@ -10,12 +13,15 @@ abstract class Repository
     {
     }
 
-    public function findOne(AggregateIdInterface $aggregateId)
+    /**
+     * @throws AggregateNotFoundException
+     */
+    public function findOne(Uuid $aggregateId)
     {
         return $this->aggregateManager->findAggregate($aggregateId);
     }
 
-    public function add(AggregateInterface $aggregate): void
+    public function add(Aggregate $aggregate): void
     {
         $this->aggregateManager->addAggregate($aggregate);
     }

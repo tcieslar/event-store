@@ -2,9 +2,9 @@
 
 namespace Tcieslar\EventStore\Snapshot;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
-use Tcieslar\EventStore\Aggregate\AggregateInterface;
+use Tcieslar\EventStore\Aggregate\Aggregate;
 use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventStore\Utils\Uuid;
 
 class InMemorySnapshotRepository implements SnapshotRepositoryInterface
 {
@@ -14,20 +14,20 @@ class InMemorySnapshotRepository implements SnapshotRepositoryInterface
     {
     }
 
-    public function getSnapshot(AggregateIdInterface $aggregateId): ?Snapshot
+    public function getSnapshot(Uuid $aggregateId): ?Snapshot
     {
-        $idString = $aggregateId->toUuidString();
+        $idString = $aggregateId->toString();
         return $this->snapshots[$idString] ?? null;
     }
 
-    public function saveSnapshot(AggregateInterface $aggregate, Version $version): void
+    public function saveSnapshot(Aggregate $aggregate, Version $version): void
     {
-        $idString = $aggregate->getId()->toUuidString();
+        $idString = $aggregate->getId()->toString();
 
         $this->store($version, $aggregate, $idString);
     }
 
-    private function store(Version $version, AggregateInterface $aggregate, string $idString): void
+    private function store(Version $version, Aggregate $aggregate, string $idString): void
     {
         $this->snapshots[$idString] = new Snapshot($aggregate, $version, new \DateTimeImmutable());
     }

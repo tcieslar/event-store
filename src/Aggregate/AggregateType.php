@@ -10,7 +10,7 @@ class AggregateType
     {
     }
 
-    public static function byAggregate(AggregateInterface $aggregate): self
+    public static function byAggregate(Aggregate $aggregate): self
     {
         return new self(get_class($aggregate));
     }

@@ -23,11 +23,6 @@ class OrderAddedEvent extends DomainEventExample
         );
     }
 
-    public function getAggregateId(): AggregateIdInterface
-    {
-        return $this->customerId;
-    }
-
     public function getOrderId(): OrderId
     {
         return $this->orderId;
@@ -41,8 +36,8 @@ class OrderAddedEvent extends DomainEventExample
     public function normalize(): array
     {
         return [
-            'customer_id' => $this->getAggregateId()->toUuidString(),
-            'order_id' => $this->getOrderId()->toUuidString(),
+            'customer_id' => $this->customerId->toString(),
+            'order_id' => $this->getOrderId()->toString(),
             'description' => $this->getOrderDescription(),
             'event_id' => $this->uuid->toString(),
             'occurred_at' => $this->occurredAt->format(DATE_RFC3339)

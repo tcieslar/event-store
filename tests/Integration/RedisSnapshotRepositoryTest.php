@@ -32,7 +32,7 @@ class RedisSnapshotRepositoryTest extends TestCase
         $repository = new RedisSnapshotRepository(self::$redisHost);
 
         $customerId = CustomerId::create();
-        $customer2 = $repository->getSnapshot($customerId);
+        $customer2 = $repository->getSnapshot($customerId->getUuid());
 
         $this->assertNull($customer2);
     }

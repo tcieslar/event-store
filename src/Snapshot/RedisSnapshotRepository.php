@@ -3,9 +3,10 @@
 namespace Tcieslar\EventStore\Snapshot;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
-use Tcieslar\EventStore\Aggregate\AggregateInterface;
+use Tcieslar\EventStore\Aggregate\Aggregate;
 use Tcieslar\EventStore\Aggregate\Version;
 use Redis;
+use Tcieslar\EventStore\Utils\Uuid;
 
 /**
  * @codeCoverageIgnore
@@ -26,7 +27,7 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
         $this->redis?->close();
     }
 
-    public function getSnapshot(AggregateIdInterface $aggregateId): ?Snapshot
+    public function getSnapshot(Uuid $aggregateId): ?Snapshot
     {
         if (!$this->redis) {
             $this->connect();
@@ -43,7 +44,7 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
         return new Snapshot($aggregate, Version::number((int)$data['v']), $createdAt);
     }
 
-    public function saveSnapshot(AggregateInterface $aggregate, Version $version): void
+    public function saveSnapshot(Aggregate $aggregate, Version $version): void
     {
         if (!$this->redis) {
             $this->connect();
@@ -56,9 +57,9 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
         ]);
     }
 
-    private function getKey(AggregateIdInterface $aggregateId): string
+    private function getKey(Uuid $aggregateId): string
     {
-        return 'aggregate-' . $aggregateId->toUuidString();
+        return 'aggregate-' . $aggregateId->toString();
     }
 
     private function connect(): void
