@@ -19,6 +19,16 @@ class OrderId
         }
     }
 
+    public function getUuid(): Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function toString(): string
+    {
+        return $this->uuid->toString();
+    }
+
     public static function create(): self
     {
         return new self();
@@ -27,15 +37,5 @@ class OrderId
     public static function fromString(string $uuid): self
     {
         return new self($uuid);
-    }
-
-    public function getUuid(): Uuid
-    {
-        return $this->uuid;
-    }
-
-    public function toUuidString(): string
-    {
-        return $this->uuid->toString();
     }
 }

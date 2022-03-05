@@ -14,20 +14,20 @@ class UnitOfWork
         return $this->identityMap;
     }
 
-    public function insert(AggregateInterface $aggregate): void
+    public function insert(Aggregate $aggregate): void
     {
         $this->throwExceptionIfAggregateAlreadyExists($aggregate, 'Aggregate already exists.');
-        $this->identityMap[$aggregate->getUuid()->toString()] =
+        $this->identityMap[$aggregate->getId()->toString()] =
             [
                 'version' => Version::zero(),
                 'aggregate' => $aggregate
             ];
     }
 
-    public function persist(AggregateInterface $aggregate, Version $version): void
+    public function persist(Aggregate $aggregate, Version $version): void
     {
         $this->throwExceptionIfAggregateAlreadyExists($aggregate, 'Aggregate already persisted.');
-        $this->identityMap[$aggregate->getUuid()->toString()] =
+        $this->identityMap[$aggregate->getId()->toString()] =
             [
                 'version' => $version,
                 'aggregate' => $aggregate
@@ -35,19 +35,19 @@ class UnitOfWork
     }
 
 
-    public function getVersion(AggregateInterface $aggregate): Version
+    public function getVersion(Aggregate $aggregate): Version
     {
         $this->throwExceptionIfAggregateNotFound($aggregate);
-        return $this->identityMap[$aggregate->getUuid()->toString()]['version'];
+        return $this->identityMap[$aggregate->getId()->toString()]['version'];
     }
 
-    public function changeVersion(AggregateInterface $aggregate, Version $version): void
+    public function changeVersion(Aggregate $aggregate, Version $version): void
     {
         $this->throwExceptionIfAggregateNotFound($aggregate);
-        $this->identityMap[$aggregate->getUuid()->toString()]['version'] = $version;
+        $this->identityMap[$aggregate->getId()->toString()]['version'] = $version;
     }
 
-    public function get(Uuid $id): ?AggregateInterface
+    public function get(Uuid $id): ?Aggregate
     {
         if (!isset($this->identityMap[$id->toString()])) {
             return null;
@@ -66,16 +66,16 @@ class UnitOfWork
         $this->identityMap = [];
     }
 
-    private function throwExceptionIfAggregateAlreadyExists(AggregateInterface $aggregate, string $message): void
+    private function throwExceptionIfAggregateAlreadyExists(Aggregate $aggregate, string $message): void
     {
-        if (isset($this->identityMap[$aggregate->getUuid()->toString()])) {
+        if (isset($this->identityMap[$aggregate->getId()->toString()])) {
             throw new InvalidArgumentException($message);
         }
     }
 
-    private function throwExceptionIfAggregateNotFound(AggregateInterface $aggregate): void
+    private function throwExceptionIfAggregateNotFound(Aggregate $aggregate): void
     {
-        if (!isset($this->identityMap[$aggregate->getUuid()->toString()])) {
+        if (!isset($this->identityMap[$aggregate->getId()->toString()])) {
             throw new InvalidArgumentException('Aggregate not found.');
         }
     }

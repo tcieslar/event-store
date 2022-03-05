@@ -24,7 +24,7 @@ class AggregateManager implements AggregateManagerInterface
     {
     }
 
-    public function addAggregate(AggregateInterface $aggregate): void
+    public function addAggregate(Aggregate $aggregate): void
     {
         $this->unitOfWork->insert($aggregate);
     }
@@ -32,7 +32,7 @@ class AggregateManager implements AggregateManagerInterface
     /**
      * @throws AggregateNotFoundException
      */
-    public function findAggregate(Uuid $aggregateId): ?AggregateInterface
+    public function findAggregate(Uuid $aggregateId): Aggregate
     {
         if ($aggregate = $this->loadFromMemory($aggregateId)) {
             return $aggregate;
@@ -58,20 +58,20 @@ class AggregateManager implements AggregateManagerInterface
         $identityMap = $this->unitOfWork->getIdentityMap();
         $aggregatesIdsToReload = [];
         foreach ($identityMap as $row) {
-            /** @var AggregateInterface $aggregate */
+            /** @var Aggregate $aggregate */
             $aggregate = $row['aggregate'];
             /** @var Version $currentVersion */
             $currentVersion = $row['version'];
             $type = AggregateType::byAggregate($aggregate);
 
             try {
-                $newVersion = $this->eventStore->appendToStream($aggregate->getUuid(), $type, $currentVersion, $aggregate->recordedEvents());
+                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $type, $currentVersion, $aggregate->recordedEvents());
                 $this->unitOfWork->changeVersion($aggregate, $newVersion);
                 $aggregate->removeRecordedEvents();
             } catch (ConcurrencyException $exception) {
-                $this->unitOfWork->resetById($aggregate->getUuid());
+                $this->unitOfWork->resetById($aggregate->getId());
                 $this->concurrencyResolvingStrategy->resolve($exception);
-                $aggregatesIdsToReload[] = $aggregate->getUuid();
+                $aggregatesIdsToReload[] = $aggregate->getId();
             }
         }
 
@@ -80,7 +80,7 @@ class AggregateManager implements AggregateManagerInterface
         }
     }
 
-    private function loadFromMemory(Uuid $aggregateId): ?AggregateInterface
+    private function loadFromMemory(Uuid $aggregateId): ?Aggregate
     {
         return $this->unitOfWork->get($aggregateId);
     }
@@ -88,7 +88,7 @@ class AggregateManager implements AggregateManagerInterface
     /**
      * @throws AggregateNotFoundException
      */
-    private function loadFromStore(Uuid $aggregateId): AggregateInterface
+    private function loadFromStore(Uuid $aggregateId): Aggregate
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId);
         $classFqcn = $eventStream->aggregateType->toString();
@@ -105,7 +105,7 @@ class AggregateManager implements AggregateManagerInterface
         return $aggregate;
     }
 
-    private function loadFromSnapshot(Uuid $aggregateId): ?AggregateInterface
+    private function loadFromSnapshot(Uuid $aggregateId): ?Aggregate
     {
         $snapshot = $this->snapshotRepository->getSnapshot($aggregateId);
         if (!$snapshot) {

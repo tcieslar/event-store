@@ -41,7 +41,7 @@ class PsqlEventStoreTest extends TestCase
                 $events->get(1) instanceof CustomerCredentialSetEvent
             ));
         $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
-        $eventStore->appendToStream($customer->getUuid(),
+        $eventStore->appendToStream($customer->getId(),
             $aggregateType,
             Version::zero(),
             $customer->recordedEvents()

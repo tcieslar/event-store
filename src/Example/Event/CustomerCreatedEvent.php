@@ -28,7 +28,7 @@ class CustomerCreatedEvent extends DomainEventExample
     public function normalize(): array
     {
         return [
-            'customer_id' => $this->getCustomerId()->toUuidString(),
+            'customer_id' => $this->getCustomerId()->toString(),
             'event_id' => $this->uuid->toString(),
             'occurred_at' => $this->occurredAt->format(DATE_RFC3339)
         ];

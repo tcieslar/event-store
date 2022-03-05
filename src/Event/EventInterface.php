@@ -7,7 +7,7 @@ use Tcieslar\EventStore\Utils\Uuid;
 
 interface EventInterface
 {
-    public function getUuid(): Uuid;
+    public function getEventId(): Uuid;
 
     public function getOccurredAt(): DateTimeImmutable;
 }

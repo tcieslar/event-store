@@ -2,13 +2,14 @@
 
 namespace Tcieslar\EventStore\Example\Aggregate;
 
+use InvalidArgumentException;
 use Tcieslar\EventStore\Utils\Uuid;
-use Tcieslar\EventStore\Aggregate\Aggregate;
+use Tcieslar\EventStore\Aggregate\AbstractAggregate;
 use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use Tcieslar\EventStore\Example\Event\OrderAddedEvent;
 
-class Customer extends Aggregate
+class Customer extends AbstractAggregate
 {
     private CustomerId $customerId;
     private string $name;
@@ -33,7 +34,7 @@ class Customer extends Aggregate
         parent::__construct();
     }
 
-    public function getUuid(): Uuid
+    public function getId(): Uuid
     {
         return $this->customerId->getUuid();
     }
@@ -46,7 +47,7 @@ class Customer extends Aggregate
     public function setName(string $name): void
     {
         if (empty($name)) {
-            throw new \InvalidArgumentException('Name is empty.');
+            throw new InvalidArgumentException('Name is empty.');
         }
 
         $this->apply(
@@ -73,7 +74,6 @@ class Customer extends Aggregate
     public function getOrderIds(): array
     {
         return $this->orderIds;
-
     }
 
     protected function whenCustomerCreatedEvent(CustomerCreatedEvent $event): void

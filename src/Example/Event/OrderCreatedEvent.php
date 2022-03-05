@@ -28,7 +28,7 @@ class OrderCreatedEvent extends DomainEventExample
     public function normalize(): array
     {
         return [
-            'order_id' => $this->getOrderId()->toUuidString(),
+            'order_id' => $this->getOrderId()->toString(),
             'description' => $this->getDescription(),
             'event_id' => $this->uuid->toString(),
             'occurred_at' => $this->occurredAt->format(DATE_RFC3339)

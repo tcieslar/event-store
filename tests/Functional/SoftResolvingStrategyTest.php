@@ -51,7 +51,7 @@ class SoftResolvingStrategyTest extends TestCase
 
         //read and change, second thread
         /** @var Customer $customer2 */
-        $customer2 = $aggregateManager2->findAggregate($customer->getUuid());
+        $customer2 = $aggregateManager2->findAggregate($customer->getId());
         $customer2->setName('name 2');
         $aggregateManager2->flush();
 
@@ -92,7 +92,7 @@ class SoftResolvingStrategyTest extends TestCase
 
         //read and change, second thread
         /** @var Customer $customer2 */
-        $customer2 = $aggregateManager2->findAggregate($customer->getUuid());
+        $customer2 = $aggregateManager2->findAggregate($customer->getId());
         $customer2->setName('name 2');
         $aggregateManager2->flush();
 
@@ -103,12 +103,12 @@ class SoftResolvingStrategyTest extends TestCase
             $aggregateManager->flush();
         } catch (AggregateReloadNeedException $exception) {
             foreach ($exception->aggregatesIds as $aggregateId) {
-                $this->assertEquals($customer->getUuid(), $aggregateId);
+                $this->assertEquals($customer->getId(), $aggregateId);
             }
         }
 
         $this->assertCount(4, $eventStore->getAllEvents());
-        $customer3 = $aggregateManager->findAggregate($customer->getUuid());
+        $customer3 = $aggregateManager->findAggregate($customer->getId());
         $this->assertEquals('name 2', $customer3->getName());
         $this->assertCount(1, $customer3->getOrderIds());
     }

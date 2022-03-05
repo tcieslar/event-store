@@ -128,7 +128,7 @@ class PsqlEventStore implements EventStoreInterface
                 $newVersion = $newVersion->incremented();
 
                 $stmt3 = $this->connection->prepare('INSERT INTO event(id, event_id, aggregate_id, data, type, version, occurred_at) VALUES(nextval(\'event_id_seq\'), ?, ?, ?, ?, ?, ?);');
-                $stmt3->bindValue(1, $event->getUuid()->toString());
+                $stmt3->bindValue(1, $event->getEventId()->toString());
                 $stmt3->bindValue(2, $aggregateId->toString());
                 $stmt3->bindValue(3,
                     $this->serializer->seriazlize($event,

@@ -46,7 +46,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         $reflectionProperty = $reflectionClass->getProperty('snapshots');
         $snapshots = $reflectionProperty->getValue($snapshotRepository);
 
-        $this->assertEquals($customerId->getUuid(), current($snapshots)->aggregate->getUuid());
+        $this->assertEquals($customerId, current($snapshots)->aggregate->getCustomerId());
     }
 
     public function testGet(): void
@@ -71,7 +71,7 @@ class InMemorySnapshotRepositoryTest extends TestCase
         // create snapshot
         $snapshotRepository->saveSnapshot($customer2, $eventStream->endVersion);
         $snapshot = $snapshotRepository->getSnapshot($customerId->getUuid());
-        $this->assertSame($snapshot->aggregate->getUuid(), $customerId->getUuid());
+        $this->assertSame($snapshot->aggregate->getId(), $customerId->getUuid());
         $this->assertSame($snapshot->endVersion, $eventStream->endVersion);
     }
 }

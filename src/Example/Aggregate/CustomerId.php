@@ -24,7 +24,7 @@ class CustomerId
         return $this->uuid;
     }
 
-    public function toUuidString(): string
+    public function toString(): string
     {
         return $this->uuid->toString();
     }

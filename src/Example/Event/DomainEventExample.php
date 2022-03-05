@@ -23,7 +23,7 @@ abstract class DomainEventExample implements EventInterface
             );
     }
 
-    public function getUuid(): Uuid
+    public function getEventId(): Uuid
     {
         return $this->uuid;
     }

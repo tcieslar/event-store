@@ -21,7 +21,7 @@ class RedisSnapshotRepositoryTest extends TestCase
         $repository = new RedisSnapshotRepository(self::$redisHost);
         $customer = Customer::create(CustomerId::create(), 'name');
         $repository->saveSnapshot($customer, Version::number(3));
-        $snapshot = $repository->getSnapshot($customer->getUuid());
+        $snapshot = $repository->getSnapshot($customer->getId());
 
         $this->assertEquals($customer, $snapshot->aggregate);
         $this->assertInstanceOf(\DateTimeImmutable::class, $snapshot->createdAt);
