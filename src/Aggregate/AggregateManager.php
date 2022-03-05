@@ -62,6 +62,8 @@ class AggregateManager implements AggregateManagerInterface
             /** @var Version $currentVersion */
             $currentVersion = $row['version'];
 
+            $type = AggregateType::byAggregate($aggregate);
+
             try {
                 $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $aggregate->getType(), $currentVersion, $aggregate->recordedEvents());
                 $this->unitOfWork->changeVersion($aggregate, $newVersion);

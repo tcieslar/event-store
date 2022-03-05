@@ -30,7 +30,7 @@ class CustomerId implements AggregateIdInterface
         return new self($uuid);
     }
 
-    public function toString(): string
+    public function toUuidString(): string
     {
         return $this->uuid->toString();
     }

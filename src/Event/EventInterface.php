@@ -2,14 +2,12 @@
 
 namespace Tcieslar\EventStore\Event;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use DateTimeImmutable;
+use Tcieslar\EventStore\Utils\Uuid;
 
 interface EventInterface
 {
-    public function getEventId(): EventId;
-
-    public function getAggregateId(): AggregateIdInterface;
+    public function getUuid(): Uuid;
 
     public function getOccurredAt(): DateTimeImmutable;
 }

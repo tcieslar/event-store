@@ -47,7 +47,7 @@ class PsqlEventStore implements EventStoreInterface
             $this->connect();
         }
         $stmt = $this->connection->prepare('SELECT type FROM aggregate WHERE aggregate_id = ?;');
-        $stmt->bindValue(1, $aggregateId->toString());
+        $stmt->bindValue(1, $aggregateId->toUuidString());
         $result = $stmt->executeQuery();
 
         if (($aggregateRow = $result->fetchAssociative()) === false) {
@@ -55,11 +55,11 @@ class PsqlEventStore implements EventStoreInterface
         }
         if (!$afterVersion) {
             $stmt = $this->connection->prepare('SELECT event_id, aggregate_id, data, type, version, occurred_at FROM event WHERE aggregate_id = ? ORDER BY version');
-            $stmt->bindValue(1, $aggregateId->toString());
+            $stmt->bindValue(1, $aggregateId->toUuidString());
             $startVersion = Version::zero();
         } else {
             $stmt = $this->connection->prepare('SELECT event_id, aggregate_id, data, type, version, occurred_at FROM event WHERE aggregate_id = ? AND version > ? ORDER BY version');
-            $stmt->bindValue(1, $aggregateId->toString());
+            $stmt->bindValue(1, $aggregateId->toUuidString());
             $stmt->bindValue(2, $afterVersion->toString());
             $startVersion = clone $afterVersion;
         }
@@ -101,7 +101,7 @@ class PsqlEventStore implements EventStoreInterface
         $this->connection->beginTransaction();
         try {
             $stmt = $this->connection->prepare('SELECT version FROM aggregate WHERE aggregate_id = ?;');
-            $stmt->bindValue(1, $aggregateId->toString());
+            $stmt->bindValue(1, $aggregateId->toUuidString());
             $result = $stmt->executeQuery();
 
             $versionNumber = $result->fetchOne();
@@ -109,7 +109,7 @@ class PsqlEventStore implements EventStoreInterface
 
             if (!$actualVersion) {
                 $stmt2 = $this->connection->prepare('INSERT INTO aggregate(id, aggregate_id, type, version) VALUES(nextval(\'aggregate_id_seq\'), ?, ?, ?);');
-                $stmt2->bindValue(1, $aggregateId->toString());
+                $stmt2->bindValue(1, $aggregateId->toUuidString());
                 $stmt2->bindValue(2, $aggregateType->toString());
                 $stmt2->bindValue(3, $expectedVersion->toString());
                 $stmt2->executeQuery();
@@ -127,8 +127,8 @@ class PsqlEventStore implements EventStoreInterface
                 $newVersion = $newVersion->incremented();
 
                 $stmt3 = $this->connection->prepare('INSERT INTO event(id, event_id, aggregate_id, data, type, version, occurred_at) VALUES(nextval(\'event_id_seq\'), ?, ?, ?, ?, ?, ?);');
-                $stmt3->bindValue(1, $event->getEventId()->toString());
-                $stmt3->bindValue(2, $aggregateId->toString());
+                $stmt3->bindValue(1, $event->getUuid()->toString());
+                $stmt3->bindValue(2, $aggregateId->toUuidString());
                 $stmt3->bindValue(3,
                     $this->serializer->seriazlize($event,
                         [
@@ -148,7 +148,7 @@ class PsqlEventStore implements EventStoreInterface
 
             $stmt4 = $this->connection->prepare('UPDATE aggregate SET version = ? WHERE aggregate_id = ?;');
             $stmt4->bindValue(1, $newVersion->toString());
-            $stmt4->bindValue(2, $aggregateId->toString());
+            $stmt4->bindValue(2, $aggregateId->toUuidString());
             $stmt4->executeQuery();
             $this->connection->commit();
 

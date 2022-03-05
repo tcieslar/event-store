@@ -58,7 +58,7 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
 
     private function getKey(AggregateIdInterface $aggregateId): string
     {
-        return 'aggregate-' . $aggregateId->toString();
+        return 'aggregate-' . $aggregateId->toUuidString();
     }
 
     private function connect(): void

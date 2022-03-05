@@ -3,29 +3,29 @@
 namespace Tcieslar\EventStore\Example\Event;
 
 use DateTimeImmutable;
-use Tcieslar\EventStore\Event\EventId;
 use Tcieslar\EventStore\Event\EventInterface;
+use Tcieslar\EventStore\Utils\Uuid;
 
 abstract class DomainEventExample implements EventInterface
 {
-    protected EventId $eventId;
+    protected Uuid $uuid;
     protected DateTimeImmutable $occurredAt;
 
     public function __construct(
-        ?EventId           $eventId,
+        ?Uuid              $uuid,
         ?DateTimeImmutable $occurredAt
     )
     {
-        $this->eventId = $eventId ?? new EventId();
+        $this->uuid = $uuid ?? Uuid::random();
         $this->occurredAt = $occurredAt ?? DateTimeImmutable::createFromFormat(
                 DATE_RFC3339,
                 (new \DateTimeImmutable())->format(DATE_RFC3339)
             );
     }
 
-    public function getEventId(): EventId
+    public function getUuid(): Uuid
     {
-        return $this->eventId;
+        return $this->uuid;
     }
 
     public function getOccurredAt(): DateTimeImmutable

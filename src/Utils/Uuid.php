@@ -10,6 +10,9 @@ class Uuid
         private string $uuid
     )
     {
+        if (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $uuid) !== 1) {
+            throw new \InvalidArgumentException('Uuid wrong value.');
+        }
     }
 
     public static function random(): self

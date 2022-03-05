@@ -16,13 +16,13 @@ class InMemorySnapshotRepository implements SnapshotRepositoryInterface
 
     public function getSnapshot(AggregateIdInterface $aggregateId): ?Snapshot
     {
-        $idString = $aggregateId->toString();
+        $idString = $aggregateId->toUuidString();
         return $this->snapshots[$idString] ?? null;
     }
 
     public function saveSnapshot(AggregateInterface $aggregate, Version $version): void
     {
-        $idString = $aggregate->getId()->toString();
+        $idString = $aggregate->getId()->toUuidString();
 
         $this->store($version, $aggregate, $idString);
     }

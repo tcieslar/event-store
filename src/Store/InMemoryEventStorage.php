@@ -17,19 +17,19 @@ class InMemoryEventStorage
 
     public function getAggregateVersion(AggregateIdInterface $aggregateId): ?Version
     {
-        $idString = $aggregateId->toString();
+        $idString = $aggregateId->toUuidString();
         return $this->aggregatesVersion[$idString] ?? null;
     }
 
     public function getAggregateType(AggregateIdInterface $aggregateId): ?AggregateType
     {
-        $idString = $aggregateId->toString();
+        $idString = $aggregateId->toUuidString();
         return $this->aggregatesType[$idString] ?? null;
     }
 
     public function createAggregate(AggregateIdInterface $aggregateId, AggregateType $aggregateType, Version $expectedVersion): void
     {
-        $idString = $aggregateId->toString();
+        $idString = $aggregateId->toUuidString();
 
         $this->aggregatesVersion[$idString] = $expectedVersion;
         $this->aggregatesType[$idString] = $aggregateType;
@@ -38,7 +38,7 @@ class InMemoryEventStorage
 
     public function getEventStream(AggregateIdInterface $aggregateId): EventStream
     {
-        $idString = $aggregateId->toString();
+        $idString = $aggregateId->toUuidString();
         $versionColumn = array_column($this->events[$idString], 'version');
         $eventsColumn = array_column($this->events[$idString], 'event');
         array_multisort($versionColumn, $eventsColumn, SORT_ASC);
@@ -55,14 +55,14 @@ class InMemoryEventStorage
     public function getEventStreamAfterVersion(AggregateIdInterface $aggregateId, Version $afterVersion): EventStream
     {
         $events = [];
-        foreach ($this->events[$aggregateId->toString()] as $key => $eventArray) {
+        foreach ($this->events[$aggregateId->toUuidString()] as $key => $eventArray) {
             if ($eventArray['version'] > (int)$afterVersion->toString()) {
                 $events[] = $eventArray;
 
             }
         }
 
-        $aggregateVersion = $this->aggregatesVersion[$aggregateId->toString()];
+        $aggregateVersion = $this->aggregatesVersion[$aggregateId->toUuidString()];
         return new EventStream(
             $aggregateId,
             $this->getAggregateType($aggregateId),
@@ -76,7 +76,7 @@ class InMemoryEventStorage
 
     public function storeEvents(AggregateIdInterface $aggregateId, Version $version, EventCollection $events): Version
     {
-        $idString = $aggregateId->toString();
+        $idString = $aggregateId->toUuidString();
         $newVersion = $version;
         /** @var EventInterface $event */
         foreach ($events->getAll() as $event) {

@@ -3,19 +3,19 @@
 namespace Tcieslar\EventStore\Example\Event;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
-use Tcieslar\EventStore\Event\EventId;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Utils\Uuid;
 
 class CustomerCreatedEvent extends DomainEventExample
 {
     public function __construct(
         private CustomerId  $customerId,
-        ?EventId            $eventId = null,
+        ?Uuid               $uuid = null,
         ?\DateTimeImmutable $occurredAt = null
     )
     {
         parent::__construct(
-            $eventId,
+            $uuid,
             $occurredAt
         );
     }
@@ -33,8 +33,8 @@ class CustomerCreatedEvent extends DomainEventExample
     public function normalize(): array
     {
         return [
-            'customer_id' => $this->getCustomerId()->toString(),
-            'event_id' => $this->eventId->toString(),
+            'customer_id' => $this->getCustomerId()->toUuidString(),
+            'event_id' => $this->uuid->toString(),
             'occurred_at' => $this->occurredAt->format(DATE_RFC3339)
         ];
     }
@@ -43,7 +43,7 @@ class CustomerCreatedEvent extends DomainEventExample
     {
         return new self(
             CustomerId::fromString($data['customer_id']),
-            EventId::fromString($data['event_id']),
+            Uuid::fromString($data['event_id']),
             \DateTimeImmutable::createFromFormat(DATE_RFC3339, $data['occurred_at'])
         );
     }

@@ -38,7 +38,7 @@ class UnitOfWorkTest extends TestCase
         $reflectionProperty = $reflectionClass->getProperty('identityMap');
         $identityMap = $reflectionProperty->getValue($unitOfWork);
 
-        $this->assertEquals('0', $identityMap[$customer->getId()->toString()]['version']->toString());
+        $this->assertEquals('0', $identityMap[$customer->getId()->toUuidString()]['version']->toString());
     }
 
     public function testInsertException(): void
@@ -94,7 +94,7 @@ class UnitOfWorkTest extends TestCase
 
         // loaded with version 2
         $this->assertNotEmpty($identityMap);
-        $this->assertEquals('2', $identityMap[$customerId->toString()]['version']->toString());
+        $this->assertEquals('2', $identityMap[$customerId->toUuidString()]['version']->toString());
     }
 
     public function testChangeVersion(): void
@@ -113,11 +113,11 @@ class UnitOfWorkTest extends TestCase
         $identityMap = $reflectionProperty->getValue($unitOfWork);
 
         $this->assertNotEmpty($identityMap);
-        $this->assertEquals('0', $identityMap[$customerId->toString()]['version']->toString());
+        $this->assertEquals('0', $identityMap[$customerId->toUuidString()]['version']->toString());
 
         $unitOfWork->changeVersion($customer, Version::number(123456));
         $identityMap = $reflectionProperty->getValue($unitOfWork);
-        $this->assertEquals('123456', $identityMap[$customerId->toString()]['version']->toString());
+        $this->assertEquals('123456', $identityMap[$customerId->toUuidString()]['version']->toString());
     }
 
     public function testVersionException(): void

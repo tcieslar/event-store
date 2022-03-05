@@ -13,8 +13,8 @@ class EventCollectionTest extends TestCase
     public function testIterator(): void
     {
         $collection = new EventCollection();
-        $collection->add(new CustomerCreatedEvent(new CustomerId('guid')));
-        $collection->add(new CustomerCredentialSetEvent(new CustomerId('guid'), 'test 1'));
+        $collection->add(new CustomerCreatedEvent(CustomerId::create()));
+        $collection->add(new CustomerCredentialSetEvent(CustomerId::create(), 'test 1'));
 
         foreach ($collection as $key => $item) {
             $this->assertGreaterThanOrEqual(0, $key);
