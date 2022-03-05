@@ -4,6 +4,7 @@ namespace Tcieslar\EventStore\Tests\Functional;
 
 use Tcieslar\EventStore\Aggregate\AggregateManager;
 use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
+use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
@@ -28,8 +29,10 @@ class RepositoryTest extends TestCase
         );
         $aggregateManager = new AggregateManager(
             unitOfWork: new UnitOfWork(),
-            eventStore: $eventStore, snapshotRepository: new InMemorySnapshotRepository(),
-            concurrencyResolvingStrategy: new DoNothingStrategy()
+            eventStore: $eventStore,
+            snapshotRepository: new InMemorySnapshotRepository(),
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
         $repository = new CustomerRepository($aggregateManager);
 
@@ -53,7 +56,8 @@ class RepositoryTest extends TestCase
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: new InMemorySnapshotRepository(),
-            concurrencyResolvingStrategy: new DoNothingStrategy()
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
         $repository = new CustomerRepository($aggregateManager);
 
@@ -85,7 +89,8 @@ class RepositoryTest extends TestCase
             unitOfWork: new UnitOfWork(),
             eventStore: $eventStore,
             snapshotRepository: $snapshotRepository,
-            concurrencyResolvingStrategy: new DoNothingStrategy()
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         // insert

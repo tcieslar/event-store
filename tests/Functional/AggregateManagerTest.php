@@ -5,6 +5,7 @@ namespace Tcieslar\EventStore\Tests\Functional;
 use Tcieslar\EventStore\Aggregate\AggregateManager;
 use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
 use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
@@ -47,7 +48,8 @@ class AggregateManagerTest extends TestCase
             unitOfWork: $unitOfWork,
             eventStore: $eventStore,
             snapshotRepository: new InMemorySnapshotRepository(),
-            concurrencyResolvingStrategy: new DoNothingStrategy()
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         // flush
@@ -72,7 +74,8 @@ class AggregateManagerTest extends TestCase
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: new InMemorySnapshotRepository(),
-            concurrencyResolvingStrategy: new DoNothingStrategy()
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         $customer = $this->createCustomer();
@@ -98,7 +101,8 @@ class AggregateManagerTest extends TestCase
             unitOfWork: $unitOfWork,
             eventStore: $eventStore,
             snapshotRepository: new InMemorySnapshotRepository(),
-            concurrencyResolvingStrategy: new DoNothingStrategy()
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         // create
@@ -145,7 +149,8 @@ class AggregateManagerTest extends TestCase
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: new InMemorySnapshotRepository(),
-            concurrencyResolvingStrategy: new DoNothingStrategy()
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         // create and modify
@@ -203,7 +208,8 @@ class AggregateManagerTest extends TestCase
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: $snapshotRepository,
-            concurrencyResolvingStrategy: new DoNothingStrategy()
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         // insert
@@ -234,7 +240,8 @@ class AggregateManagerTest extends TestCase
                 eventPublisher: new FileEventPublisher()
             ),
             snapshotRepository: $snapshotRepository,
-            concurrencyResolvingStrategy: new DoNothingStrategy()
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         // insert

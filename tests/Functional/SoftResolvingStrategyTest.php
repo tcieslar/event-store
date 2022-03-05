@@ -15,6 +15,7 @@ use Tcieslar\EventStore\Example\Aggregate\OrderId;
 use Tcieslar\EventStore\Exception\AggregateReloadNeedException;
 use Tcieslar\EventStore\Exception\RealConcurrencyException;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
+use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
 
@@ -31,14 +32,16 @@ class SoftResolvingStrategyTest extends TestCase
             unitOfWork: new UnitOfWork(),
             eventStore: $eventStore,
             snapshotRepository: $snapshotRepository,
-            concurrencyResolvingStrategy: new SoftResolvingStrategy($eventStore)
+            concurrencyResolvingStrategy: new SoftResolvingStrategy($eventStore),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         $aggregateManager2 = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: $eventStore,
             snapshotRepository: $snapshotRepository,
-            concurrencyResolvingStrategy: new SoftResolvingStrategy($eventStore)
+            concurrencyResolvingStrategy: new SoftResolvingStrategy($eventStore),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         //create, first thread
@@ -70,14 +73,16 @@ class SoftResolvingStrategyTest extends TestCase
             unitOfWork: new UnitOfWork(),
             eventStore: $eventStore,
             snapshotRepository: $snapshotRepository,
-            concurrencyResolvingStrategy: new SoftResolvingStrategy($eventStore)
+            concurrencyResolvingStrategy: new SoftResolvingStrategy($eventStore),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         $aggregateManager2 = new AggregateManager(
             unitOfWork: new UnitOfWork(),
             eventStore: $eventStore,
             snapshotRepository: $snapshotRepository,
-            concurrencyResolvingStrategy: new SoftResolvingStrategy($eventStore)
+            concurrencyResolvingStrategy: new SoftResolvingStrategy($eventStore),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
 
         //create, first thread

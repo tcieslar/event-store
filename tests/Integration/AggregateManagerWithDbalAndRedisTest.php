@@ -17,6 +17,7 @@ use Tcieslar\EventStore\Example\Aggregate\Order;
 use Tcieslar\EventStore\Example\Aggregate\OrderId;
 use Tcieslar\EventStore\Example\Repository\CustomerRepository;
 use Tcieslar\EventStore\Snapshot\RedisSnapshotRepository;
+use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
 use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
 
@@ -42,7 +43,8 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
             unitOfWork: $unitOfWork,
             eventStore: $eventStore,
             snapshotRepository: $snapshotRepository,
-            concurrencyResolvingStrategy: $concurrencyResolvingStrategy
+            concurrencyResolvingStrategy: $concurrencyResolvingStrategy,
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
         );
         $customerRepository = new CustomerRepository($aggregateManager);
 

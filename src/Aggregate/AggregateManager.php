@@ -9,6 +9,7 @@ use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventStore\ConcurrencyResolving\ConcurrencyResolvingStrategyInterface;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Snapshot\SnapshotRepositoryInterface;
+use Tcieslar\EventStore\Snapshot\SnapshotStoreStrategyInterface;
 
 class AggregateManager implements AggregateManagerInterface
 {
@@ -16,7 +17,8 @@ class AggregateManager implements AggregateManagerInterface
         private UnitOfWork                            $unitOfWork,
         private EventStoreInterface                   $eventStore,
         private SnapshotRepositoryInterface           $snapshotRepository,
-        private ConcurrencyResolvingStrategyInterface $concurrencyResolvingStrategy
+        private ConcurrencyResolvingStrategyInterface $concurrencyResolvingStrategy,
+        private SnapshotStoreStrategyInterface        $snapshotStoreStrategy
     )
     {
     }
@@ -90,10 +92,13 @@ class AggregateManager implements AggregateManagerInterface
         $classFqcn = $eventStream->aggregateType->toString();
         $aggregate = $classFqcn::loadFromEvents($eventStream->events);
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
-        $this->snapshotRepository->saveSnapshot(
-            $aggregate,
-            $eventStream->endVersion
-        );
+
+        if($this->snapshotStoreStrategy->whetherToStoreNew(null)){
+            $this->snapshotRepository->saveSnapshot(
+                $aggregate,
+                $eventStream->endVersion
+            );
+        }
 
         return $aggregate;
     }
@@ -111,11 +116,12 @@ class AggregateManager implements AggregateManagerInterface
             $aggregate->reply($event);
         }
 
-        //todo :
-        $this->snapshotRepository->saveSnapshot(
-            $aggregate,
-            $eventStream->endVersion
-        );
+        if($this->snapshotStoreStrategy->whetherToStoreNew($snapshot)) {
+            $this->snapshotRepository->saveSnapshot(
+                $aggregate,
+                $eventStream->endVersion
+            );
+        }
 
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
 
