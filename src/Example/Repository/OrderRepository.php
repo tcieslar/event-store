@@ -10,6 +10,6 @@ class OrderRepository extends Repository
 {
     public function find(OrderId $customerId): ?Order
     {
-        return $this->findOne($customerId);
+        return $this->findOne($customerId->getUuid());
     }
 }

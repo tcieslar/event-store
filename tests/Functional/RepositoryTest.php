@@ -120,7 +120,7 @@ class RepositoryTest extends TestCase
         $customer2 = $customerRepository->find($customerId);
         $order2 = $orderRepository->find($orderId);
 
-        $this->assertSame($customer->getId(), $customer2->getId());
-        $this->assertSame($order->getId(), $order2->getId());
+        $this->assertSame($customer->getUuid(), $customer2->getUuid());
+        $this->assertSame($order->getUuid(), $order2->getUuid());
     }
 }

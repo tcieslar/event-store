@@ -10,6 +10,6 @@ class CustomerRepository extends Repository
 {
     public function find(CustomerId $customerId): ?Customer
     {
-        return $this->findOne($customerId);
+        return $this->findOne($customerId->getUuid());
     }
 }

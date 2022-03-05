@@ -2,7 +2,6 @@
 
 namespace Tcieslar\EventStore\Example\Event;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Utils\Uuid;
 
@@ -25,10 +24,6 @@ class CustomerCreatedEvent extends DomainEventExample
         return $this->customerId;
     }
 
-    public function getAggregateId(): AggregateIdInterface
-    {
-        return $this->customerId;
-    }
 
     public function normalize(): array
     {

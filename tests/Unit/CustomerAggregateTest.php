@@ -16,7 +16,7 @@ final class CustomerAggregateTest extends TestCase
         $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
 
-        $this->assertSame($customer->getId(), $customerId);
+        $this->assertSame($customer->getUuid(), $customerId->getUuid());
         $changes = $customer->recordedEvents();
         $this->assertNotEmpty($changes);
         $this->assertInstanceOf(CustomerCreatedEvent::class, $changes->get(0));

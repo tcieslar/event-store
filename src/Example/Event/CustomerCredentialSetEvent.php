@@ -21,10 +21,6 @@ class CustomerCredentialSetEvent extends DomainEventExample
         );
     }
 
-    public function getAggregateId(): AggregateIdInterface
-    {
-        return $this->customerId;
-    }
 
     public function getCustomerId(): CustomerId
     {

@@ -3,6 +3,7 @@
 namespace Tcieslar\EventStore\Aggregate;
 
 use Error;
+use Tcieslar\EventStore\Utils\Uuid;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventInterface;
 use Tcieslar\EventStore\Exception\EventAggregateMismatchException;
@@ -29,7 +30,7 @@ abstract class Aggregate implements AggregateInterface
         $this->recordedEvents = new EventCollection();
     }
 
-    abstract public function getId(): AggregateIdInterface;
+    abstract public function getUuid(): Uuid;
 
 
     public function recordedEvents(): EventCollection

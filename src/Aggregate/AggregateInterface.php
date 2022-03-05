@@ -5,6 +5,7 @@ namespace Tcieslar\EventStore\Aggregate;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventInterface;
 use Tcieslar\EventStore\Exception\EventAggregateMismatchException;
+use Tcieslar\EventStore\Utils\Uuid;
 
 interface AggregateInterface
 {
@@ -13,7 +14,7 @@ interface AggregateInterface
      */
     public static function loadFromEvents(EventCollection $events): static;
 
-    public function getId(): AggregateIdInterface;
+    public function getUuid(): Uuid;
 
     public function recordedEvents(): EventCollection;
 

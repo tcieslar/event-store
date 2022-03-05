@@ -8,6 +8,7 @@ use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventStore\Event\EventCollection;
 use Tcieslar\EventStore\Event\EventInterface;
 use Tcieslar\EventStore\Event\EventStream;
+use Tcieslar\EventStore\Utils\Uuid;
 
 class InMemoryEventStorage
 {
@@ -15,30 +16,30 @@ class InMemoryEventStorage
     private array $aggregatesType = [];
     private array $events = [];
 
-    public function getAggregateVersion(AggregateIdInterface $aggregateId): ?Version
+    public function getAggregateVersion(Uuid $aggregateId): ?Version
     {
-        $idString = $aggregateId->toUuidString();
+        $idString = $aggregateId->toString();
         return $this->aggregatesVersion[$idString] ?? null;
     }
 
-    public function getAggregateType(AggregateIdInterface $aggregateId): ?AggregateType
+    public function getAggregateType(Uuid $aggregateId): ?AggregateType
     {
-        $idString = $aggregateId->toUuidString();
+        $idString = $aggregateId->toString();
         return $this->aggregatesType[$idString] ?? null;
     }
 
-    public function createAggregate(AggregateIdInterface $aggregateId, AggregateType $aggregateType, Version $expectedVersion): void
+    public function createAggregate(Uuid $aggregateId, AggregateType $aggregateType, Version $expectedVersion): void
     {
-        $idString = $aggregateId->toUuidString();
+        $idString = $aggregateId->toString();
 
         $this->aggregatesVersion[$idString] = $expectedVersion;
         $this->aggregatesType[$idString] = $aggregateType;
         $this->events[$idString] = [];
     }
 
-    public function getEventStream(AggregateIdInterface $aggregateId): EventStream
+    public function getEventStream(Uuid $aggregateId): EventStream
     {
-        $idString = $aggregateId->toUuidString();
+        $idString = $aggregateId->toString();
         $versionColumn = array_column($this->events[$idString], 'version');
         $eventsColumn = array_column($this->events[$idString], 'event');
         array_multisort($versionColumn, $eventsColumn, SORT_ASC);
@@ -52,17 +53,17 @@ class InMemoryEventStorage
         );
     }
 
-    public function getEventStreamAfterVersion(AggregateIdInterface $aggregateId, Version $afterVersion): EventStream
+    public function getEventStreamAfterVersion(Uuid $aggregateId, Version $afterVersion): EventStream
     {
         $events = [];
-        foreach ($this->events[$aggregateId->toUuidString()] as $key => $eventArray) {
+        foreach ($this->events[$aggregateId->toString()] as $key => $eventArray) {
             if ($eventArray['version'] > (int)$afterVersion->toString()) {
                 $events[] = $eventArray;
 
             }
         }
 
-        $aggregateVersion = $this->aggregatesVersion[$aggregateId->toUuidString()];
+        $aggregateVersion = $this->aggregatesVersion[$aggregateId->toString()];
         return new EventStream(
             $aggregateId,
             $this->getAggregateType($aggregateId),
@@ -74,9 +75,9 @@ class InMemoryEventStorage
         );
     }
 
-    public function storeEvents(AggregateIdInterface $aggregateId, Version $version, EventCollection $events): Version
+    public function storeEvents(Uuid $aggregateId, Version $version, EventCollection $events): Version
     {
-        $idString = $aggregateId->toUuidString();
+        $idString = $aggregateId->toString();
         $newVersion = $version;
         /** @var EventInterface $event */
         foreach ($events->getAll() as $event) {

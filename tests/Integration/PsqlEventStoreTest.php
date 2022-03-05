@@ -41,14 +41,14 @@ class PsqlEventStoreTest extends TestCase
                 $events->get(1) instanceof CustomerCredentialSetEvent
             ));
         $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
-        $eventStore->appendToStream($customer->getId(),
+        $eventStore->appendToStream($customer->getUuid(),
             $aggregateType,
             Version::zero(),
             $customer->recordedEvents()
         );
-        $eventStream = $eventStore->loadFromStream($customerId);
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid());
 
-        $this->assertEquals($customerId, $eventStream->aggregateId);
+        $this->assertEquals($customerId->getUuid(), $eventStream->aggregateId);
         $this->assertEquals(Version::zero(), $eventStream->startVersion);
         $this->assertEquals(Version::number(2), $eventStream->endVersion);
         $this->assertEquals($aggregateType, $eventStream->aggregateType);
@@ -65,7 +65,7 @@ class PsqlEventStoreTest extends TestCase
         $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
 
         $this->expectExceptionMessage('Aggregate not found.');
-        $eventStore->loadFromStream($customerId);
+        $eventStore->loadFromStream($customerId->getUuid());
     }
 
     public function testNewAggregate(): void
@@ -83,9 +83,9 @@ class PsqlEventStoreTest extends TestCase
                 $events->get(1) instanceof CustomerCredentialSetEvent
             ));
         $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
-        $eventStore->appendToStream($customerId, $aggregateType, Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId->getUuid(), $aggregateType, Version::zero(), $customer->recordedEvents());
 
-        $eventStream = $eventStore->loadFromStream($customerId);
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid());
         $this->assertCount(2, $eventStream->events);
         $this->assertEquals('0', $eventStream->startVersion->toString());
         $this->assertEquals('2', $eventStream->endVersion->toString());
@@ -106,20 +106,20 @@ class PsqlEventStoreTest extends TestCase
         $event1 = $customer->recordedEvents()->get(0);
 
         // insert
-        $eventStore->appendToStream($customerId, $aggregateType, Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId->getUuid(), $aggregateType, Version::zero(), $customer->recordedEvents());
 
         // read
-        $eventStream = $eventStore->loadFromStream($customerId);
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid());
 
         $this->assertEquals($eventStream->events->get(0), $event1);
 
         // insert 2
         $customer = Customer::loadFromEvents($eventStream->events);
         $customer->setName('test2');
-        $eventStore->appendToStream($customerId, $aggregateType, $eventStream->endVersion, $customer->recordedEvents());
+        $eventStore->appendToStream($customerId->getUuid(), $aggregateType, $eventStream->endVersion, $customer->recordedEvents());
 
         //read 2
-        $eventStream = $eventStore->loadFromStream($customerId);
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid());
         $customer = Customer::loadFromEvents($eventStream->events);
         $this->assertEquals('test2', $customer->getName());
         $this->assertEquals('3', $eventStream->endVersion->toString());
@@ -149,15 +149,15 @@ class PsqlEventStoreTest extends TestCase
 
             ));
         $eventStore = new PsqlEventStore(self::$postgreUrl, $this->getSerializer(), $eventPublisher);
-        $eventStore->appendToStream($customerId, $aggregateType, Version::zero(), $customer->recordedEvents());
+        $eventStore->appendToStream($customerId->getUuid(), $aggregateType, Version::zero(), $customer->recordedEvents());
 
-        $eventStream = $eventStore->loadFromStream($customerId, Version::zero());
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid(), Version::zero());
         $this->assertCount(5, $eventStream->events);
-        $eventStream = $eventStore->loadFromStream($customerId, Version::number(1));
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid(), Version::number(1));
         $this->assertCount(4, $eventStream->events);
-        $eventStream = $eventStore->loadFromStream($customerId, Version::number(2));
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid(), Version::number(2));
         $this->assertCount(3, $eventStream->events);
-        $eventStream = $eventStore->loadFromStream($customerId, Version::number(4));
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid(), Version::number(4));
         $this->assertCount(1, $eventStream->events);
     }
 

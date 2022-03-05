@@ -2,6 +2,7 @@
 
 namespace Tcieslar\EventStore\Example\Aggregate;
 
+use Tcieslar\EventStore\Utils\Uuid;
 use Tcieslar\EventStore\Aggregate\Aggregate;
 use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
@@ -32,7 +33,12 @@ class Customer extends Aggregate
         parent::__construct();
     }
 
-    public function getId(): CustomerId
+    public function getUuid(): Uuid
+    {
+        return $this->customerId->getUuid();
+    }
+
+    public function getCustomerId(): CustomerId
     {
         return $this->customerId;
     }

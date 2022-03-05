@@ -16,7 +16,7 @@ class ConcurrentExceptionTest extends TestCase
     public function testException(): void
     {
         $exception = new ConcurrencyException(
-            CustomerId::create(),
+            CustomerId::create()->getUuid(),
             new AggregateType(Customer::class),
             Version::number(123),
             Version::number(123),

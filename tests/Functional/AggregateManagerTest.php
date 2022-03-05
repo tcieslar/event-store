@@ -32,7 +32,7 @@ class AggregateManagerTest extends TestCase
         $eventStore = $this->createMock(InMemoryEventStore::class);
         $eventStore->expects($this->once())
             ->method('appendToStream')
-            ->with($this->equalTo($customer->getId()),
+            ->with($this->equalTo($customer->getUuid()),
                 $this->equalTo(
                     $aggregateType
                 ),
@@ -63,7 +63,7 @@ class AggregateManagerTest extends TestCase
 
         // check identityMap version number
         $identityMap = $unitOfWork->getIdentityMap();
-        $this->assertSame('2', $identityMap[$customer->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('2', $identityMap[$customer->getUuid()->toString()]['version']->toString());
     }
 
     public function testSecondFlush(): void
@@ -89,7 +89,7 @@ class AggregateManagerTest extends TestCase
 
         // check identityMap version number
         $identityMap = $unitOfWork->getIdentityMap();
-        $this->assertSame('2', $identityMap[$customer->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('2', $identityMap[$customer->getUuid()->toString()]['version']->toString());
     }
 
     public function testMultiAggregateFlush(): void
@@ -119,9 +119,9 @@ class AggregateManagerTest extends TestCase
         $aggregateManager->flush();
 
         // check identityMap version number
-        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerA->getId()->toUuidString()]['version']->toString());
-        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerB->getId()->toUuidString()]['version']->toString());
-        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerC->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerA->getUuid()->toString()]['version']->toString());
+        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerB->getUuid()->toString()]['version']->toString());
+        $this->assertSame('2', $unitOfWork->getIdentityMap()[$customerC->getUuid()->toString()]['version']->toString());
         $this->assertCount(6, $eventStore->getAllEvents());
 
         // update after flush
@@ -137,7 +137,7 @@ class AggregateManagerTest extends TestCase
 
         $this->assertCount(0, $customerA->recordedEvents());
         $this->assertCount(0, $customerC->recordedEvents());
-        $this->assertSame('3', $unitOfWork->getIdentityMap()[$customerC->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('3', $unitOfWork->getIdentityMap()[$customerC->getUuid()->toString()]['version']->toString());
         $this->assertCount(8, $eventStore->getAllEvents());
     }
 
@@ -174,7 +174,7 @@ class AggregateManagerTest extends TestCase
 
         // flush
         $aggregateManager->flush();
-        $this->assertSame('5', ($unitOfWork)->getIdentityMap()[$customerA->getId()->toUuidString()]['version']->toString());
+        $this->assertSame('5', ($unitOfWork)->getIdentityMap()[$customerA->getUuid()->toString()]['version']->toString());
     }
 
 //    public function testWrongAggregateType(): void
@@ -221,14 +221,14 @@ class AggregateManagerTest extends TestCase
         $aggregateManager->reset();
 
         // loading from store, snapshot saved
-        $customer = $aggregateManager->findAggregate($customer->getId());
-        $snapshot = $snapshotRepository->getSnapshot($customer->getId());
+        $customer = $aggregateManager->findAggregate($customer->getUuid());
+        $snapshot = $snapshotRepository->getSnapshot($customer->getUuid());
         $this->assertNotNull($snapshot);
         $this->assertEquals($customer, $snapshot->aggregate);
         $aggregateManager->reset();
 
         // loading from snapshot
-        $customer2 = $aggregateManager->findAggregate($customer->getId());
+        $customer2 = $aggregateManager->findAggregate($customer->getUuid());
         $this->assertEquals($customer, $customer2);
     }
 
@@ -253,8 +253,8 @@ class AggregateManagerTest extends TestCase
         $aggregateManager->reset();
 
         // loading from store, snapshot saved
-        $customer = $aggregateManager->findAggregate($customer->getId());
-        $snapshot = $snapshotRepository->getSnapshot($customer->getId());
+        $customer = $aggregateManager->findAggregate($customer->getUuid());
+        $snapshot = $snapshotRepository->getSnapshot($customer->getUuid());
 
         $this->assertNotNull($snapshot);
         $this->assertEquals($customer, $snapshot->aggregate);
@@ -263,7 +263,7 @@ class AggregateManagerTest extends TestCase
 
         // loading from snapshot
         /** @var Customer $customer2 */
-        $customer2 = $aggregateManager->findAggregate($customer->getId());
+        $customer2 = $aggregateManager->findAggregate($customer->getUuid());
 
         // store new event
         $customer2->setName('test 3');
@@ -271,7 +271,7 @@ class AggregateManagerTest extends TestCase
         $aggregateManager->reset();
 
         // load from snapshot with additional event
-        $customer3 = $aggregateManager->findAggregate($customer->getId());
+        $customer3 = $aggregateManager->findAggregate($customer->getUuid());
         $this->assertEquals('test 3', $customer3->getName());
     }
 

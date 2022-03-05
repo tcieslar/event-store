@@ -3,6 +3,7 @@
 namespace Tcieslar\EventStore\Aggregate;
 
 use InvalidArgumentException;
+use Tcieslar\EventStore\Utils\Uuid;
 
 class UnitOfWork
 {
@@ -16,7 +17,7 @@ class UnitOfWork
     public function insert(AggregateInterface $aggregate): void
     {
         $this->throwExceptionIfAggregateAlreadyExists($aggregate, 'Aggregate already exists.');
-        $this->identityMap[$aggregate->getId()->toUuidString()] =
+        $this->identityMap[$aggregate->getUuid()->toString()] =
             [
                 'version' => Version::zero(),
                 'aggregate' => $aggregate
@@ -26,7 +27,7 @@ class UnitOfWork
     public function persist(AggregateInterface $aggregate, Version $version): void
     {
         $this->throwExceptionIfAggregateAlreadyExists($aggregate, 'Aggregate already persisted.');
-        $this->identityMap[$aggregate->getId()->toUuidString()] =
+        $this->identityMap[$aggregate->getUuid()->toString()] =
             [
                 'version' => $version,
                 'aggregate' => $aggregate
@@ -37,27 +38,27 @@ class UnitOfWork
     public function getVersion(AggregateInterface $aggregate): Version
     {
         $this->throwExceptionIfAggregateNotFound($aggregate);
-        return $this->identityMap[$aggregate->getId()->toUuidString()]['version'];
+        return $this->identityMap[$aggregate->getUuid()->toString()]['version'];
     }
 
     public function changeVersion(AggregateInterface $aggregate, Version $version): void
     {
         $this->throwExceptionIfAggregateNotFound($aggregate);
-        $this->identityMap[$aggregate->getId()->toUuidString()]['version'] = $version;
+        $this->identityMap[$aggregate->getUuid()->toString()]['version'] = $version;
     }
 
-    public function get(AggregateIdInterface $id): ?AggregateInterface
+    public function get(Uuid $id): ?AggregateInterface
     {
-        if (!isset($this->identityMap[$id->toUuidString()])) {
+        if (!isset($this->identityMap[$id->toString()])) {
             return null;
         }
 
-        return $this->identityMap[$id->toUuidString()]['aggregate'];
+        return $this->identityMap[$id->toString()]['aggregate'];
     }
 
-    public function resetById(AggregateIdInterface $id): void
+    public function resetById(Uuid $id): void
     {
-        unset($this->identityMap[$id->toUuidString()]);
+        unset($this->identityMap[$id->toString()]);
     }
 
     public function reset(): void
@@ -67,14 +68,14 @@ class UnitOfWork
 
     private function throwExceptionIfAggregateAlreadyExists(AggregateInterface $aggregate, string $message): void
     {
-        if (isset($this->identityMap[$aggregate->getId()->toUuidString()])) {
+        if (isset($this->identityMap[$aggregate->getUuid()->toString()])) {
             throw new InvalidArgumentException($message);
         }
     }
 
     private function throwExceptionIfAggregateNotFound(AggregateInterface $aggregate): void
     {
-        if (!isset($this->identityMap[$aggregate->getId()->toUuidString()])) {
+        if (!isset($this->identityMap[$aggregate->getUuid()->toString()])) {
             throw new InvalidArgumentException('Aggregate not found.');
         }
     }

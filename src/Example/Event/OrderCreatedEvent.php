@@ -2,7 +2,6 @@
 
 namespace Tcieslar\EventStore\Example\Event;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Utils\Uuid;
 use Tcieslar\EventStore\Example\Aggregate\OrderId;
 
@@ -21,11 +20,6 @@ class OrderCreatedEvent extends DomainEventExample
         );
     }
 
-    public function getAggregateId(): AggregateIdInterface
-    {
-        return $this->orderId;
-    }
-
     public function getOrderId(): OrderId
     {
         return $this->orderId;
@@ -34,7 +28,7 @@ class OrderCreatedEvent extends DomainEventExample
     public function normalize(): array
     {
         return [
-            'order_id' => $this->getAggregateId()->toUuidString(),
+            'order_id' => $this->getOrderId()->toUuidString(),
             'description' => $this->getDescription(),
             'event_id' => $this->uuid->toString(),
             'occurred_at' => $this->occurredAt->format(DATE_RFC3339)

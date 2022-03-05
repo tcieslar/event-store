@@ -2,6 +2,8 @@
 
 namespace Tcieslar\EventStore\Aggregate;
 
+use Tcieslar\EventStore\Utils\Uuid;
+
 abstract class Repository
 {
     public function __construct(
@@ -10,7 +12,7 @@ abstract class Repository
     {
     }
 
-    public function findOne(AggregateIdInterface $aggregateId)
+    public function findOne(Uuid $aggregateId)
     {
         return $this->aggregateManager->findAggregate($aggregateId);
     }

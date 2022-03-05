@@ -11,6 +11,7 @@ use Tcieslar\EventStore\Event\EventStream;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
+use Tcieslar\EventStore\Utils\Uuid;
 
 class InMemoryEventStore implements EventStoreInterface
 {
@@ -21,7 +22,7 @@ class InMemoryEventStore implements EventStoreInterface
     {
     }
 
-    public function loadFromStream(AggregateIdInterface $aggregateId, ?Version $afterVersion = null): EventStream
+    public function loadFromStream(Uuid $aggregateId, ?Version $afterVersion = null): EventStream
     {
         if (!$this->storage->getAggregateVersion($aggregateId)) {
             throw new AggregateNotFoundException($aggregateId);
@@ -38,7 +39,7 @@ class InMemoryEventStore implements EventStoreInterface
      * @return Version new version
      * @throws ConcurrencyException
      */
-    public function appendToStream(AggregateIdInterface $aggregateId, AggregateType $aggregateType, Version $expectedVersion, EventCollection $events): Version
+    public function appendToStream(Uuid $aggregateId, AggregateType $aggregateType, Version $expectedVersion, EventCollection $events): Version
     {
         $actualVersion = $this->storage->getAggregateVersion($aggregateId);
         if (!$actualVersion) {
