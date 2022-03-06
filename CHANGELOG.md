@@ -1,6 +1,7 @@
 v0.1.1
-- DBAL event store implementation
+- PostgreSQL event store implementation
 - ConcurrencyException resolving implementation
+- Event publisher, event serializer interface
 
 v0.1
 - Event store in memory implementation

@@ -1,5 +1,5 @@
 Event Store
 ===================
 
-Php implementation of a multiplatform eventstore.
+Php implementation of a multiplatform event-store.
 
