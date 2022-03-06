@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Aggregate;
 
 use InvalidArgumentException;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Aggregate;
+use Tcieslar\EventSourcing\Uuid;
 
 class UnitOfWork
 {

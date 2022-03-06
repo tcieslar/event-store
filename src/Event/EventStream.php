@@ -2,9 +2,10 @@
 
 namespace Tcieslar\EventStore\Event;
 
+use Tcieslar\EventSourcing\EventCollection;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
 
 class EventStream
 {

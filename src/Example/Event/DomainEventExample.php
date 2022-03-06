@@ -3,10 +3,10 @@
 namespace Tcieslar\EventStore\Example\Event;
 
 use DateTimeImmutable;
-use Tcieslar\EventStore\Event\EventInterface;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Event;
+use Tcieslar\EventSourcing\Uuid;
 
-abstract class DomainEventExample implements EventInterface
+abstract class DomainEventExample implements Event
 {
     protected Uuid $uuid;
     protected DateTimeImmutable $occurredAt;

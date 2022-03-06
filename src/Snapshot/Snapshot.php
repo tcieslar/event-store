@@ -2,8 +2,7 @@
 
 namespace Tcieslar\EventStore\Snapshot;
 
-use Tcieslar\EventStore\Aggregate\Aggregate;
-use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventSourcing\Aggregate;use Tcieslar\EventStore\Aggregate\Version;
 
 class Snapshot
 {

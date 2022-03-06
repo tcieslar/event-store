@@ -2,9 +2,8 @@
 
 namespace Tcieslar\EventStore\Snapshot;
 
-use Tcieslar\EventStore\Aggregate\Aggregate;
-use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Aggregate;use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventSourcing\Uuid;
 
 interface SnapshotRepositoryInterface
 {

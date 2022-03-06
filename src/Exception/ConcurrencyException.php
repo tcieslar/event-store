@@ -6,8 +6,8 @@ use Exception;
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Event\EventCollection;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\EventCollection;
+use Tcieslar\EventSourcing\Uuid;
 
 class ConcurrencyException extends Exception
 {

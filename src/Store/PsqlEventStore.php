@@ -5,18 +5,17 @@ namespace Tcieslar\EventStore\Store;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\TransactionIsolationLevel;
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Event\EventCollection;
-use Tcieslar\EventStore\Event\EventInterface;
 use Tcieslar\EventStore\Event\EventStream;
 use Tcieslar\EventStore\EventPublisher\EventPublisherInterface;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
+use Tcieslar\EventSourcing\EventCollection;
+use Tcieslar\EventSourcing\Event;
 
 class PsqlEventStore implements EventStoreInterface
 {
@@ -123,7 +122,7 @@ class PsqlEventStore implements EventStoreInterface
             }
 
             $newVersion = clone $actualVersion;
-            /** @var EventInterface $event */
+            /** @var Event $event */
             foreach ($events->getAll() as $event) {
                 $newVersion = $newVersion->incremented();
 

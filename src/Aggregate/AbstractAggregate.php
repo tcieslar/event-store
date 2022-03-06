@@ -3,10 +3,11 @@
 namespace Tcieslar\EventStore\Aggregate;
 
 use Error;
-use Tcieslar\EventStore\Utils\Uuid;
-use Tcieslar\EventStore\Event\EventCollection;
-use Tcieslar\EventStore\Event\EventInterface;
-use Tcieslar\EventStore\Exception\EventAggregateMismatchException;
+use Tcieslar\EventSourcing\Aggregate;
+use Tcieslar\EventSourcing\Uuid;
+use Tcieslar\EventSourcing\EventCollection;
+use Tcieslar\EventSourcing\Event;
+use Tcieslar\EventSourcing\EventAggregateMismatchException;
 
 abstract class AbstractAggregate implements Aggregate
 {
@@ -45,7 +46,7 @@ abstract class AbstractAggregate implements Aggregate
     /**
      * @throws EventAggregateMismatchException
      */
-    protected function apply(EventInterface $event): void
+    protected function apply(Event $event): void
     {
         $this->recordedEvents->add($event);
         $this->mutate($event);
@@ -54,7 +55,7 @@ abstract class AbstractAggregate implements Aggregate
     /**
      * @throws EventAggregateMismatchException
      */
-    public function reply(EventInterface $event): void
+    public function reply(Event $event): void
     {
         $this->mutate($event);
     }
@@ -62,7 +63,7 @@ abstract class AbstractAggregate implements Aggregate
     /**
      * @throws EventAggregateMismatchException
      */
-    protected function mutate(EventInterface $event): void
+    protected function mutate(Event $event): void
     {
         $array = explode('\\', get_class($event));
         $name = 'when' . $array[count($array) - 1];

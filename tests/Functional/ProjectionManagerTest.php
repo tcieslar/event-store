@@ -2,7 +2,7 @@
 
 namespace Tcieslar\EventStore\Tests\Functional;
 
-use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventSourcing\EventCollection;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Example\Aggregate\OrderId;
 use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;

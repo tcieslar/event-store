@@ -2,7 +2,7 @@
 
 namespace Tcieslar\EventStore\Example\Event;
 
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
 use Tcieslar\EventStore\Example\Aggregate\OrderId;
 
 class OrderCreatedEvent extends DomainEventExample

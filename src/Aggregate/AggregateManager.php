@@ -10,7 +10,8 @@ use Tcieslar\EventStore\ConcurrencyResolving\ConcurrencyResolvingStrategyInterfa
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Snapshot\SnapshotRepositoryInterface;
 use Tcieslar\EventStore\Snapshot\SnapshotStoreStrategyInterface;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
+use Tcieslar\EventSourcing\Aggregate;
 
 class AggregateManager implements AggregateManagerInterface
 {

@@ -2,7 +2,7 @@
 
 namespace Tcieslar\EventStore\Example\Utils;
 
-use Tcieslar\EventStore\Event\EventInterface;
+use Tcieslar\EventSourcing\Event;
 use Tcieslar\EventStore\Example\Event\DomainEventExample;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
 
@@ -15,7 +15,7 @@ class JsonSerializerAdapter implements EventSerializerInterface
     /**
      * @throws \JsonException
      */
-    public function seriazlize(EventInterface $event, array $context = []): string
+    public function seriazlize(Event $event, array $context = []): string
     {
         if (!$event instanceof DomainEventExample) {
             throw new \RuntimeException('This serializer uses only the ExampleDomainEvent class.');
@@ -29,7 +29,7 @@ class JsonSerializerAdapter implements EventSerializerInterface
         return json_encode($normalizeData, JSON_THROW_ON_ERROR);
     }
 
-    public function deseriazlize(string $text, string $type, array $context = []): EventInterface
+    public function deseriazlize(string $text, string $type, array $context = []): Event
     {
         $decodedData = json_decode($text, true, 512, JSON_THROW_ON_ERROR);
         if (array_key_exists(EventSerializerInterface::ADD_PROPERTY, $context)) {

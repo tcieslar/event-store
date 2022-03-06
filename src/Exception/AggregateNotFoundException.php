@@ -2,7 +2,7 @@
 
 namespace Tcieslar\EventStore\Exception;
 
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
 
 class AggregateNotFoundException extends \Exception
 {

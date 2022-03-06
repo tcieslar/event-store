@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Serializer;
 
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventSourcing\EventCollection;
 use Tcieslar\EventStore\EventPublisher\EventPublisherInterface;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;

@@ -5,11 +5,11 @@ namespace Tcieslar\EventStore;
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventSourcing\EventCollection;
 use Tcieslar\EventStore\Event\EventStream;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
 
 interface EventStoreInterface
 {

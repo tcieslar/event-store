@@ -5,7 +5,7 @@ namespace Tcieslar\EventStore\Tests\Functional;
 use Tcieslar\EventStore\Aggregate\AggregateManager;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\ConcurrencyResolving\DoNothingStrategy;
-use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventSourcing\EventCollection;
 use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;

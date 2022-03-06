@@ -4,7 +4,7 @@ namespace Tcieslar\EventStore\Example\Event;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
 
 class CustomerCredentialSetEvent extends DomainEventExample
 {

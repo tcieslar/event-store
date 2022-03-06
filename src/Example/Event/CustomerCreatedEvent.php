@@ -3,7 +3,7 @@
 namespace Tcieslar\EventStore\Example\Event;
 
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
 
 class CustomerCreatedEvent extends DomainEventExample
 {

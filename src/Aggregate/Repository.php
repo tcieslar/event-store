@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Aggregate;
 
+use Tcieslar\EventSourcing\Aggregate;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
 
 abstract class Repository
 {

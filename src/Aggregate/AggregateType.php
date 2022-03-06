@@ -2,6 +2,8 @@
 
 namespace Tcieslar\EventStore\Aggregate;
 
+use Tcieslar\EventSourcing\Aggregate;
+
 class AggregateType
 {
     public function __construct(

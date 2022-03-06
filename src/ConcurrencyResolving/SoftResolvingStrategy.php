@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Tcieslar\EventStore\ConcurrencyResolving;
 
-use Tcieslar\EventStore\Event\EventCollection;
-use Tcieslar\EventStore\Event\EventInterface;
+use Tcieslar\EventSourcing\EventCollection;
+use Tcieslar\EventSourcing\Event;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventStore\Exception\RealConcurrencyException;
@@ -22,9 +22,9 @@ class SoftResolvingStrategy implements ConcurrencyResolvingStrategyInterface
     public function resolve(ConcurrencyException $exception): void
     {
         $newEvents = new EventCollection();
-        /** @var EventInterface $event */
+        /** @var Event $event */
         foreach ($exception->eventsToStore as $event) {
-            /** @var EventInterface $storedEvent */
+            /** @var Event $storedEvent */
             $store = true;
             foreach ($exception->storedEvents as $storedEvent) {
                 if (get_class($storedEvent) === get_class($event)) {

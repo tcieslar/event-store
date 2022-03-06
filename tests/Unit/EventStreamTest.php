@@ -3,7 +3,7 @@
 namespace Tcieslar\EventStore\Tests\Unit;
 
 use Tcieslar\EventStore\Aggregate\AggregateType;
-use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventSourcing\EventCollection;
 use Tcieslar\EventStore\Event\EventStream;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;

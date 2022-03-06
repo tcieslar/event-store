@@ -6,7 +6,7 @@ use Tcieslar\EventStore\Aggregate\AbstractAggregate;
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use DateTimeImmutable;
 use Tcieslar\EventStore\Example\Event\OrderCreatedEvent;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
 
 class Order extends AbstractAggregate
 {

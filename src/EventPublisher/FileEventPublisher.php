@@ -2,7 +2,7 @@
 
 namespace Tcieslar\EventStore\EventPublisher;
 
-use Tcieslar\EventStore\Event\EventCollection;
+use Tcieslar\EventSourcing\EventCollection;
 use JsonException;
 
 class FileEventPublisher implements EventPublisherInterface

@@ -3,7 +3,7 @@
 namespace Tcieslar\EventStore\Example\Aggregate;
 
 use InvalidArgumentException;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Uuid;
 use Tcieslar\EventStore\Aggregate\AbstractAggregate;
 use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;

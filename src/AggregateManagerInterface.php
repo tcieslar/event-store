@@ -2,8 +2,8 @@
 
 namespace Tcieslar\EventStore;
 
-use Tcieslar\EventStore\Aggregate\Aggregate;
-use Tcieslar\EventStore\Utils\Uuid;
+use Tcieslar\EventSourcing\Aggregate;
+use Tcieslar\EventSourcing\Uuid;
 
 interface AggregateManagerInterface
 {
