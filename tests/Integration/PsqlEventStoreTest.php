@@ -3,13 +3,6 @@
 namespace Tcieslar\EventStore\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
-use Symfony\Component\Serializer\Serializer;
-
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventSourcing\EventCollection;
@@ -20,7 +13,6 @@ use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
-use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
 use Tcieslar\EventStore\Utils\SymfonySerializerAdapter;
 
 /**
@@ -164,20 +156,6 @@ class PsqlEventStoreTest extends TestCase
 
     private function getSerializer(): EventSerializerInterface
     {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [
-            new DateTimeNormalizer(),
-            new PropertyNormalizer(
-                null, null, new ReflectionExtractor()
-            )];
-        $serializer = new Serializer(
-            $normalizers, $encoders
-        );
-        return new SymfonySerializerAdapter($serializer);
+        return new SymfonySerializerAdapter();
     }
-
-//    private function getSerializer(): EventSerializerInterface
-//    {
-//        return new JsonSerializerAdapter();
-//    }
 }

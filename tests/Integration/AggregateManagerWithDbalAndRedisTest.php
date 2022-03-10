@@ -36,7 +36,7 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
 
     public function testIntegration(): void
     {
-        $serializer = $this->getSerializer();
+        $serializer = new SymfonySerializerAdapter();
         $unitOfWork = new UnitOfWork();
         $eventPublisher = new FileEventPublisher();
         $eventStore = new PsqlEventStore(self::$postgreUrl, $serializer, $eventPublisher);
@@ -80,17 +80,4 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
         $this->assertEquals('name 2', $customer4->getName());
     }
 
-    private function getSerializer(): EventSerializerInterface
-    {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [
-            new DateTimeNormalizer(),
-            new PropertyNormalizer(
-                null, null, new ReflectionExtractor()
-            )];
-        $serializer = new Serializer(
-            $normalizers, $encoders
-        );
-        return new SymfonySerializerAdapter($serializer);
-    }
 }

@@ -33,27 +33,27 @@ class OrderAddedEvent extends DomainEventExample
         return $this->orderDescription;
     }
 
-    public function normalize(): array
-    {
-        return [
-            'customer_id' => $this->customerId->toString(),
-            'order_id' => $this->getOrderId()->toString(),
-            'description' => $this->getOrderDescription(),
-            'event_id' => $this->uuid->toString(),
-            'occurred_at' => $this->occurredAt->format(DATE_RFC3339)
-        ];
-    }
-
-    public static function denormalize(array $data): static
-    {
-        return new self(
-            CustomerId::fromString($data['customer_id']),
-            OrderId::fromString($data['order_id']),
-            $data['description'],
-            Uuid::fromString($data['event_id']),
-            \DateTimeImmutable::createFromFormat(DATE_RFC3339, $data['occurred_at'])
-        );
-    }
+//    public function normalize(): array
+//    {
+//        return [
+//            'customer_id' => $this->customerId->toString(),
+//            'order_id' => $this->getOrderId()->toString(),
+//            'description' => $this->getOrderDescription(),
+//            'event_id' => $this->uuid->toString(),
+//            'occurred_at' => $this->occurredAt->format(DATE_RFC3339)
+//        ];
+//    }
+//
+//    public static function denormalize(array $data): static
+//    {
+//        return new self(
+//            CustomerId::fromString($data['customer_id']),
+//            OrderId::fromString($data['order_id']),
+//            $data['description'],
+//            Uuid::fromString($data['event_id']),
+//            \DateTimeImmutable::createFromFormat(DATE_RFC3339, $data['occurred_at'])
+//        );
+//    }
 
 
 }
