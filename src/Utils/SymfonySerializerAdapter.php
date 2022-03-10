@@ -2,6 +2,10 @@
 
 namespace Tcieslar\EventStore\Utils;
 
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Tcieslar\EventSourcing\Event;
 
@@ -9,9 +13,21 @@ class SymfonySerializerAdapter implements EventSerializerInterface
 {
     private Serializer $serializer;
 
-    public function __construct(Serializer $serializer)
+    public function __construct(?Serializer $serializer = null)
     {
-        $this->serializer = $serializer;
+        if ($serializer) {
+            $this->serializer = $serializer;
+            return;
+        }
+        $encoders = [new JsonEncoder()];
+        $normalizers = [
+            new DateTimeNormalizer(),
+            new PropertyNormalizer(
+                null, null, new ReflectionExtractor()
+            )];
+        $this->serializer = new Serializer(
+            $normalizers, $encoders
+        );
     }
 
     public function seriazlize(Event $event, array $context = []): string
