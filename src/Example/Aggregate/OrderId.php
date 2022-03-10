@@ -9,13 +9,13 @@ class OrderId
     private Uuid $uuid;
 
     public function __construct(
-        ?string $uuid = null
+        ?string $value = null
     )
     {
-        if (!$uuid) {
+        if (!$value) {
             $this->uuid = Uuid::random();
         } else {
-            $this->uuid = new Uuid($uuid);
+            $this->uuid = new Uuid($value);
         }
     }
 

@@ -71,11 +71,10 @@ class PsqlEventStore implements EventStoreInterface
             $endVersion = Version::number($row['version']);
             $event = $this->serializer->deseriazlize($row['data'], $row['type'],
                 [
-                    EventSerializerInterface::ADD_PROPERTY => [
-                        'event_id' => $row['event_id'],
-                        'aggregate_id' => $row['aggregate_id'],
-                        'occurred_at' => \DateTimeImmutable::createFromFormat('Y-m-d H:i:sO', $row['occurred_at'])->format(DATE_RFC3339)
-                    ]
+//                    EventSerializerInterface::ADD_PROPERTY => [
+//                        'uuid' => ['uuid' => $row['event_id']],
+//                        'occurredAt' => \DateTimeImmutable::createFromFormat('Y-m-d H:i:sO', $row['occurred_at'])->format(DATE_RFC3339)
+//                    ]
                 ]);
             $eventCollection->add($event);
         }
@@ -132,11 +131,10 @@ class PsqlEventStore implements EventStoreInterface
                 $stmt3->bindValue(3,
                     $this->serializer->seriazlize($event,
                         [
-                            EventSerializerInterface::IGNORE_PROPERTY => [
-                                'aggregate_id',
-                                'occurred_at',
-                                'event_id'
-                            ]
+//                            EventSerializerInterface::IGNORE_PROPERTY => [
+//                                'uuid',
+//                                'occurredAt'
+//                            ]
                         ]
                     )
                 );

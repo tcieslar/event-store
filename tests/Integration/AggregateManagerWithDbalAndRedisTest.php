@@ -3,8 +3,11 @@
 namespace Tcieslar\EventStore\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 use Tcieslar\EventStore\Aggregate\AggregateManager;
@@ -20,6 +23,8 @@ use Tcieslar\EventStore\Snapshot\RedisSnapshotRepository;
 use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
 use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
+use Tcieslar\EventStore\Utils\EventSerializerInterface;
+use Tcieslar\EventStore\Utils\SymfonySerializerAdapter;
 
 /**
  * @group integration
@@ -31,7 +36,7 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
 
     public function testIntegration(): void
     {
-        $serializer = new JsonSerializerAdapter();
+        $serializer = $this->getSerializer();
         $unitOfWork = new UnitOfWork();
         $eventPublisher = new FileEventPublisher();
         $eventStore = new PsqlEventStore(self::$postgreUrl, $serializer, $eventPublisher);
@@ -73,5 +78,19 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
 
         $customer4 = $customerRepository->find($customerId);
         $this->assertEquals('name 2', $customer4->getName());
+    }
+
+    private function getSerializer(): EventSerializerInterface
+    {
+        $encoders = [new JsonEncoder()];
+        $normalizers = [
+            new DateTimeNormalizer(),
+            new PropertyNormalizer(
+                null, null, new ReflectionExtractor()
+            )];
+        $serializer = new Serializer(
+            $normalizers, $encoders
+        );
+        return new SymfonySerializerAdapter($serializer);
     }
 }

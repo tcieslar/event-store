@@ -3,12 +3,15 @@
 namespace Tcieslar\EventStore\Example\Event;
 
 use DateTimeImmutable;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Tcieslar\EventSourcing\Event;
 use Tcieslar\EventSourcing\Uuid;
 
 abstract class DomainEventExample implements Event
 {
+
     protected Uuid $uuid;
+
     protected DateTimeImmutable $occurredAt;
 
     public function __construct(

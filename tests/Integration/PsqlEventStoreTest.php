@@ -3,8 +3,11 @@
 namespace Tcieslar\EventStore\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 use Tcieslar\EventStore\Aggregate\AggregateType;
@@ -18,6 +21,7 @@ use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
 use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
+use Tcieslar\EventStore\Utils\SymfonySerializerAdapter;
 
 /**
  * @group integration
@@ -35,8 +39,7 @@ class PsqlEventStoreTest extends TestCase
         $eventPublisher
             ->expects($this->once())
             ->method('publish')
-            ->with($this->callback(fn(EventCollection $events) =>
-                $events->count() === 2 &&
+            ->with($this->callback(fn(EventCollection $events) => $events->count() === 2 &&
                 $events->get(0) instanceof CustomerCreatedEvent &&
                 $events->get(1) instanceof CustomerCredentialSetEvent
             ));
@@ -77,8 +80,7 @@ class PsqlEventStoreTest extends TestCase
         $eventPublisher
             ->expects($this->once())
             ->method('publish')
-            ->with($this->callback(fn(EventCollection $events) =>
-                $events->count() === 2 &&
+            ->with($this->callback(fn(EventCollection $events) => $events->count() === 2 &&
                 $events->get(0) instanceof CustomerCreatedEvent &&
                 $events->get(1) instanceof CustomerCredentialSetEvent
             ));
@@ -138,8 +140,7 @@ class PsqlEventStoreTest extends TestCase
         $eventPublisher
             ->expects($this->once())
             ->method('publish')
-            ->with($this->callback(fn(EventCollection $events) =>
-                $events->count() === 5 &&
+            ->with($this->callback(fn(EventCollection $events) => $events->count() === 5 &&
                 $events->get(0) instanceof CustomerCreatedEvent &&
                 $events->get(1) instanceof CustomerCredentialSetEvent &&
                 $events->get(2) instanceof CustomerCredentialSetEvent &&
@@ -163,6 +164,20 @@ class PsqlEventStoreTest extends TestCase
 
     private function getSerializer(): EventSerializerInterface
     {
-        return new JsonSerializerAdapter();
+        $encoders = [new JsonEncoder()];
+        $normalizers = [
+            new DateTimeNormalizer(),
+            new PropertyNormalizer(
+                null, null, new ReflectionExtractor()
+            )];
+        $serializer = new Serializer(
+            $normalizers, $encoders
+        );
+        return new SymfonySerializerAdapter($serializer);
     }
+
+//    private function getSerializer(): EventSerializerInterface
+//    {
+//        return new JsonSerializerAdapter();
+//    }
 }

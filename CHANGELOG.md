@@ -5,5 +5,5 @@ v0.1.1
 
 v0.1
 - Event store in memory implementation
-- Making aggregate snapshots using memory and redis 
+- Making aggregate snapshots using memory and Redis 
 - Finding and store aggregates by manager (unit of work) 
