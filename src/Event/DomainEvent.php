@@ -13,8 +13,8 @@ abstract class DomainEvent implements Event
     protected DateTimeImmutable $occurredAt;
 
     public function __construct(
-        ?Uuid              $eventId,
-        ?DateTimeImmutable $occurredAt
+        ?Uuid              $eventId = null,
+        ?DateTimeImmutable $occurredAt = null
     )
     {
         $this->eventId = $eventId ?? Uuid::random();

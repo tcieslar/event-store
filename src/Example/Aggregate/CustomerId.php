@@ -8,15 +8,9 @@ class CustomerId
 {
     private Uuid $uuid;
 
-    public function __construct(
-        ?string $value = null
-    )
+    public function __construct()
     {
-        if (!$value) {
-            $this->uuid = Uuid::random();
-        } else {
-            $this->uuid = new Uuid($value);
-        }
+        $this->uuid = Uuid::random();
     }
 
     public function getUuid(): Uuid
@@ -32,10 +26,5 @@ class CustomerId
     public static function create(): self
     {
         return new self();
-    }
-
-    public static function fromString(string $uuid): self
-    {
-        return new self($uuid);
     }
 }
