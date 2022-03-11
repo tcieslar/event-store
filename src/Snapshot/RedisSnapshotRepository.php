@@ -2,8 +2,8 @@
 
 namespace Tcieslar\EventStore\Snapshot;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
-use Tcieslar\EventSourcing\Aggregate;use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventSourcing\Aggregate;
+use Tcieslar\EventStore\Aggregate\Version;
 use Redis;
 use Tcieslar\EventSourcing\Uuid;
 
