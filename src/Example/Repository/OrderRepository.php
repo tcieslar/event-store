@@ -10,11 +10,6 @@ class OrderRepository extends Repository
 {
     public function find(OrderId $customerId): ?Order
     {
-        return $this->findOne($customerId);
-    }
-
-    protected static function getAggregateClassName(): string
-    {
-        return Order::class;
+        return $this->findOne($customerId->getUuid());
     }
 }

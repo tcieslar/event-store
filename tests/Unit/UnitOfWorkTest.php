@@ -2,15 +2,16 @@
 
 namespace Tcieslar\EventStore\Tests\Unit;
 
-use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Aggregate\AggregateType;
+use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
-use Tcieslar\EventStore\Storage\InMemoryEventStorage;
+use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\UnitOfWork;
 use Tcieslar\EventStore\Aggregate\Version;
 
@@ -70,7 +71,7 @@ class UnitOfWorkTest extends TestCase
 
     public function testPersist(): void
     {
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
@@ -78,8 +79,9 @@ class UnitOfWorkTest extends TestCase
 
         // create outside
         $customer = $this->createCustomer();
+        $aggregateType = AggregateType::byAggregate($customer);
         $customerId = $customer->getId();
-        $eventStore->appendToStream($customer->getId(), Version::createZeroVersion(), $customer->recordedEvents());
+        $eventStore->appendToStream($customer->getId(), $aggregateType, Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load and persist
@@ -114,7 +116,7 @@ class UnitOfWorkTest extends TestCase
         $this->assertNotEmpty($identityMap);
         $this->assertEquals('0', $identityMap[$customerId->toString()]['version']->toString());
 
-        $unitOfWork->changeVersion($customer, Version::createVersion(123456));
+        $unitOfWork->changeVersion($customer, Version::number(123456));
         $identityMap = $reflectionProperty->getValue($unitOfWork);
         $this->assertEquals('123456', $identityMap[$customerId->toString()]['version']->toString());
     }
@@ -122,17 +124,23 @@ class UnitOfWorkTest extends TestCase
     public function testVersionException(): void
     {
         $unitOfWork = new UnitOfWork();
-        // new customer
         $customer = $this->createCustomer();
         $this->assertNull($unitOfWork->get($customer->getId()));
-
         $this->expectException(InvalidArgumentException::class);
         $unitOfWork->getVersion($customer);
     }
 
+    public function testGetVersion(): void
+    {
+        $unitOfWork = new UnitOfWork();
+        $customer = $this->createCustomer();
+        $unitOfWork->insert($customer);
+        $this->assertEquals(Version::zero(), $unitOfWork->getVersion($customer));
+    }
+
     private function createCustomer(): Customer
     {
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         return Customer::create($customerId, 'name');
     }
 }

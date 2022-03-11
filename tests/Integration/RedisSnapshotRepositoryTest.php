@@ -7,34 +7,32 @@ use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use Tcieslar\EventStore\Snapshot\RedisSnapshotRepository;
-use Symfony\Component\Uid\Uuid;
-use Tcieslar\EventStore\Utils\PhpSerializer;
+
 
 /**
  * @group integration
  */
 class RedisSnapshotRepositoryTest extends TestCase
 {
+    private static $redisHost = '127.0.0.1';
+
     public function testSaveAndGet(): void
     {
-        $repository = new RedisSnapshotRepository(
-            new PhpSerializer()
-        );
-        $customer = Customer::create(new CustomerId(Uuid::v4()), 'name');
-        $repository->saveSnapshot($customer, Version::createVersion(3));
-        $customer2 = $repository->getSnapshot($customer->getId());
+        $repository = new RedisSnapshotRepository(self::$redisHost);
+        $customer = Customer::create(CustomerId::create(), 'name');
+        $repository->saveSnapshot($customer, Version::number(3));
+        $snapshot = $repository->getSnapshot($customer->getId());
 
-        $this->assertEquals($customer, $customer2->aggregate);
+        $this->assertEquals($customer, $snapshot->aggregate);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $snapshot->createdAt);
     }
 
     public function testNotFound(): void
     {
-        $repository = new RedisSnapshotRepository(
-            new PhpSerializer()
-        );
+        $repository = new RedisSnapshotRepository(self::$redisHost);
 
-        $customerId = new CustomerId(Uuid::v4());
-        $customer2 = $repository->getSnapshot($customerId);
+        $customerId = CustomerId::create();
+        $customer2 = $repository->getSnapshot($customerId->getUuid());
 
         $this->assertNull($customer2);
     }

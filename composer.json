@@ -1,7 +1,7 @@
 {
   "name": "tcieslar/event-store",
   "type": "library",
-  "description": "Implementation of the event-store independent of infrastructure",
+  "description": "Php implementation of a multiplatform event-store.",
   "keywords": [
     "eventstore",
     "event-store",
@@ -16,11 +16,16 @@
     }
   ],
   "require": {
-    "php": ">=8.1"
+    "php": ">=8.1",
+    "ext-redis": "*",
+    "tcieslar/event-sourcing": "^0.1",
+    "doctrine/dbal": "^3.3",
+    "symfony/serializer": "^6.0",
+    "symfony/property-info": "^6.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^9",
-    "symfony/uid": "^6.0"
+    "vimeo/psalm": "^4.21"
   },
   "autoload": {
     "psr-4": {

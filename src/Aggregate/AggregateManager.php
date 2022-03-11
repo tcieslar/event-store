@@ -1,42 +1,49 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Aggregate;
 
-use RuntimeException;
-use Tcieslar\EventStore\Snapshot\Snapshot;
+use Tcieslar\EventStore\AggregateManagerInterface;
+use Tcieslar\EventStore\Exception\AggregateNotFoundException;
+use Tcieslar\EventStore\Exception\AggregateReloadNeedException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventStore\ConcurrencyResolving\ConcurrencyResolvingStrategyInterface;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Snapshot\SnapshotRepositoryInterface;
+use Tcieslar\EventStore\Snapshot\SnapshotStoreStrategyInterface;
+use Tcieslar\EventSourcing\Uuid;
+use Tcieslar\EventSourcing\Aggregate;
 
-class AggregateManager
+class AggregateManager implements AggregateManagerInterface
 {
     public function __construct(
         private UnitOfWork                            $unitOfWork,
         private EventStoreInterface                   $eventStore,
         private SnapshotRepositoryInterface           $snapshotRepository,
-        private ConcurrencyResolvingStrategyInterface $concurrencyResolvingStrategy
+        private ConcurrencyResolvingStrategyInterface $concurrencyResolvingStrategy,
+        private SnapshotStoreStrategyInterface        $snapshotStoreStrategy
     )
     {
     }
 
-    public function addAggregate(AggregateInterface $aggregate): void
+    public function addAggregate(Aggregate $aggregate): void
     {
         $this->unitOfWork->insert($aggregate);
     }
 
-    public function findAggregate(string $className, AggregateIdInterface $aggregateId)
+    /**
+     * @throws AggregateNotFoundException
+     */
+    public function findAggregate(Uuid $aggregateId): Aggregate
     {
-        if ($aggregate = $this->unitOfWork->get($aggregateId)) {
+        if ($aggregate = $this->loadFromMemory($aggregateId)) {
             return $aggregate;
         }
 
-        $snapshot = $this->snapshotRepository->getSnapshot($aggregateId);
-        if (!$snapshot) {
-            return $this->loadFromStore($aggregateId, $className);
+        if ($aggregate = $this->loadFromSnapshot($aggregateId)) {
+            return $aggregate;
         }
 
-        return $this->loadFromSnapshot($aggregateId, $snapshot);
+        return $this->loadFromStore($aggregateId);
     }
 
     public function reset(): void
@@ -44,48 +51,81 @@ class AggregateManager
         $this->unitOfWork->reset();
     }
 
+    /**
+     * @throws AggregateReloadNeedException
+     */
     public function flush(): void
     {
         $identityMap = $this->unitOfWork->getIdentityMap();
+        $aggregatesIdsToReload = [];
         foreach ($identityMap as $row) {
-            /** @var AggregateInterface $aggregate */
+            /** @var Aggregate $aggregate */
             $aggregate = $row['aggregate'];
-            /** @var Version $version */
-            $version = $row['version'];
+            /** @var Version $currentVersion */
+            $currentVersion = $row['version'];
+            $type = AggregateType::byAggregate($aggregate);
+
             try {
-                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $version, $aggregate->recordedEvents());
+                $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $type, $currentVersion, $aggregate->recordedEvents());
                 $this->unitOfWork->changeVersion($aggregate, $newVersion);
                 $aggregate->removeRecordedEvents();
             } catch (ConcurrencyException $exception) {
+                $this->unitOfWork->resetById($aggregate->getId());
                 $this->concurrencyResolvingStrategy->resolve($exception);
+                $aggregatesIdsToReload[] = $aggregate->getId();
             }
+        }
+
+        if (!empty($aggregatesIdsToReload)) {
+            throw new AggregateReloadNeedException($aggregatesIdsToReload);
         }
     }
 
-    private function loadFromStore(AggregateIdInterface $aggregateId, string $className): mixed
+    private function loadFromMemory(Uuid $aggregateId): ?Aggregate
+    {
+        return $this->unitOfWork->get($aggregateId);
+    }
+
+    /**
+     * @throws AggregateNotFoundException
+     */
+    private function loadFromStore(Uuid $aggregateId): Aggregate
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId);
-
-        $aggregate = $className::loadFromEvents($eventStream->events);
-        if (!($aggregate instanceof $className)) {
-            throw new RuntimeException('Aggregate type mismatch.');
-        }
+        $classFqcn = $eventStream->aggregateType->toString();
+        $aggregate = $classFqcn::loadFromEvents($eventStream->events);
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
-        $this->snapshotRepository->saveSnapshot(
-            $aggregate,
-            $eventStream->endVersion
-        );
+
+        if($this->snapshotStoreStrategy->whetherToStoreNew(null)){
+            $this->snapshotRepository->saveSnapshot(
+                $aggregate,
+                $eventStream->endVersion
+            );
+        }
 
         return $aggregate;
     }
 
-    private function loadFromSnapshot(AggregateIdInterface $aggregateId, Snapshot $snapshot): AggregateInterface
+    private function loadFromSnapshot(Uuid $aggregateId): ?Aggregate
     {
-        $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->version);
+        $snapshot = $this->snapshotRepository->getSnapshot($aggregateId);
+        if (!$snapshot) {
+            return null;
+        }
+
+        $eventStream = $this->eventStore->loadFromStream($aggregateId, $snapshot->endVersion);
         $aggregate = $snapshot->aggregate;
         foreach ($eventStream->events as $event) {
             $aggregate->reply($event);
         }
+
+        if($this->snapshotStoreStrategy->whetherToStoreNew($snapshot)) {
+            $this->snapshotRepository->saveSnapshot(
+                $aggregate,
+                $eventStream->endVersion
+            );
+        }
+
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
 
         return $aggregate;

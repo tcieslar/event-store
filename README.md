@@ -1,5 +1,5 @@
 Event Store
 ===================
 
-Implementation of the eventstore independent of infrastructure.
+Php implementation of a multiplatform event-store.
 

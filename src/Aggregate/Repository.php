@@ -1,6 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Aggregate;
+
+use Tcieslar\EventSourcing\Aggregate;
+use Tcieslar\EventStore\Exception\AggregateNotFoundException;
+use Tcieslar\EventSourcing\Uuid;
 
 abstract class Repository
 {
@@ -10,15 +14,16 @@ abstract class Repository
     {
     }
 
-    public function findOne(AggregateIdInterface $aggregateId)
+    /**
+     * @throws AggregateNotFoundException
+     */
+    public function findOne(Uuid $aggregateId)
     {
-        return $this->aggregateManager->findAggregate(static::getAggregateClassName(), $aggregateId);
+        return $this->aggregateManager->findAggregate($aggregateId);
     }
 
-    public function add(AggregateInterface $aggregate): void
+    public function add(Aggregate $aggregate): void
     {
         $this->aggregateManager->addAggregate($aggregate);
     }
-
-    abstract protected static function getAggregateClassName(): string;
 }

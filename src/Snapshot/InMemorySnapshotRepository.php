@@ -1,36 +1,33 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Snapshot;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
-use Tcieslar\EventStore\Aggregate\AggregateInterface;
-use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Utils\SerializerInterface;
+use Tcieslar\EventSourcing\Aggregate;use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventSourcing\Uuid;
 
-class InMemorySnapshotRepository extends AbstractSnapshotRepository
+class InMemorySnapshotRepository implements SnapshotRepositoryInterface
 {
     private array $snapshots = [];
 
-    public function __construct(SerializerInterface $serializer)
+    public function __construct()
     {
-        parent::__construct($serializer);
     }
 
-    public function getSnapshot(AggregateIdInterface $aggregateId): ?Snapshot
+    public function getSnapshot(Uuid $aggregateId): ?Snapshot
     {
         $idString = $aggregateId->toString();
         return $this->snapshots[$idString] ?? null;
     }
 
-    public function saveSnapshot(AggregateInterface $aggregate, Version $version): void
+    public function saveSnapshot(Aggregate $aggregate, Version $version): void
     {
         $idString = $aggregate->getId()->toString();
 
         $this->store($version, $aggregate, $idString);
     }
 
-    private function store(Version $version, AggregateInterface $aggregate, string $idString): void
+    private function store(Version $version, Aggregate $aggregate, string $idString): void
     {
-        $this->snapshots[$idString] = new Snapshot($aggregate, $version);
+        $this->snapshots[$idString] = new Snapshot($aggregate, $version, new \DateTimeImmutable());
     }
 }

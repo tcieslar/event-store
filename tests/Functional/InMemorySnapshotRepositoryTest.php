@@ -2,16 +2,16 @@
 
 namespace Tcieslar\EventStore\Tests\Functional;
 
-use Tcieslar\EventStore\EventStore;
+use Tcieslar\EventStore\Aggregate\AggregateType;
+use Tcieslar\EventStore\Store\InMemoryEventStore;
 use Tcieslar\EventStore\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
-use Tcieslar\EventStore\Storage\InMemoryEventStorage;
-use Tcieslar\EventStore\Utils\PhpSerializer;
+use Tcieslar\EventStore\Store\InMemoryEventStorage;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use Symfony\Component\Uid\Uuid;
+
 use Tcieslar\EventStore\Aggregate\Version;
 
 /**
@@ -21,21 +21,21 @@ class InMemorySnapshotRepositoryTest extends TestCase
 {
     public function testSave(): void
     {
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $serializer = new PhpSerializer();
-        $snapshotRepository = new InMemorySnapshotRepository($serializer);
+        $snapshotRepository = new InMemorySnapshotRepository();
 
         // create aggregate
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
-        $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
+        $aggregateType = AggregateType::byAggregate($customer);
+        $eventStore->appendToStream($customerId->getUuid(), $aggregateType, Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load aggregate
-        $eventStream = $eventStore->loadFromStream($customerId);
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid());
         $customer2 = Customer::loadFromEvents($eventStream->events);
 
         // create snapshot
@@ -46,32 +46,32 @@ class InMemorySnapshotRepositoryTest extends TestCase
         $reflectionProperty = $reflectionClass->getProperty('snapshots');
         $snapshots = $reflectionProperty->getValue($snapshotRepository);
 
-        $this->assertEquals($customerId, current($snapshots)->aggregate->getId());
+        $this->assertEquals($customerId, current($snapshots)->aggregate->getCustomerId());
     }
 
     public function testGet(): void
     {
-        $eventStore = new EventStore(
+        $eventStore = new InMemoryEventStore(
             storage: new InMemoryEventStorage(),
             eventPublisher: new FileEventPublisher()
         );
-        $serializer = new PhpSerializer();
-        $snapshotRepository = new InMemorySnapshotRepository($serializer);
+        $snapshotRepository = new InMemorySnapshotRepository();
 
         // create aggregate
-        $customerId = new CustomerId(Uuid::v4());
+        $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
-        $eventStore->appendToStream($customerId, Version::createZeroVersion(), $customer->recordedEvents());
+        $aggregateType = AggregateType::byAggregate($customer);
+        $eventStore->appendToStream($customerId->getUuid(), $aggregateType, Version::zero(), $customer->recordedEvents());
         unset($customer);
 
         // load aggregate
-        $eventStream = $eventStore->loadFromStream($customerId);
+        $eventStream = $eventStore->loadFromStream($customerId->getUuid());
         $customer2 = Customer::loadFromEvents($eventStream->events);
 
         // create snapshot
         $snapshotRepository->saveSnapshot($customer2, $eventStream->endVersion);
-        $snapshot = $snapshotRepository->getSnapshot($customerId);
-        $this->assertSame($snapshot->aggregate->getId(), $customerId);
-        $this->assertSame($snapshot->version, $eventStream->endVersion);
+        $snapshot = $snapshotRepository->getSnapshot($customerId->getUuid());
+        $this->assertSame($snapshot->aggregate->getId(), $customerId->getUuid());
+        $this->assertSame($snapshot->endVersion, $eventStream->endVersion);
     }
 }

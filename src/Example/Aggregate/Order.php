@@ -1,13 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Example\Aggregate;
 
-use Tcieslar\EventStore\Aggregate\Aggregate;
+use Tcieslar\EventStore\Aggregate\AbstractAggregate;
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use DateTimeImmutable;
 use Tcieslar\EventStore\Example\Event\OrderCreatedEvent;
+use Tcieslar\EventSourcing\Uuid;
 
-class Order extends Aggregate
+class Order extends AbstractAggregate
 {
     private OrderId $orderId;
     private string $description;
@@ -30,15 +31,15 @@ class Order extends Aggregate
         parent::__construct();
     }
 
+    public function getId(): Uuid
+    {
+        return $this->orderId->getUuid();
+    }
+
     public function getOrderId(): OrderId
     {
         return $this->orderId;
 
-    }
-
-    public function getId(): AggregateIdInterface
-    {
-        return $this->orderId;
     }
 
     public function getDescription(): string
@@ -53,8 +54,8 @@ class Order extends Aggregate
 
     protected function whenOrderCreatedEvent(OrderCreatedEvent $event): void
     {
-        $this->orderId = $event->orderId;
-        $this->description = $event->description;
-        $this->createdAt = $event->occurredAt;
+        $this->orderId = $event->getOrderId();
+        $this->description = $event->getDescription();
+        $this->createdAt = $event->getOccurredAt();
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Aggregate;
 
@@ -12,12 +12,12 @@ class Version
     {
     }
 
-    public static function createZeroVersion(): self
+    public static function zero(): self
     {
-        return self::createVersion(0);
+        return self::number(0);
     }
 
-    public static function createVersion(int $number): self
+    public static function number(int $number): self
     {
         if ($number < 0) {
             throw new InvalidArgumentException('Version number error.');

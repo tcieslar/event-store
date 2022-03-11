@@ -1,54 +1,62 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Snapshot;
 
 use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
-use Tcieslar\EventStore\Aggregate\AggregateInterface;
-use Tcieslar\EventStore\Aggregate\Version;
+use Tcieslar\EventSourcing\Aggregate;use Tcieslar\EventStore\Aggregate\Version;
 use Redis;
-use Tcieslar\EventStore\Utils\SerializerInterface;
+use Tcieslar\EventSourcing\Uuid;
 
 /**
  * @codeCoverageIgnore
  */
 class RedisSnapshotRepository implements SnapshotRepositoryInterface
 {
-    private Redis $redis;
-    private SerializerInterface $serializer;
+    private ?Redis $redis = null;
 
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(
+        private string $host,
+        private int    $port = 6379
+    )
     {
-        $this->serializer = $serializer;
-        $this->connect();
     }
 
     public function __destruct()
     {
-        $this->disconnect();
+        $this->redis?->close();
     }
 
-    public function getSnapshot(AggregateIdInterface $aggregateId): ?Snapshot
+    public function getSnapshot(Uuid $aggregateId): ?Snapshot
     {
+        if (!$this->redis) {
+            $this->connect();
+        }
         $key = $this->getKey($aggregateId);
-        $array = $this->redis->hGetAll($key);
-        if (empty($array)) {
+        /** @var array $data */
+        $data = $this->redis->hGetAll($key);
+        if (!isset($data['o'], $data['t'], $data['v'])) {
             return null;
         }
-        $aggregate = $this->serializer->unserialize($array['o']);
+        $aggregate = unserialize($data["o"], ['allowed_classes' => true]);
+        $createdAt = (new \DateTimeImmutable)->setTimestamp((int)$data['t']);
 
-        return new Snapshot($aggregate, Version::createVersion((int)$array['v']));
+        return new Snapshot($aggregate, Version::number((int)$data['v']), $createdAt);
     }
 
-    public function saveSnapshot(AggregateInterface $aggregate, Version $version): void
+    public function saveSnapshot(Aggregate $aggregate, Version $version): void
     {
+        if (!$this->redis) {
+            $this->connect();
+        }
         $key = $this->getKey($aggregate->getId());
         $this->redis->hMSet($key, [
             'v' => $version->toString(),
-            'o' => $this->serializer->serialize($aggregate)
+            'o' => serialize($aggregate),
+            't' => (new \DateTimeImmutable())->getTimestamp()
         ]);
     }
 
-    private function getKey(AggregateIdInterface $aggregateId): string
+    private function getKey(Uuid $aggregateId): string
     {
         return 'aggregate-' . $aggregateId->toString();
     }
@@ -57,12 +65,8 @@ class RedisSnapshotRepository implements SnapshotRepositoryInterface
     {
         $this->redis = new Redis();
         $this->redis->connect(
-            '127.0.0.1'
+            $this->host,
+            $this->port
         );
-    }
-
-    private function disconnect(): void
-    {
-        $this->redis->close();
     }
 }

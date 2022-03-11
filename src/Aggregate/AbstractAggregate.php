@@ -1,13 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tcieslar\EventStore\Aggregate;
 
 use Error;
-use Tcieslar\EventStore\Event\EventCollection;
-use Tcieslar\EventStore\Event\EventInterface;
-use Tcieslar\EventStore\Exception\EventAggregateMismatchException;
+use Tcieslar\EventSourcing\Aggregate;
+use Tcieslar\EventSourcing\Uuid;
+use Tcieslar\EventSourcing\EventCollection;
+use Tcieslar\EventSourcing\Event;
+use Tcieslar\EventSourcing\EventAggregateMismatchException;
 
-abstract class Aggregate implements AggregateInterface
+abstract class AbstractAggregate implements Aggregate
 {
     protected EventCollection $recordedEvents;
 
@@ -24,12 +26,12 @@ abstract class Aggregate implements AggregateInterface
         return $aggregate;
     }
 
-    public function __construct()
+    protected function __construct()
     {
         $this->recordedEvents = new EventCollection();
     }
 
-    abstract public function getId(): AggregateIdInterface;
+    abstract public function getId(): Uuid;
 
     public function recordedEvents(): EventCollection
     {
@@ -44,7 +46,7 @@ abstract class Aggregate implements AggregateInterface
     /**
      * @throws EventAggregateMismatchException
      */
-    protected function apply(EventInterface $event): void
+    protected function apply(Event $event): void
     {
         $this->recordedEvents->add($event);
         $this->mutate($event);
@@ -53,7 +55,7 @@ abstract class Aggregate implements AggregateInterface
     /**
      * @throws EventAggregateMismatchException
      */
-    public function reply(EventInterface $event): void
+    public function reply(Event $event): void
     {
         $this->mutate($event);
     }
@@ -61,7 +63,7 @@ abstract class Aggregate implements AggregateInterface
     /**
      * @throws EventAggregateMismatchException
      */
-    protected function mutate(EventInterface $event): void
+    protected function mutate(Event $event): void
     {
         $array = explode('\\', get_class($event));
         $name = 'when' . $array[count($array) - 1];
