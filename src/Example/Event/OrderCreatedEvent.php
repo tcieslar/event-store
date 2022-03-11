@@ -3,9 +3,10 @@
 namespace Tcieslar\EventStore\Example\Event;
 
 use Tcieslar\EventSourcing\Uuid;
+use Tcieslar\EventStore\Event\DomainEvent;
 use Tcieslar\EventStore\Example\Aggregate\OrderId;
 
-class OrderCreatedEvent extends DomainEventExample
+class OrderCreatedEvent extends DomainEvent
 {
     public function __construct(
         private OrderId     $orderId,

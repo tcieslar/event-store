@@ -24,7 +24,7 @@ use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
 use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
-use Tcieslar\EventStore\Utils\SymfonySerializerAdapter;
+use Tcieslar\EventStore\Utils\PsqlEventStoreSerializer;
 
 /**
  * @group integration
@@ -36,7 +36,7 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
 
     public function testIntegration(): void
     {
-        $serializer = new SymfonySerializerAdapter();
+        $serializer = new PsqlEventStoreSerializer();
         $unitOfWork = new UnitOfWork();
         $eventPublisher = new FileEventPublisher();
         $eventStore = new PsqlEventStore(self::$postgreUrl, $serializer, $eventPublisher);

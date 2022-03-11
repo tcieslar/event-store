@@ -1,23 +1,23 @@
 <?php declare(strict_types=1);
 
-namespace Tcieslar\EventStore\Example\Event;
+namespace Tcieslar\EventStore\Event;
 
 use DateTimeImmutable;
 use Tcieslar\EventSourcing\Event;
 use Tcieslar\EventSourcing\Uuid;
 
-abstract class DomainEventExample implements Event
+abstract class DomainEvent implements Event
 {
-    protected Uuid $uuid;
+    protected Uuid $eventId;
 
     protected DateTimeImmutable $occurredAt;
 
     public function __construct(
-        ?Uuid              $uuid,
+        ?Uuid              $eventId,
         ?DateTimeImmutable $occurredAt
     )
     {
-        $this->uuid = $uuid ?? Uuid::random();
+        $this->eventId = $eventId ?? Uuid::random();
         $this->occurredAt = $occurredAt ?? DateTimeImmutable::createFromFormat(
                 DATE_RFC3339,
                 (new \DateTimeImmutable())->format(DATE_RFC3339)
@@ -26,7 +26,7 @@ abstract class DomainEventExample implements Event
 
     public function getEventId(): Uuid
     {
-        return $this->uuid;
+        return $this->eventId;
     }
 
     public function getOccurredAt(): DateTimeImmutable

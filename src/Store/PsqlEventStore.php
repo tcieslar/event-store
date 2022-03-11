@@ -12,7 +12,7 @@ use Tcieslar\EventStore\EventPublisher\EventPublisherInterface;
 use Tcieslar\EventStore\EventStoreInterface;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
-use Tcieslar\EventStore\Utils\EventSerializerInterface;
+use Tcieslar\EventStore\Utils\PsqlEventStoreSerializer;
 use Tcieslar\EventSourcing\Uuid;
 use Tcieslar\EventSourcing\EventCollection;
 use Tcieslar\EventSourcing\Event;
@@ -26,7 +26,7 @@ class PsqlEventStore implements EventStoreInterface
      */
     public function __construct(
         private string                   $url,
-        private EventSerializerInterface $serializer,
+        private PsqlEventStoreSerializer $serializer,
         private EventPublisherInterface  $eventPublisher
     )
     {
@@ -71,10 +71,8 @@ class PsqlEventStore implements EventStoreInterface
             $endVersion = Version::number($row['version']);
             $event = $this->serializer->deseriazlize($row['data'], $row['type'],
                 [
-//                    EventSerializerInterface::ADD_PROPERTY => [
-//                        'uuid' => ['uuid' => $row['event_id']],
-//                        'occurredAt' => \DateTimeImmutable::createFromFormat('Y-m-d H:i:sO', $row['occurred_at'])->format(DATE_RFC3339)
-//                    ]
+                    'eventId' => ['uuid' => $row['event_id']],
+                    'occurredAt' => \DateTimeImmutable::createFromFormat('Y-m-d H:i:sO', $row['occurred_at'])->format(DATE_RFC3339)
                 ]);
             $eventCollection->add($event);
         }
@@ -129,14 +127,7 @@ class PsqlEventStore implements EventStoreInterface
                 $stmt3->bindValue(1, $event->getEventId()->toString());
                 $stmt3->bindValue(2, $aggregateId->toString());
                 $stmt3->bindValue(3,
-                    $this->serializer->seriazlize($event,
-                        [
-//                            EventSerializerInterface::IGNORE_PROPERTY => [
-//                                'uuid',
-//                                'occurredAt'
-//                            ]
-                        ]
-                    )
+                    $this->serializer->seriazlize($event)
                 );
                 $stmt3->bindValue(4, get_class($event));
                 $stmt3->bindValue(5, $newVersion->toString());

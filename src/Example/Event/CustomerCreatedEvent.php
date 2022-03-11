@@ -2,10 +2,11 @@
 
 namespace Tcieslar\EventStore\Example\Event;
 
+use Tcieslar\EventStore\Event\DomainEvent;
 use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventSourcing\Uuid;
 
-class CustomerCreatedEvent extends DomainEventExample
+class CustomerCreatedEvent extends DomainEvent
 {
     public function __construct(
         private CustomerId  $customerId,

@@ -13,7 +13,7 @@ use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
-use Tcieslar\EventStore\Utils\SymfonySerializerAdapter;
+use Tcieslar\EventStore\Utils\PsqlEventStoreSerializer;
 
 /**
  * @group integration
@@ -26,6 +26,7 @@ class PsqlEventStoreTest extends TestCase
     {
         $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'name 1');
+        $firstEvent = $customer->recordedEvents()->get(0);
         $aggregateType = AggregateType::byAggregate($customer);
         $eventPublisher = $this->createMock(EventPublisherInterface::class);
         $eventPublisher
@@ -48,6 +49,9 @@ class PsqlEventStoreTest extends TestCase
         $this->assertEquals(Version::number(2), $eventStream->endVersion);
         $this->assertEquals($aggregateType, $eventStream->aggregateType);
         $this->assertCount(2, $eventStream->events);
+
+        $storedEvent = $eventStream->events->get(0);
+        $this->assertEquals($firstEvent, $storedEvent);
     }
 
     public function testLoadEmpty(): void
@@ -154,8 +158,8 @@ class PsqlEventStoreTest extends TestCase
         $this->assertCount(1, $eventStream->events);
     }
 
-    private function getSerializer(): EventSerializerInterface
+    private function getSerializer()
     {
-        return new SymfonySerializerAdapter();
+        return new PsqlEventStoreSerializer();
     }
 }
