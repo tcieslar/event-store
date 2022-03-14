@@ -1,6 +1,6 @@
 <?php
 
-namespace Tcieslar\EventStore\Utils;
+namespace Tcieslar\EventStore\Store;
 
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -20,6 +20,11 @@ class PsqlEventStoreSerializer
             $this->serializer = $serializer;
             return;
         }
+        $this->symfonySerializerFactory();
+    }
+
+    private function symfonySerializerFactory(): void
+    {
         $encoders = [new JsonEncoder()];
         $normalizers = [
             new DateTimeNormalizer(),

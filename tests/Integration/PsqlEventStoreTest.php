@@ -13,7 +13,7 @@ use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
 use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
 use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
-use Tcieslar\EventStore\Utils\PsqlEventStoreSerializer;
+use Tcieslar\EventStore\Store\PsqlEventStoreSerializer;
 
 /**
  * @group integration

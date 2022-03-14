@@ -24,7 +24,7 @@ use Tcieslar\EventStore\Snapshot\StoreStrategy\EachTimeStoreStrategy;
 use Tcieslar\EventStore\Store\PsqlEventStore;
 use Tcieslar\EventStore\Example\Utils\JsonSerializerAdapter;
 use Tcieslar\EventStore\Utils\EventSerializerInterface;
-use Tcieslar\EventStore\Utils\PsqlEventStoreSerializer;
+use Tcieslar\EventStore\Store\PsqlEventStoreSerializer;
 
 /**
  * @group integration

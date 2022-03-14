@@ -1,3 +1,7 @@
+v0.2
+- Tcieslar/event-source introduction
+- Test coverage
+
 v0.1.1
 - PostgreSQL event store implementation
 - ConcurrencyException resolving implementation
