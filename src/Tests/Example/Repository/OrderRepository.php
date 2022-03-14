@@ -1,9 +1,9 @@
 <?php
 
-namespace Tcieslar\EventStore\Example\Repository;
+namespace Tcieslar\EventStore\Tests\Example\Repository;
 
-use Tcieslar\EventStore\Example\Aggregate\Order;
-use Tcieslar\EventStore\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\Order;
+use Tcieslar\EventStore\Tests\Example\Aggregate\OrderId;
 use Tcieslar\EventStore\Aggregate\Repository;
 
 class OrderRepository extends Repository

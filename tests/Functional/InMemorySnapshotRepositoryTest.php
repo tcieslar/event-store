@@ -4,8 +4,8 @@ namespace Tcieslar\EventStore\Tests\Functional;
 
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Store\InMemoryEventStore;
-use Tcieslar\EventStore\Example\Aggregate\Customer;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\EventPublisher\FileEventPublisher;
 use Tcieslar\EventStore\Snapshot\InMemorySnapshotRepository;
 use Tcieslar\EventStore\Store\InMemoryEventStorage;

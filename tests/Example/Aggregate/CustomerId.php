@@ -1,6 +1,6 @@
 <?php
 
-namespace Tcieslar\EventStore\Example\Aggregate;
+namespace Tcieslar\EventStore\Tests\Example\Aggregate;
 
 use Tcieslar\EventSourcing\Uuid;
 

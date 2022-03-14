@@ -8,9 +8,9 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
-use Tcieslar\EventStore\Example\Aggregate\OrderId;
-use Tcieslar\EventStore\Example\Event\OrderAddedEvent;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Tests\Example\Event\OrderAddedEvent;
 
 class SerializerIntegrationTest
 {

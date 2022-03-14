@@ -2,10 +2,10 @@
 
 namespace Tcieslar\EventStore\Tests\Unit;
 
-use Tcieslar\EventStore\Example\Aggregate\Customer;
-use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
-use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Tests\Example\Event\CustomerCreatedEvent;
+use Tcieslar\EventStore\Tests\Example\Event\CustomerCredentialSetEvent;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 
 

@@ -1,13 +1,13 @@
 <?php
 
-namespace Tcieslar\EventStore\Example\Aggregate;
+namespace Tcieslar\EventStore\Tests\Example\Aggregate;
 
 use InvalidArgumentException;
 use Tcieslar\EventSourcing\Uuid;
 use Tcieslar\EventStore\Aggregate\AbstractAggregate;
-use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
-use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
-use Tcieslar\EventStore\Example\Event\OrderAddedEvent;
+use Tcieslar\EventStore\Tests\Example\Event\CustomerCreatedEvent;
+use Tcieslar\EventStore\Tests\Example\Event\CustomerCredentialSetEvent;
+use Tcieslar\EventStore\Tests\Example\Event\OrderAddedEvent;
 
 class Customer extends AbstractAggregate
 {

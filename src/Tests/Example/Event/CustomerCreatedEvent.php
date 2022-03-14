@@ -1,9 +1,9 @@
 <?php
 
-namespace Tcieslar\EventStore\Example\Event;
+namespace Tcieslar\EventStore\Tests\Example\Event;
 
 use Tcieslar\EventStore\Event\DomainEvent;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
 use Tcieslar\EventSourcing\Uuid;
 
 class CustomerCreatedEvent extends DomainEvent

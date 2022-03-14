@@ -1,16 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Tcieslar\EventStore\Example\Event;
+namespace Tcieslar\EventStore\Tests\Example\Event;
 
-use Tcieslar\EventStore\Event\DomainEvent;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
 use Tcieslar\EventSourcing\Uuid;
+use Tcieslar\EventStore\Event\DomainEvent;
+use Tcieslar\EventStore\Tests\Example\Aggregate\OrderId;
 
-class CustomerCredentialSetEvent extends DomainEvent
+class OrderCreatedEvent extends DomainEvent
 {
     public function __construct(
-        private CustomerId  $customerId,
-        private string      $name,
+        private OrderId     $orderId,
+        private string      $description,
         ?Uuid               $uuid = null,
         ?\DateTimeImmutable $occurredAt = null
     )
@@ -21,22 +21,16 @@ class CustomerCredentialSetEvent extends DomainEvent
         );
     }
 
-
-    public function getCustomerId(): CustomerId
+    public function getOrderId(): OrderId
     {
-        return $this->customerId;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
+        return $this->orderId;
     }
 
 //    public function normalize(): array
 //    {
 //        return [
-//            'customer_id' => $this->getCustomerId()->toString(),
-//            'name' => $this->name,
+//            'order_id' => $this->getOrderId()->toString(),
+//            'description' => $this->getDescription(),
 //            'event_id' => $this->uuid->toString(),
 //            'occurred_at' => $this->occurredAt->format(DATE_RFC3339)
 //        ];
@@ -45,10 +39,18 @@ class CustomerCredentialSetEvent extends DomainEvent
 //    public static function denormalize(array $data): static
 //    {
 //        return new self(
-//            CustomerId::fromString($data['customer_id']),
-//            $data['name'],
+//            OrderId::fromString($data['order_id']),
+//            $data['description'],
 //            Uuid::fromString($data['event_id']),
 //            \DateTimeImmutable::createFromFormat(DATE_RFC3339, $data['occurred_at'])
 //        );
 //    }
+
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+
 }

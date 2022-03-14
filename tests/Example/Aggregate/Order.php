@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Tcieslar\EventStore\Example\Aggregate;
+namespace Tcieslar\EventStore\Tests\Example\Aggregate;
 
 use Tcieslar\EventStore\Aggregate\AbstractAggregate;
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use DateTimeImmutable;
-use Tcieslar\EventStore\Example\Event\OrderCreatedEvent;
+use Tcieslar\EventStore\Tests\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Tests\Example\Event\OrderCreatedEvent;
 use Tcieslar\EventSourcing\Uuid;
 
 class Order extends AbstractAggregate

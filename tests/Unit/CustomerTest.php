@@ -2,8 +2,8 @@
 
 namespace Tcieslar\EventStore\Tests\Unit;
 
-use Tcieslar\EventStore\Example\Aggregate\Customer;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 
 

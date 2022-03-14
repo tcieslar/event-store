@@ -1,9 +1,9 @@
 <?php
 
-namespace Tcieslar\EventStore\Example\Repository;
+namespace Tcieslar\EventStore\Tests\Example\Repository;
 
-use Tcieslar\EventStore\Example\Aggregate\Customer;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
 use Tcieslar\EventStore\Aggregate\Repository;
 use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 

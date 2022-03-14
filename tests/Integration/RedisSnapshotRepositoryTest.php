@@ -3,8 +3,8 @@
 namespace Tcieslar\EventStore\Tests\Integration;
 
 use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Example\Aggregate\Customer;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 use Tcieslar\EventStore\Snapshot\RedisSnapshotRepository;
 

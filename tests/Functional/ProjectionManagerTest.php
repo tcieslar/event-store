@@ -3,11 +3,11 @@
 namespace Tcieslar\EventStore\Tests\Functional;
 
 use Tcieslar\EventSourcing\EventCollection;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
-use Tcieslar\EventStore\Example\Aggregate\OrderId;
-use Tcieslar\EventStore\Example\Event\CustomerCreatedEvent;
-use Tcieslar\EventStore\Example\Event\CustomerCredentialSetEvent;
-use Tcieslar\EventStore\Example\Event\OrderAddedEvent;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Tests\Example\Event\CustomerCreatedEvent;
+use Tcieslar\EventStore\Tests\Example\Event\CustomerCredentialSetEvent;
+use Tcieslar\EventStore\Tests\Example\Event\OrderAddedEvent;
 use Tcieslar\EventStore\Projection\ProjectionManager;
 use Tcieslar\EventStore\Projection\InMemoryProjectionStorage;
 

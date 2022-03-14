@@ -1,12 +1,11 @@
 <?php
 
-namespace Tcieslar\EventStore\Example\Event;
+namespace Tcieslar\EventStore\Tests\Example\Event;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventSourcing\Uuid;
 use Tcieslar\EventStore\Event\DomainEvent;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
-use Tcieslar\EventStore\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\OrderId;
 
 class OrderAddedEvent extends DomainEvent
 {

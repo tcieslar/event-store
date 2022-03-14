@@ -1,16 +1,16 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Tcieslar\EventStore\Example\Event;
+namespace Tcieslar\EventStore\Tests\Example\Event;
 
-use Tcieslar\EventSourcing\Uuid;
 use Tcieslar\EventStore\Event\DomainEvent;
-use Tcieslar\EventStore\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
+use Tcieslar\EventSourcing\Uuid;
 
-class OrderCreatedEvent extends DomainEvent
+class CustomerCredentialSetEvent extends DomainEvent
 {
     public function __construct(
-        private OrderId     $orderId,
-        private string      $description,
+        private CustomerId  $customerId,
+        private string      $name,
         ?Uuid               $uuid = null,
         ?\DateTimeImmutable $occurredAt = null
     )
@@ -21,16 +21,22 @@ class OrderCreatedEvent extends DomainEvent
         );
     }
 
-    public function getOrderId(): OrderId
+
+    public function getCustomerId(): CustomerId
     {
-        return $this->orderId;
+        return $this->customerId;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
 //    public function normalize(): array
 //    {
 //        return [
-//            'order_id' => $this->getOrderId()->toString(),
-//            'description' => $this->getDescription(),
+//            'customer_id' => $this->getCustomerId()->toString(),
+//            'name' => $this->name,
 //            'event_id' => $this->uuid->toString(),
 //            'occurred_at' => $this->occurredAt->format(DATE_RFC3339)
 //        ];
@@ -39,18 +45,10 @@ class OrderCreatedEvent extends DomainEvent
 //    public static function denormalize(array $data): static
 //    {
 //        return new self(
-//            OrderId::fromString($data['order_id']),
-//            $data['description'],
+//            CustomerId::fromString($data['customer_id']),
+//            $data['name'],
 //            Uuid::fromString($data['event_id']),
 //            \DateTimeImmutable::createFromFormat(DATE_RFC3339, $data['occurred_at'])
 //        );
 //    }
-
-
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-
 }

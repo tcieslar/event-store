@@ -3,10 +3,10 @@
 namespace Tcieslar\EventStore\Tests\Unit;
 
 use Tcieslar\EventStore\Aggregate\AggregateType;
-use Tcieslar\EventStore\Example\Aggregate\Customer;
+use Tcieslar\EventStore\Tests\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventSourcing\EventCollection;
-use Tcieslar\EventStore\Example\Aggregate\CustomerId;
+use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
 
 use Tcieslar\EventStore\Aggregate\Version;
