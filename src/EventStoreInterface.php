@@ -2,7 +2,6 @@
 
 namespace Tcieslar\EventStore;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventSourcing\EventCollection;
