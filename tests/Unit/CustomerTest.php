@@ -2,9 +2,13 @@
 
 namespace Tcieslar\EventStore\Tests\Unit;
 
+use Tcieslar\EventSourcing\EventAggregateMismatchException;
+use Tcieslar\EventSourcing\EventCollection;
 use Tcieslar\EventStore\Tests\Example\Aggregate\Customer;
 use Tcieslar\EventStore\Tests\Example\Aggregate\CustomerId;
 use PHPUnit\Framework\TestCase;
+use Tcieslar\EventStore\Tests\Example\Aggregate\OrderId;
+use Tcieslar\EventStore\Tests\Example\Event\OrderCreatedEvent;
 
 
 class CustomerTest extends TestCase
@@ -26,6 +30,20 @@ class CustomerTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
         $customer->setName('');
+    }
+
+    public function testEventAggregateMismatchException(): void
+    {
+        $orderCreatedEvent = new OrderCreatedEvent(
+            OrderId::create(),
+            'test'
+        );
+
+        $this->expectException(EventAggregateMismatchException::class);
+
+        Customer::loadFromEvents(new EventCollection([
+            $orderCreatedEvent
+        ]));
     }
 
 }
