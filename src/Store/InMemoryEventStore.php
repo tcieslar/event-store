@@ -2,7 +2,6 @@
 
 namespace Tcieslar\EventStore\Store;
 
-use Tcieslar\EventStore\Aggregate\AggregateIdInterface;
 use Tcieslar\EventStore\Aggregate\AggregateType;
 use Tcieslar\EventStore\Aggregate\Version;
 use Tcieslar\EventSourcing\EventCollection;
@@ -13,7 +12,7 @@ use Tcieslar\EventStore\Exception\AggregateNotFoundException;
 use Tcieslar\EventStore\Exception\ConcurrencyException;
 use Tcieslar\EventSourcing\Uuid;
 
-class InMemoryEventStore implements EventStoreInterface
+class InMemoryEventStore implements EventStoreInterface, EventProviderInterface
 {
     public function __construct(
         private InMemoryEventStorage    $storage,
@@ -60,5 +59,10 @@ class InMemoryEventStore implements EventStoreInterface
     public function getAllEvents(): EventCollection
     {
         return $this->storage->getAllEvents();
+    }
+
+    public function getEvents(int $page = 1, int $pageLimit = 1000): EventCollection
+    {
+        array_slice($this->storage->getAllEvents()->getAll(),($page-1) * $pageLimit, $pageLimit);
     }
 }

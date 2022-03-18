@@ -27,9 +27,9 @@ class LoggableEventStore implements EventStoreInterface
         $this->logger->debug('Load from event stream.', [
             'aggregate_id' => $aggregateId->toString(),
             'aggregate_type' => $eventStream->aggregateType,
-            'after_version' => $afterVersion?->toString(),
-            'start_version' => $eventStream->startVersion->toString(),
-            'end_version' => $eventStream->endVersion->toString(),
+            'after_version' => (int)$afterVersion?->toString(),
+            'start_version' => (int)$eventStream->startVersion->toString(),
+            'end_version' => (int)$eventStream->endVersion->toString(),
             'events_count' => $eventStream->events->count()
         ]);
 
@@ -43,7 +43,7 @@ class LoggableEventStore implements EventStoreInterface
         $this->logger->debug('Save to event stream.', [
             'aggregate_id' => $aggregateId->toString(),
             'aggregate_type' => $aggregateType,
-            'expected_version' => $expectedVersion->toString(),
+            'expected_version' => (int)$expectedVersion->toString(),
             'events_count' => $events->count()
         ]);
 

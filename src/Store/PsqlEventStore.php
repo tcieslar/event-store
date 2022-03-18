@@ -16,7 +16,7 @@ use Tcieslar\EventSourcing\Uuid;
 use Tcieslar\EventSourcing\EventCollection;
 use Tcieslar\EventSourcing\Event;
 
-class PsqlEventStore implements EventStoreInterface
+class PsqlEventStore implements EventStoreInterface, EventProviderInterface
 {
     private ?Connection $connection = null;
 
@@ -208,5 +208,24 @@ WHERE  table_name = \'aggregate\'
 );');
             $this->connection->executeQuery('CREATE INDEX aggregate_idx ON aggregate (aggregate_id);');
         }
+    }
+
+    public function getEvents(int $page = 1, int $pageLimit = 1000): EventCollection
+    {
+        $stmt = $this->connection->prepare('SELECT event_id, aggregate_id, data, type, version, occurred_at FROM event ORDER BY id LIMIT ? OFFSET ?');
+        $stmt->bindValue(1, $pageLimit);
+        $stmt->bindValue(2, ($page - 1) * $pageLimit);
+
+        $eventCollection = new EventCollection();
+        $result = $stmt->executeQuery();
+        while (($row = $result->fetchAssociative()) !== false) {
+            $event = $this->serializer->deseriazlize($row['data'], $row['type'],
+                [
+                    'eventId' => ['uuid' => $row['event_id']],
+                    'occurredAt' => \DateTimeImmutable::createFromFormat('Y-m-d H:i:sO', $row['occurred_at'])->format(DATE_RFC3339)
+                ]);
+            $eventCollection->add($event);
+        }
+        return $eventCollection;
     }
 }

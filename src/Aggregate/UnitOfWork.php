@@ -15,6 +15,11 @@ class UnitOfWork
         return $this->identityMap;
     }
 
+    public function getNumberOfObjects(): int
+    {
+        return count($this->identityMap);
+    }
+
     public function insert(Aggregate $aggregate): void
     {
         $this->throwExceptionIfAggregateAlreadyExists($aggregate, 'Aggregate already exists.');
@@ -34,7 +39,6 @@ class UnitOfWork
                 'aggregate' => $aggregate
             ];
     }
-
 
     public function getVersion(Aggregate $aggregate): Version
     {

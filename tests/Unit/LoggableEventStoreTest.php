@@ -77,5 +77,4 @@ class LoggableEventStoreTest extends TestCase
         $loggableEventStore = new LoggableEventStore($eventStore, $logger);
         $loggableEventStore->appendToStream($aggregateId, $aggregateType, $startVersion, new EventCollection([]));
     }
-
 }
