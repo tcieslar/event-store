@@ -212,6 +212,9 @@ WHERE  table_name = \'aggregate\'
 
     public function getEvents(int $page = 1, int $pageLimit = 1000): EventCollection
     {
+        if (!$this->connection) {
+            $this->connect();
+        }
         $stmt = $this->connection->prepare('SELECT event_id, aggregate_id, data, type, version, occurred_at FROM event ORDER BY id LIMIT ? OFFSET ?');
         $stmt->bindValue(1, $pageLimit);
         $stmt->bindValue(2, ($page - 1) * $pageLimit);
@@ -231,6 +234,9 @@ WHERE  table_name = \'aggregate\'
 
     public function getEventsCount(): int
     {
+        if (!$this->connection) {
+            $this->connect();
+        }
         $stmt = $this->connection->prepare('SELECT COUNT(*) FROM event');
         $result = $stmt->executeQuery();
         return (int)$result->fetchOne();
