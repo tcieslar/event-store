@@ -65,4 +65,9 @@ class InMemoryEventStore implements EventStoreInterface, EventProviderInterface
     {
         array_slice($this->storage->getAllEvents()->getAll(),($page-1) * $pageLimit, $pageLimit);
     }
+
+    public function getEventsCount(): int
+    {
+        return count($this->storage->getAllEvents());
+    }
 }

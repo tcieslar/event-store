@@ -228,4 +228,9 @@ WHERE  table_name = \'aggregate\'
         }
         return $eventCollection;
     }
+
+    public function getEventsCount(): int
+    {
+        return 0;
+    }
 }
