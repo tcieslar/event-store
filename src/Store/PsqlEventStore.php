@@ -231,6 +231,8 @@ WHERE  table_name = \'aggregate\'
 
     public function getEventsCount(): int
     {
-        return 0;
+        $stmt = $this->connection->prepare('SELECT COUNT(*) FROM event');
+        $result = $stmt->executeQuery();
+        return (int)$result->fetchOne();
     }
 }
