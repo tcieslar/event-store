@@ -17,7 +17,7 @@ abstract class Repository
     /**
      * @throws AggregateNotFoundException
      */
-    public function findOne(Uuid $aggregateId)
+    public function findAggregate(Uuid $aggregateId)
     {
         return $this->aggregateManager->findAggregate($aggregateId);
     }
@@ -27,7 +27,7 @@ abstract class Repository
         $this->aggregateManager->addAggregate($aggregate);
     }
 
-    public function saveAggregate(Aggregate $aggregate): void
+    public function flushAggregate(Aggregate $aggregate): void
     {
         $this->aggregateManager->flushAggregate($aggregate);
     }
