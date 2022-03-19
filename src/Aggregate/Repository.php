@@ -26,4 +26,9 @@ abstract class Repository
     {
         $this->aggregateManager->addAggregate($aggregate);
     }
+
+    public function save(Aggregate $aggregate): void
+    {
+        $this->aggregateManager->flushAggregate($aggregate);
+    }
 }
