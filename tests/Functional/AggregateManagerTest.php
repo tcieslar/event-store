@@ -66,6 +66,48 @@ class AggregateManagerTest extends TestCase
         $this->assertSame('2', $identityMap[$customer->getId()->toString()]['version']->toString());
     }
 
+    public function testFlushAggregate(): void
+    {
+        $customer = $this->createCustomer();
+        $aggregateType = AggregateType::byAggregate($customer);
+
+        // append To Stream
+        $eventStore = $this->createMock(InMemoryEventStore::class);
+        $eventStore->expects($this->once())
+            ->method('appendToStream')
+            ->with($this->equalTo($customer->getId()),
+                $this->equalTo(
+                    $aggregateType
+                ),
+                $this->equalTo(Version::zero()),
+                $this->callback(function (EventCollection $changes) {
+                    return count($changes) === 2 &&
+                        $changes->get(0) instanceof CustomerCreatedEvent &&
+                        $changes->get(1) instanceof CustomerCredentialSetEvent;
+                })
+            )
+            ->willReturn(Version::number(2));
+
+        $unitOfWork = new UnitOfWork();
+        $aggregateManager = new AggregateManager(
+            unitOfWork: $unitOfWork,
+            eventStore: $eventStore,
+            snapshotRepository: new InMemorySnapshotRepository(),
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
+        );
+
+        // flush
+        $aggregateManager->flushAggregate($customer);
+
+        // check aggregate
+        $this->assertEmpty($customer->recordedEvents());
+
+        // check identityMap version number
+        $identityMap = $unitOfWork->getIdentityMap();
+        $this->assertSame('2', $identityMap[$customer->getId()->toString()]['version']->toString());
+    }
+
     public function testSecondFlush(): void
     {
         $unitOfWork = new UnitOfWork();
@@ -86,6 +128,31 @@ class AggregateManagerTest extends TestCase
         $aggregateManager->addAggregate($customer);
         $aggregateManager->flush();
         $aggregateManager->flush();
+
+        // check identityMap version number
+        $identityMap = $unitOfWork->getIdentityMap();
+        $this->assertSame('2', $identityMap[$customer->getId()->toString()]['version']->toString());
+    }
+
+    public function testSecondFlushAggregate(): void
+    {
+        $unitOfWork = new UnitOfWork();
+        $aggregateManager = new AggregateManager(
+            unitOfWork: $unitOfWork,
+            eventStore: new InMemoryEventStore(
+                storage: new InMemoryEventStorage(),
+                eventPublisher: new FileEventPublisher()
+            ),
+            snapshotRepository: new InMemorySnapshotRepository(),
+            concurrencyResolvingStrategy: new DoNothingStrategy(),
+            snapshotStoreStrategy: new EachTimeStoreStrategy()
+        );
+
+        $customer = $this->createCustomer();
+
+        // flush
+        $aggregateManager->flushAggregate($customer);
+        $aggregateManager->flushAggregate($customer);
 
         // check identityMap version number
         $identityMap = $unitOfWork->getIdentityMap();

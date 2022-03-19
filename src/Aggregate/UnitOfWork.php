@@ -20,6 +20,15 @@ class UnitOfWork
         return count($this->identityMap);
     }
 
+    public function isAvailable(Aggregate $aggregate): bool
+    {
+        if (isset($this->identityMap[$aggregate->getId()->toString()])) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function insert(Aggregate $aggregate): void
     {
         $this->throwExceptionIfAggregateAlreadyExists($aggregate, 'Aggregate already exists.');

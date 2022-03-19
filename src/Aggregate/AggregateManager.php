@@ -81,6 +81,32 @@ class AggregateManager implements AggregateManagerInterface
         }
     }
 
+    /**
+     * @return bool - is there a need to reload aggregate
+     */
+    public function flushAggregate(Aggregate $paramAggregate): bool
+    {
+        if (!$this->unitOfWork->isAvailable($paramAggregate)) {
+            $this->addAggregate($paramAggregate);
+        }
+
+        $aggregate = $this->unitOfWork->get($paramAggregate->getId());
+        assert($aggregate !== null);
+        $currentVersion = $this->unitOfWork->getVersion($paramAggregate);
+        $type = AggregateType::byAggregate($aggregate);
+        try {
+            $newVersion = $this->eventStore->appendToStream($aggregate->getId(), $type, $currentVersion, $aggregate->recordedEvents());
+            $this->unitOfWork->changeVersion($aggregate, $newVersion);
+            $aggregate->removeRecordedEvents();
+        } catch (ConcurrencyException $exception) {
+            $this->unitOfWork->resetById($aggregate->getId());
+            $this->concurrencyResolvingStrategy->resolve($exception);
+           return true;
+        }
+
+        return false;
+    }
+
     private function loadFromMemory(Uuid $aggregateId): ?Aggregate
     {
         return $this->unitOfWork->get($aggregateId);
@@ -96,7 +122,7 @@ class AggregateManager implements AggregateManagerInterface
         $aggregate = $classFqcn::loadFromEvents($eventStream->events);
         $this->unitOfWork->persist($aggregate, $eventStream->endVersion);
 
-        if($this->snapshotStoreStrategy->whetherToStoreNew(null)){
+        if ($this->snapshotStoreStrategy->whetherToStoreNew(null)) {
             $this->snapshotRepository->saveSnapshot(
                 $aggregate,
                 $eventStream->endVersion
@@ -119,7 +145,7 @@ class AggregateManager implements AggregateManagerInterface
             $aggregate->reply($event);
         }
 
-        if($this->snapshotStoreStrategy->whetherToStoreNew($snapshot)) {
+        if ($this->snapshotStoreStrategy->whetherToStoreNew($snapshot)) {
             $this->snapshotRepository->saveSnapshot(
                 $aggregate,
                 $eventStream->endVersion
