@@ -38,7 +38,7 @@ class RepositoryTest extends TestCase
 
         $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
-        $repository->add($customer);
+        $repository->addAggregate($customer);
 
         $this->assertCount(0, $eventStore->getAllEvents());
         $aggregateManager->flush();
@@ -64,7 +64,7 @@ class RepositoryTest extends TestCase
         // insert
         $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'test');
-        $repository->add($customer);
+        $repository->addAggregate($customer);
         $aggregateManager->flush();
         $unitOfWork->reset();
 

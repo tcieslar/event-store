@@ -56,7 +56,7 @@ class AggregateManagerWithDbalAndRedisTest extends TestCase
         // save
         $customerId = CustomerId::create();
         $customer = Customer::create($customerId, 'name 1');
-        $customerRepository->add($customer);
+        $customerRepository->addAggregate($customer);
         $aggregateManager->flush();
         $aggregateManager->reset();
 

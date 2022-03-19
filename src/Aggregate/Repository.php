@@ -22,12 +22,12 @@ abstract class Repository
         return $this->aggregateManager->findAggregate($aggregateId);
     }
 
-    public function add(Aggregate $aggregate): void
+    public function addAggregate(Aggregate $aggregate): void
     {
         $this->aggregateManager->addAggregate($aggregate);
     }
 
-    public function save(Aggregate $aggregate): void
+    public function saveAggregate(Aggregate $aggregate): void
     {
         $this->aggregateManager->flushAggregate($aggregate);
     }
