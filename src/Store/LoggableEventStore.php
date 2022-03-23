@@ -24,7 +24,7 @@ class LoggableEventStore implements EventStoreInterface
     public function loadFromStream(Uuid $aggregateId, ?Version $afterVersion = null): EventStream
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId, $afterVersion);
-        $this->logger->debug('Load from event stream.', [
+        $this->logger->debug('Load from event stream aggregate.', [
             'aggregate_id' => $aggregateId->toString(),
             'aggregate_type' => $eventStream->aggregateType,
             'after_version' => (int)$afterVersion?->toString(),
