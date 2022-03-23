@@ -1,13 +1,11 @@
 <?php
 
-namespace Tcieslar\EventStore\Snapshot\StoreStrategy;
+namespace Tcieslar\EventStore\Snapshot;
 
 use Psr\Log\LoggerInterface;
 use Tcieslar\EventSourcing\Aggregate;
 use Tcieslar\EventSourcing\Uuid;
 use Tcieslar\EventStore\Aggregate\Version;
-use Tcieslar\EventStore\Snapshot\Snapshot;
-use Tcieslar\EventStore\Snapshot\SnapshotRepositoryInterface;
 
 class LoggableSnapshotRepository implements SnapshotRepositoryInterface
 {
