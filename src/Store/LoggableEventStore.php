@@ -24,9 +24,9 @@ class LoggableEventStore implements EventStoreInterface
     public function loadFromStream(Uuid $aggregateId, ?Version $afterVersion = null): EventStream
     {
         $eventStream = $this->eventStore->loadFromStream($aggregateId, $afterVersion);
-        $this->logger->debug('Load from event stream aggregate.', [
+        $this->logger->debug("Event stream (Aggregate - {$eventStream->aggregateType->toString()} - {$aggregateId->toString()}) loaded. Loaded version {$eventStream->endVersion->toString()}, after version {$afterVersion?->toString()}.", [
             'aggregate_id' => $aggregateId->toString(),
-            'aggregate_type' => $eventStream->aggregateType,
+            'aggregate_type' => $eventStream->aggregateType->toString(),
             'after_version' => (int)$afterVersion?->toString(),
             'start_version' => (int)$eventStream->startVersion->toString(),
             'end_version' => (int)$eventStream->endVersion->toString(),
@@ -40,9 +40,9 @@ class LoggableEventStore implements EventStoreInterface
     {
         $version = $this->eventStore->appendToStream($aggregateId, $aggregateType, $expectedVersion, $events);
 
-        $this->logger->debug('Save to event stream.', [
+        $this->logger->debug("Event stream (Aggregate - {$aggregateType->toString()} - {$aggregateId->toString()}) saved. Expected version {$expectedVersion->toString()}, events count {$events->count()}.", [
             'aggregate_id' => $aggregateId->toString(),
-            'aggregate_type' => $aggregateType,
+            'aggregate_type' => $aggregateType->toString(),
             'expected_version' => (int)$expectedVersion->toString(),
             'events_count' => $events->count()
         ]);
