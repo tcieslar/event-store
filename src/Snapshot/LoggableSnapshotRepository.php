@@ -44,7 +44,7 @@ class LoggableSnapshotRepository implements SnapshotRepositoryInterface
     {
         $this->snapshotRepository->saveSnapshot($aggregate, $version);
         $versionString = $version->toString();
-        $this->logger->debug("Aggregate ({$aggregate->getId()->toString()}) snapshot saved. Saved version {$versionString}.", [
+        $this->logger->debug("Aggregate {$aggregate->getId()->toString()} snapshot saved. Saved version {$versionString}.", [
             'aggregate_id' => $aggregate->getId()->toString(),
             'version' => $versionString
         ]);
