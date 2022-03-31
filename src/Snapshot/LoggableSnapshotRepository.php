@@ -22,7 +22,7 @@ class LoggableSnapshotRepository implements SnapshotRepositoryInterface
     {
         $snapshot = $this->snapshotRepository->getSnapshot($aggregateId);
         if (!$snapshot) {
-            $this->logger->debug("Cannot find aggregate ({$aggregateId->toString()}) snapshot.", [
+            $this->logger->debug("Snapshot repository - Cannot find aggregate {$aggregateId->toString()} snapshot.", [
                 'aggregate_id' => $aggregateId->toString(),
                 'version' => (int)$snapshot?->endVersion->toString(),
                 'created_at' => $snapshot?->createdAt
@@ -31,7 +31,7 @@ class LoggableSnapshotRepository implements SnapshotRepositoryInterface
             return null;
         }
         $version = (int)$snapshot->endVersion->toString();
-        $this->logger->debug("Aggregate {$aggregateId->toString()} snapshot loaded. Loaded version {$version}.", [
+        $this->logger->debug("Snapshot repository - Aggregate {$aggregateId->toString()} snapshot loaded. Loaded version {$version}.", [
             'aggregate_id' => $aggregateId->toString(),
             'version' => $version,
             'created_at' => $snapshot->createdAt
@@ -44,7 +44,7 @@ class LoggableSnapshotRepository implements SnapshotRepositoryInterface
     {
         $this->snapshotRepository->saveSnapshot($aggregate, $version);
         $versionString = $version->toString();
-        $this->logger->debug("Aggregate {$aggregate->getId()->toString()} snapshot saved. Saved version {$versionString}.", [
+        $this->logger->debug("Snapshot repository - Aggregate {$aggregate->getId()->toString()} snapshot saved. Saved version {$versionString}.", [
             'aggregate_id' => $aggregate->getId()->toString(),
             'version' => $versionString
         ]);
