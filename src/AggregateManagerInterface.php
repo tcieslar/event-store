@@ -14,4 +14,9 @@ interface AggregateManagerInterface
     public function reset(): void;
 
     public function flush(): void;
+
+    /**
+     * @return bool - is there a need to reload aggregate
+     */
+    public function flushAggregate(Aggregate $paramAggregate): bool;
 }
